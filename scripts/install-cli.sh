@@ -16,6 +16,7 @@ info() { echo "  $1"; }
 
 mkdir -p "$BIN_DIR"
 ln -sf "$SCRIPT" "$LINK"
+ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind" 2>/dev/null || true
 chmod +x "$SCRIPT"
 info "Linked: $LINK → $SCRIPT"
 

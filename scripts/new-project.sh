@@ -128,8 +128,11 @@ main() {
 
   [[ -d "$TEMPLATE" ]] || die "Template missing: $TEMPLATE"
 
-  if already_initialized "$PROJECT_DIR"; then
-    die "Already initialized (AGENTS.md or ai-dev-os.yaml exists): $PROJECT_DIR"
+  if [[ -f "$PROJECT_DIR/AGENTS.md" && -f "$PROJECT_DIR/ai-dev-os.yaml" ]]; then
+    die "Already initialized: $PROJECT_DIR — use bind-project.sh to repair missing files only"
+  fi
+  if [[ -f "$PROJECT_DIR/AGENTS.md" || -f "$PROJECT_DIR/ai-dev-os.yaml" ]]; then
+    die "Partial OS binding in $PROJECT_DIR — run: $ROOT/scripts/bind-project.sh"
   fi
 
   if [[ "$project_arg" != "." && "$project_arg" != "./" ]]; then
