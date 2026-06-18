@@ -130,13 +130,20 @@ setup_os_binding() {
     created=$((created + 1))
   fi
 
-  # --- ai-dev-os.yaml ---
+  # --- ai-dev-os.yaml (portable — env:AI_DEV_OS_HOME, no machine paths) ---
   if [[ -f "$PROJECT_DIR/ai-dev-os.yaml" ]]; then
     info "ai-dev-os.yaml — exists, kept"
     skipped=$((skipped + 1))
   else
     substitute "$TEMPLATE/ai-dev-os.yaml" "$PROJECT_DIR/ai-dev-os.yaml" "$idea"
-    info "ai-dev-os.yaml — created"
+    info "ai-dev-os.yaml — created (portable — uses \$AI_DEV_OS_HOME)"
+    created=$((created + 1))
+  fi
+
+  # --- local override example ---
+  if [[ ! -f "$PROJECT_DIR/ai-dev-os.local.yaml.example" ]]; then
+    cp "$TEMPLATE/ai-dev-os.local.yaml.example" "$PROJECT_DIR/ai-dev-os.local.yaml.example"
+    info "ai-dev-os.local.yaml.example — created"
     created=$((created + 1))
   fi
 
@@ -156,11 +163,19 @@ setup_os_binding() {
   info "work/ docs/ — ready"
 
   # --- .gitignore ---
+  ensure_gitignore_entry() {
+    local file="$1" entry="$2"
+    grep -qF "$entry" "$file" 2>/dev/null || echo "$entry" >> "$file"
+  }
   if [[ -f "$PROJECT_DIR/.gitignore" ]]; then
-    info ".gitignore — exists, kept"
+    ensure_gitignore_entry "$PROJECT_DIR/.gitignore" "ai-dev-os.local.yaml"
+    info ".gitignore — exists, ensured ai-dev-os.local.yaml"
     skipped=$((skipped + 1))
   else
     cat > "$PROJECT_DIR/.gitignore" <<'GITIGNORE'
+# OS per-machine paths (optional — prefer AI_DEV_OS_HOME in shell)
+ai-dev-os.local.yaml
+
 # OS runtime (optional — commit work/ if you want artifact history)
 # work/
 
@@ -190,9 +205,12 @@ GITIGNORE
     echo "=== Done — created $created item(s), kept $skipped existing ==="
   fi
   echo ""
-  echo "Paths (check ai-dev-os.yaml):"
-  echo "  ai_dev_os_home: $ROOT"
-  echo "  project_root:   $PROJECT_DIR"
+  echo "Paths (portable — set once per machine):"
+  echo "  export AI_DEV_OS_HOME=\"$ROOT\"   # add to ~/.zshrc or ~/.bashrc"
+  echo "  project_root:   $PROJECT_DIR (auto — this repo)"
+  if [[ -n "${AI_DEV_OS_HOME:-}" ]]; then
+    "$ROOT/scripts/ai-paths.sh" sync 2>/dev/null && info "ai-dev-os.local.yaml synced for this machine" || true
+  fi
   echo ""
   echo "Open in your agent:"
   echo "  cd $PROJECT_DIR && grok"

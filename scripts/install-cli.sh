@@ -17,8 +17,10 @@ info() { echo "  $1"; }
 mkdir -p "$BIN_DIR"
 ln -sf "$SCRIPT" "$LINK"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind" 2>/dev/null || true
-chmod +x "$SCRIPT"
+ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths" 2>/dev/null || true
+chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.sh"
 info "Linked: $LINK → $SCRIPT"
+info "Linked: $BIN_DIR/ai-paths"
 
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo ""
@@ -27,19 +29,22 @@ if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo "      Or open a new login shell if your distro already adds ~/.local/bin."
 fi
 
-if [[ -f "$BASHRC" ]] && ! grep -qF "$MARKER" "$BASHRC" 2>/dev/null; then
+_write_shell_block() {
+  local rc="$1"
+  [[ -f "$rc" ]] || return 0
+  grep -qF "$MARKER" "$rc" 2>/dev/null && return 0
   {
     echo ""
     echo "$MARKER"
     echo "export AI_DEV_OS_HOME=\"$ROOT\""
+    echo "export PATH=\"\$HOME/.local/bin:\$PATH\""
     echo "alias ai-new=\"\$AI_DEV_OS_HOME/scripts/new-project.sh\""
-  } >> "$BASHRC"
-  info "Added ai-new alias + AI_DEV_OS_HOME to $BASHRC"
-elif [[ -f "$BASHRC" ]]; then
-  info "bashrc already has AI Dev OS CLI block — skipped"
-else
-  info "No $BASHRC — symlink only (ai-new via ~/.local/bin)"
-fi
+  } >> "$rc"
+  info "Added AI_DEV_OS_HOME + ai-new to $rc"
+}
+
+_write_shell_block "$BASHRC"
+_write_shell_block "$HOME/.zshrc"
 
 echo ""
 echo "Done. Verify:"

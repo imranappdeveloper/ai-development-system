@@ -42,11 +42,14 @@ git clone <your-repo-url> ~/ai-development-system
 export AI_DEV_OS_HOME=/data/project/ai-development-system
 ```
 
-Add to `~/.bashrc` (or tell your agent every session):
+Add to `~/.bashrc` (Ubuntu) or `~/.zshrc` (Mac) — **once per machine**:
 
 ```bash
-export AI_DEV_OS_HOME=/data/project/ai-development-system   # ← your real path
+export AI_DEV_OS_HOME=~/ai-development-system   # ← your clone path on THIS machine
 ```
+
+Or run `install-cli.sh` — it sets this automatically.  
+**Multi-machine (Mac + Ubuntu):** [MULTI-MACHINE.md](./MULTI-MACHINE.md) — project files stay portable; only shell env differs.
 
 **Optional — `ai-new` shortcut** (one command from any folder):
 

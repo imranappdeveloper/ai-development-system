@@ -1,0 +1,5 @@
+# Copy to ai-dev-os.local.yaml (gitignored) — only if env:AI_DEV_OS_HOME is not enough.
+# Usually you only need: export AI_DEV_OS_HOME=... in ~/.zshrc or ~/.bashrc
+#
+# ai_dev_os_home: /Users/you/ai-development-system
+# project_root: /Users/you/projects/auction

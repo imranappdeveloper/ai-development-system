@@ -4,15 +4,29 @@ This project uses **AI Development OS v1.0** with **grill-first kickoff**.
 
 > Grok reads this file automatically from the project directory. Antigravity: open this folder as the workspace.
 
+## Path resolution (Mac / Ubuntu — every session)
+
+Resolve before loading any OS doc:
+
+| Priority | Source |
+|----------|--------|
+| 1 | `$AI_DEV_OS_HOME` environment variable (**required on each machine**) |
+| 2 | `ai-dev-os.local.yaml` in this directory (optional, gitignored) |
+| 3 | `project_root` = directory containing this `AGENTS.md` |
+
+If `$AI_DEV_OS_HOME` is unset: tell user to run `$OS_REPO/scripts/install-cli.sh` on this machine, or `ai-paths machine-setup`.
+
+Committed `ai-dev-os.yaml` uses `env:AI_DEV_OS_HOME` — **never** hardcode `/Users/...` or `/data/...` in project files.
+
 ## Config
 
-Read `ai-dev-os.yaml` in this directory for paths and `work_id`.
+Read `ai-dev-os.yaml` + `work_id` in this directory.
 
 ## When the user reports a bug
 
 Message starts with **`Bug Fix:`**, **`bug:`**, **`fix:`**, or describes something broken/failing.
 
-Follow **`{{AI_DEV_OS_HOME}}/docs/BUG-FIX.md`** exactly:
+Follow **`$AI_DEV_OS_HOME/docs/BUG-FIX.md`** exactly:
 
 1. **`/triage`** — classify; one clarifying question only if repro impossible
 2. **`/diagnose`** — reproduce + root cause (automatic)
@@ -25,7 +39,7 @@ User never reads playbooks. Max **3 approval cards** per bug.
 
 ## When the user says `start`, `new project`, or describes an idea
 
-Follow **`{{AI_DEV_OS_HOME}}/docs/PROJECT-KICKOFF.md`** exactly.
+Follow **`$AI_DEV_OS_HOME/docs/PROJECT-KICKOFF.md`** exactly.
 
 ### Required behavior
 
@@ -48,7 +62,7 @@ When writing application code for an ISS:
 
 ### OS status footer (last line — every response)
 
-The **absolute last line** of every reply — one line, nothing after it. Full spec: **`{{AI_DEV_OS_HOME}}/docs/OS-STATUS-FOOTER.md`**.
+The **absolute last line** of every reply — one line, nothing after it. Full spec: **`$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`**.
 
 ```text
 **AI Dev OS:** {✅ Used | ⚠️ Partial | ❌ Not used} | {skill/playbook} | {work_id} | {artifact or reason}
@@ -58,11 +72,12 @@ Be honest. Never claim `✅ Used` without loading OS docs/skills and writing req
 
 ### Never
 
-- Ask the user to read files under `{{AI_DEV_OS_HOME}}/playbooks/`
+- Ask the user to read files under `$AI_DEV_OS_HOME/playbooks/`
 - Omit the OS status footer
 - Dump gate IDs (`H-INTAKE`) unless user asks
 - Self-approve gates
 - Skip grill on greenfield projects
+- Use absolute OS paths baked for another machine
 
 ### User approvals (plain English)
 

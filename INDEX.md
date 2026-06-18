@@ -37,6 +37,7 @@ Machine- and human-readable registry for workflows, templates, playbooks, and ch
 | DOC-START-001 | `docs/GETTING-STARTED.md` | OS install + agent gate reference |
 | DOC-BUGFIX-001 | `docs/BUG-FIX.md` | **Bug fix** — report once, `/triage` + `/diagnose` + 3 approvals |
 | DOC-OS-FOOTER-001 | `docs/OS-STATUS-FOOTER.md` | **Compliance footer** — required on every agent response |
+| DOC-MULTI-001 | `docs/MULTI-MACHINE.md` | **Mac + Ubuntu** — portable paths via `AI_DEV_OS_HOME` |
 | DOC-ARCH-001 | `docs/ARCHITECTURE.md` | Clean Architecture layers |
 | DOC-SSOT-001 | `docs/SSOT-HIERARCHY.md` | SSOT ownership |
 | DOC-GOV-001 | `docs/GOVERNANCE.md` | Gates, waivers, promotion |
