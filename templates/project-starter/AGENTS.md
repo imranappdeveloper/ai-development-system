@@ -37,19 +37,24 @@ Follow **`$AI_DEV_OS_HOME/docs/BUG-FIX.md`** exactly:
 
 User never reads playbooks. Max **3 approval cards** per bug.
 
-## When the user says `start`, `new project`, or describes an idea
+## When the user runs `/setup-ads`, `start`, or `new project`
 
-Follow **`$AI_DEV_OS_HOME/docs/PROJECT-KICKOFF.md`** exactly.
+Follow **`/setup-ads`** skill (`~/.grok/skills/setup-ads/SKILL.md`) — SSOT: **`$AI_DEV_OS_HOME/docs/SETUP-ADS.md`**.
 
-### Required behavior
+| Mode | Grill | Focus |
+|------|-------|-------|
+| **New** | `/grill-me` | Use cases, flows, MVP, assumptions — **not** standard practices |
+| **Existing** | `/grill-with-docs` | Explore codebase, glossary, goals, clear assumptions |
 
-1. Run **`/grill-with-docs`** — **one question at a time**; include your recommendation each time
-2. Update **`CONTEXT.md`** as terms are resolved (glossary only — no implementation detail)
-3. Defer unknowns to **`docs/OPEN-QUESTIONS.md`**
-4. After Q1–Q8: **5-line summary** → wait for user **`yes`**
-5. Run **`PB-intake-classify`** silently (load 09+04+checklist internally) → **3-line INT summary**
-6. Wait for **`Approve intake.`** — do not run discovery until user confirms
-7. Offer discovery with **`yes` / `not yet`**
+Flow: `ai-new` → grill → `CONTEXT.md` → summary → **`yes`** → silent intake → **`Approve intake.`**
+
+### Required behavior (if /setup-ads not invoked manually)
+
+1. Run **`ai-new`** + path check first
+2. **New:** **`/grill-me`** one question at a time | **Existing:** **`/grill-with-docs`** + explore code
+3. Update **`CONTEXT.md`** (glossary only); defer to **`docs/OPEN-QUESTIONS.md`**
+4. Alignment summary card → wait for **`yes`**
+5. **`PB-intake-classify`** silently → **3-line INT summary** → **`Approve intake.`**
 
 ### Implementation (PB-implement-* lanes)
 

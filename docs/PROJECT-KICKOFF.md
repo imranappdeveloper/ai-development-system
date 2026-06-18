@@ -2,12 +2,13 @@
 
 **For users:** You answer short questions. The agent writes `CONTEXT.md` and project files. You never read playbook specs.
 
-**For agents:** Run **`/grill-with-docs`** first on every **new project**, then OS intake. One question at a time. OS status footer on the **last line** of every reply — [OS-STATUS-FOOTER.md](./OS-STATUS-FOOTER.md).
+**For agents:** Run **`/setup-ads`** first — [SETUP-ADS.md](./SETUP-ADS.md). OS status footer on the **last line** of every reply — [OS-STATUS-FOOTER.md](./OS-STATUS-FOOTER.md).
 
 | Project type | Start here |
 |--------------|------------|
-| **New project** | [§1 New project kickoff](#1-new-project-kickoff) |
-| **Existing project** | [§2 Existing project kickoff](#2-existing-project-kickoff) |
+| **Any bind / kickoff** | **[SETUP-ADS.md](./SETUP-ADS.md)** — `/setup-ads` |
+| **New project** | [§1 New project](#1-new-project-kickoff) → `/grill-me` |
+| **Existing project** | [§2 Existing project](#2-existing-project-kickoff) → `/grill-with-docs` |
 | **Bug fix** | **[BUG-FIX.md](./BUG-FIX.md)** — `Bug Fix: …` (automatic triage → diagnose → fix) |
 | After kickoff | [§3 Then the OS takes over](#3-then-the-os-takes-over) |
 
@@ -45,8 +46,11 @@ cd my-app
 Then open in **Grok** (`cd` to project, run `grok`) or **Antigravity** (open folder) and type:
 
 ```text
-start
+/setup-ads
+New project: <one-line idea>
 ```
+
+Or: `start` (same flow via AGENTS.md)
 
 The script works from **any directory** — it always uses your **current folder (pwd)** as the base. OS files (`AGENTS.md`, `work/`, `ai-dev-os.yaml`) are added there.
 
@@ -70,36 +74,26 @@ Say in chat: `New project: <one sentence>` + ask for PROJECT-KICKOFF grill.
 
 ### What the agent does (automatic)
 
-#### Phase A — `/grill-with-docs` (required)
+#### Phase A — `/setup-ads` → `/grill-me` (required for new projects)
 
-Load skill: `grill-with-docs` (Grok skills path: `~/.grok/skills/`).
+Load skills: **`setup-ads`** then **`grill-me`** (`~/.grok/skills/`).
+
+Full script: [SETUP-ADS.md](./SETUP-ADS.md) Phase 3A.
 
 **Rules:**
 
 | Rule | Detail |
 |------|--------|
+| Run `ai-new` first | Idempotent OS file bind |
 | One question at a time | Wait for answer before next |
-| Short questions | No jargon; plain language |
 | Your recommendation | End each question with "I recommend X because …" |
-| No spec dumping | Never ask user to read `playbooks/*` or `04-io-contract.md` |
-| Write as you go | Update `CONTEXT.md` after each resolved topic |
-| Explore if needed | If repo has code, read it; greenfield has none — skip |
+| No spec dumping | Never ask user to read `playbooks/*` |
+| Write as you go | Update `CONTEXT.md` (glossary only) |
+| **Skip standard practices** | Do NOT grill TDD, CI, folder layout — agent applies later |
 
-**New-project question script** (ask in order; skip if already answered):
+**New-project topics:** problem, users, use cases, main flows, MVP scope, platforms, integrations, constraints, success metric, domain language, assumptions, open risks.
 
-| # | Topic | Example question |
-|---|-------|------------------|
-| Q1 | **Problem** | Who has this problem and what pain do they feel today? |
-| Q2 | **Users** | Who uses it — end users, admins, both? |
-| Q3 | **Platforms** | Web, mobile (iOS/Android), API-only, or combo? *Recommend one MVP platform.* |
-| Q4 | **API surface** | REST, GraphQL, or no public API yet? *Recommend for MVP.* |
-| Q5 | **MVP scope** | What is in v1 vs explicitly out? |
-| Q6 | **Constraints** | Must-use stack, cloud, auth, or "no preference"? |
-| Q7 | **Success** | How do we know v1 succeeded? (one measurable outcome) |
-| Q8 | **Language** | Name 3–5 domain terms (e.g. "preference", "quiet hours") — lock glossary |
-| Q9 | **Open risks** | What are we least sure about? |
-
-Stop grilling when Q1–Q8 are resolved or explicitly deferred. Log deferred items in `docs/OPEN-QUESTIONS.md`.
+Stop when core topics resolved or deferred → `docs/OPEN-QUESTIONS.md`.
 
 #### Phase B — Write project docs (agent only)
 
@@ -183,14 +177,14 @@ On **yes** → run `PB-discovery-research` internally; present DISC summary at H
 
 ## 2. Existing project kickoff
 
-Same pattern, different grill emphasis:
+Via **`/setup-ads`** → **`/grill-with-docs`**. Full script: [SETUP-ADS.md](./SETUP-ADS.md) Phase 3B.
 
-1. User: `Existing project: <path or folder> — <what they want to do>`
-2. Agent: `/grill-with-docs` — explore codebase + read `CONTEXT.md` if present
-3. Questions focus on: **what's broken / what to add**, alignment with existing modules, constraints from current stack
-4. Update `CONTEXT.md` glossary (don't rewrite architecture in CONTEXT)
-5. Run `PB-intake-classify` → summary → user `Approve intake`
-6. If `existing_project` / onboard path → `PB-onboard-project` before discovery (agent explains in one sentence why)
+1. User: `/setup-ads` + `Existing project: <what they want to do>`
+2. Agent: `ai-new` → explore codebase → **`/grill-with-docs`**
+3. Questions focus on: **goal**, module scope, current behavior vs code, pain/gaps, constraints, domain terms, assumptions
+4. Update `CONTEXT.md` glossary; create OS files if missing
+5. Alignment summary → **`yes`** → `PB-intake-classify` → **`Approve intake`**
+6. If `existing_project` / onboard path → `PB-onboard-project` before discovery (one sentence why)
 
 ---
 

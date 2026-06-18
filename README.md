@@ -14,7 +14,7 @@ A vendor-agnostic **AI Development Operating System** — workflows, playbooks, 
 
 ## Quick Start
 
-**New project?** Run (after one-time `$AI_DEV_OS_HOME/scripts/install-cli.sh`):
+**New or existing project?** `/setup-ads` (after one-time `install-cli.sh`):
 
 ```bash
 # From any folder — creates ./my-app here:
@@ -23,10 +23,10 @@ cd my-app && grok
 
 # Or scaffold the current folder:
 cd my-app && ai-new && grok
-# then chat: start
+# chat: /setup-ads
 ```
 
-→ **[docs/PROJECT-KICKOFF.md](./docs/PROJECT-KICKOFF.md)** for details.  
+→ **[docs/SETUP-ADS.md](./docs/SETUP-ADS.md)** — bind + grill (new / existing).  
 **Bug fix?** → **[docs/BUG-FIX.md](./docs/BUG-FIX.md)** — `Bug Fix: …` and approve 3 cards.
 
 **Install OS?** → **[docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md)** — one-time setup.

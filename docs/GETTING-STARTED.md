@@ -4,7 +4,8 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 
 | Read this if… | Jump to |
 |---------------|---------|
-| **Start a new or existing project** | **[PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md)** ← **start here** |
+| **Bind / kickoff any project** | **[SETUP-ADS.md](./SETUP-ADS.md)** — `/setup-ads` ← **start here** |
+| **After setup** | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) |
 | **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, 3 approvals |
 | First time installing the OS | [§1 One-time setup](#1-one-time-setup-5-minutes) |
 | Brand-new app / greenfield | [PROJECT-KICKOFF.md §1](./PROJECT-KICKOFF.md#1-new-project-kickoff) |
@@ -17,8 +18,8 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 ## How it works (30 seconds)
 
 ```
-You: one sentence about the project
-    → Agent grills you (/grill-with-docs) — one question at a time
+You: /setup-ads + one sentence
+    → ai-new + grill (new: /grill-me | existing: /grill-with-docs)
     → Agent writes CONTEXT.md + work/ files (you don't read long docs)
     → You: "yes" / "approve intake" in plain English
     → Agent runs discovery, PRD, decompose, … — you approve each step briefly

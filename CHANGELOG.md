@@ -34,6 +34,7 @@ Platform frozen. No further architectural changes to v1.0 substrate.
 - `docs/BUG-FIX.md` — simple bug path: `Bug Fix: …` → `/triage` → `/diagnose` → 3 formatted approval cards; silent OS artifacts
 - Implementation flow — **`/tdd` mandatory** for all `PB-implement-*` lanes (03-workflow, 09-system-prompt, checklists, PROJECT-KICKOFF, AGENTS.md)
 - Docs + scaffold output — **Grok / Antigravity** workflow (replaced Cursor-only `cursor .` steps)
+- **`/setup-ads` skill** — ai-new + grill-me (new) / grill-with-docs (existing); [SETUP-ADS.md](./docs/SETUP-ADS.md); installed via install-cli.sh
 - Portable multi-machine paths — `env:AI_DEV_OS_HOME` in `ai-dev-os.yaml`, `ai-paths` CLI, `ai-dev-os.local.yaml` (gitignored), [MULTI-MACHINE.md](./docs/MULTI-MACHINE.md)
 - `ai-new` — idempotent setup for existing projects (create AGENTS.md/git/work only if missing; no overwrite)
 - `scripts/install-cli.sh` — one-time install for `ai-new` (`~/.local/bin` symlink + optional `~/.bashrc` alias)

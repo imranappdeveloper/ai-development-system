@@ -33,7 +33,9 @@ Machine- and human-readable registry for workflows, templates, playbooks, and ch
 |-------------|------|---------|
 | DOC-KICKOFF-001 | `docs/PROJECT-KICKOFF.md` | **Start here** — grill-first kickoff (users) |
 | SCR-NEW-PROJECT | `scripts/new-project.sh` | **Create project** — scaffold + `start` command |
-| SCR-INSTALL-CLI | `scripts/install-cli.sh` | **Install `ai-new`** — symlink + shell alias (one-time) |
+| SCR-INSTALL-CLI | `scripts/install-cli.sh` | **Install CLI + `/setup-ads` skill** (one-time per machine) |
+| SKILL-SETUP-ADS | `skills/setup-ads/SKILL.md` | **`/setup-ads`** — ai-new + grill-me (new) or grill-with-docs (existing) |
+| DOC-SETUP-ADS | `docs/SETUP-ADS.md` | User guide for /setup-ads |
 | DOC-START-001 | `docs/GETTING-STARTED.md` | OS install + agent gate reference |
 | DOC-BUGFIX-001 | `docs/BUG-FIX.md` | **Bug fix** — report once, `/triage` + `/diagnose` + 3 approvals |
 | DOC-OS-FOOTER-001 | `docs/OS-STATUS-FOOTER.md` | **Compliance footer** — required on every agent response |

@@ -20,9 +20,12 @@ docs:
   os_footer: docs/OS-STATUS-FOOTER.md
 
 start_commands:
+  - /setup-ads
+  - setup ads
   - start
   - new project
   - kickoff
+setup_ads_ref: docs/SETUP-ADS.md
 
 bug_fix_commands:
   - "Bug Fix:"

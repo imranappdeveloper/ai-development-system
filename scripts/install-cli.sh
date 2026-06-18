@@ -67,6 +67,17 @@ _write_shell_block() {
 _write_shell_block "$HOME/.bashrc"
 _write_shell_block "$HOME/.zshrc"
 
+# Install /setup-ads Grok skill
+SKILL_SRC="$ROOT/skills/setup-ads/SKILL.md"
+SKILL_DST="$HOME/.grok/skills/setup-ads/SKILL.md"
+if [[ -f "$SKILL_SRC" ]]; then
+  mkdir -p "$(dirname "$SKILL_DST")"
+  cp "$SKILL_SRC" "$SKILL_DST"
+  info "Installed Grok skill: ~/.grok/skills/setup-ads/SKILL.md"
+else
+  info "WARN: skills/setup-ads/SKILL.md missing — skip skill install"
+fi
+
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo ""
   echo "NOTE: ~/.local/bin not on PATH in this shell yet."
@@ -79,6 +90,11 @@ echo "  source ~/.zshrc    # Mac"
 echo "  hash -r"
 echo "  which ai-new ai-paths"
 echo "  ai-paths check"
+echo "  ls ~/.grok/skills/setup-ads/SKILL.md"
+echo ""
+echo "In project chat:"
+echo "  /setup-ads"
+echo "  New project: <idea>  |  Existing project: <goal>"
 echo ""
 echo "Or without PATH:"
 echo "  \$AI_DEV_OS_HOME/scripts/ai-paths.sh"

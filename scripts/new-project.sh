@@ -215,12 +215,12 @@ GITIGNORE
   echo "Open in your agent:"
   echo "  cd $PROJECT_DIR && grok"
   echo ""
+  echo "In chat:"
+  echo "  /setup-ads"
   if $is_existing; then
-    echo "In chat:"
     echo "  Existing project: <what you want on this codebase>"
   else
-    echo "In chat:"
-    echo "  start"
+    echo "  New project: <one-line idea>"
     if [[ -n "${PROJECT_IDEA:-}" ]]; then
       echo "  (idea: $PROJECT_IDEA)"
     fi
