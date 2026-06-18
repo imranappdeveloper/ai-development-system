@@ -44,14 +44,15 @@ Existing project: Odoo auction addon — <what you want to do>
 ```
 1. check-cli       → if fail: stop, tell user to run install-cli.sh
 2. ai-paths check
-3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
+3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/, git, graphify hook
 4. setup-project-agents → docs/agents/ + GitHub labels (Phase 1.5)
-5. Grill           → new: grill-me | existing: grill-with-docs
-6. Summary card    → you: yes
-7. Spec (silent)   → agent writes work/ — you never read it
-8. Fork questions  → A / B / C only when paths diverge
-9. Task list       → short bullets → you pick an option
-10. Start AFK      → new chat `/task-run` (or Start coding for bugs only)
+5. setup-task-run    → server AFK: grok|agy, task-run docs (Phase 1.6)
+6. Grill           → new: grill-me | existing: grill-with-docs
+7. Summary card    → you: yes
+8. Spec (silent)   → agent writes work/ — you never read it
+9. Fork questions  → A / B / C only when paths diverge
+10. Task list       → short bullets → you pick an option
+11. Start AFK      → server: `task-run-server.sh --agent grok|agy`
 ```
 
 You answer **one question at a time** with **A / B / C**. Agent recommends each time. Full rules: [USER-FLOW.md](./USER-FLOW.md)
@@ -64,7 +65,7 @@ You answer **one question at a time** with **A / B / C**. Agent recommends each 
 |------|---------|
 | After alignment summary | `yes` |
 | When agent asks a fork | `A` / `B` / `C` |
-| Before batch code | **Start AFK local / server** |
+| Before batch code | **Start AFK on server** (`task-run-server.sh`) |
 | Before bug fix code | **Start coding** |
 | After work complete | `Done.` (optional) |
 

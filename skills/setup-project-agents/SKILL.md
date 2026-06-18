@@ -15,7 +15,7 @@ Scaffold the per-repo configuration that the engineering skills assume:
 
 This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write — except in `--detect-only` mode.
 
-**AI Dev OS:** invoked automatically in **`/setup-ads` Phase 1.5** (after `ai-new`, before grill). Required before `/plan-to-issue-v2` and `/task-run`. When `AGENTS.md` has `<!-- ADS-BLOCK:* -->` markers, update `## Agent skills` in-place — do not remove other ADS blocks.
+**AI Dev OS:** invoked automatically in **`/setup-ads` Phase 1.5** (after `ai-new`, before Phase 1.6 `setup-task-run`). Required before `/plan-to-issue-v2` and `/task-run`. When `AGENTS.md` has `<!-- ADS-BLOCK:* -->` markers, update `## Agent skills` in-place — do not remove other ADS blocks.
 
 ## Invocation
 
@@ -109,10 +109,10 @@ The five canonical roles:
 
 Default: each role's string equals its name. Ask the user if they want to override any. If their issue tracker has no existing labels, the defaults are fine.
 
-Also ensure workflow labels for `/work-to-pr-v2` exist on GitHub: `in-progress`, `pr-open`, `done`. Create `pr-open` if missing:
+Also ensure workflow labels for `/work-to-pr-v2` exist on GitHub: `in-progress`, `done`, `needs-info`. Optional legacy label `pr-open` (repair to `done` on state sync — not used in normal flow):
 
 ```bash
-gh label create "pr-open" --description "PR open — awaiting merge into dev"
+gh label create "pr-open" --description "Legacy — repair to done on state sync"
 ```
 
 **Section C — Domain docs.**

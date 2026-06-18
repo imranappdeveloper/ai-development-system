@@ -3,20 +3,23 @@
 | Field | Value |
 |-------|-------|
 | platform | **AI Development OS** |
-| version | **1.0.0** |
+| version | **1.1.0** |
 | status | **frozen** |
-| freeze_date | 2026-06-18 |
-| updated | 2026-06-18 |
+| freeze_date | 2026-06-19 |
+| updated | 2026-06-19 |
 | owner | Principal Architect |
-| substrate_readiness | 96/100 |
-| spec_sha | `14d731c15af6532e` |
-| release_bundle | `release/v1.0/` |
+| substrate_readiness | 96/100 (v1.0 playbooks) |
+| spec_sha | `c969fe5de054aaac` |
+| release_bundle | `release/v1.1/` |
+| prior_release | `release/v1.0/` (playbook substrate — immutable) |
 
 ---
 
 ## Purpose
 
-Single entry point for Foundation v1 scope, P0 completion tracking, and freeze criteria.
+Single entry point for platform version, P0 completion tracking, and freeze criteria.
+
+**v1.1** adds standalone execution (bundled skills + server AFK). **v1.0** playbook substrate in `release/v1.0/` is unchanged.
 
 ---
 
@@ -60,43 +63,72 @@ Single entry point for Foundation v1 scope, P0 completion tracking, and freeze c
 
 ---
 
-## v1.0 Scope (Frozen)
+## v1.1 Scope (Frozen — 2026-06-19)
+
+**Delivered:** Standalone execution layer — **19 bundled slash skills**, server AFK (`task-run-server.sh`, `task-run-poll.sh`), grok/agy symlinks, user flows (`USER-FLOW`, `AFK-TASK-RUN`, `STANDALONE`), done-at-PR-create policy.
+
+**Bundle:** `release/v1.1/`
+
+## v1.0 Scope (Frozen — 2026-06-18, unchanged)
 
 **Delivered:** Full delivery spine — **32 `active` playbooks**, 14 workflows, 18 standards, CI validation (`verify-catalog`, `sync-routing-graph`, `simulate-workflow`, `verify-skill-spec`).
 
-**Post-freeze backlog:** Meta skills (`MS-*`), platform adapters, runtime E2E harness, `12-qa-scenarios.md` rollout. See `release/v1.0/ROADMAP-v2.md`.
+**Bundle:** `release/v1.0/`
+
+**Post-freeze backlog:** Meta skills (`MS-*`), runtime E2E harness, `12-qa-scenarios.md` rollout. See `release/v1.0/ROADMAP-v2.md`.
 
 ---
 
-## Freeze Criteria — All Met
+## Freeze Criteria — v1.1 (2026-06-19)
+
+- [x] `verify-standalone.sh` passes (19 bundled skills, symlinks, session tests)
+- [x] `verify-catalog.sh` + `simulate-workflow.sh` pass (v1.0 substrate intact)
+- [x] Server AFK stack documented (`AFK-TASK-RUN.md`, `task-run` skill)
+- [x] User flow documented (`USER-FLOW.md`, `SETUP-ADS.md`)
+- [x] Done-at-PR-create policy consistent across skills + docs
+- [x] Principal Architect sign-off
+
+### Principal Architect Sign-Off — v1.1
+
+| Field | Value |
+|-------|-------|
+| reviewer | Principal Architect |
+| review_date | 2026-06-19 |
+| decision | **approved** |
+| bundled_skills | 19 |
+| open_p0 | 0 |
+| notes | v1.1 frozen as Standalone Execution. v1.0 playbook substrate unchanged in `release/v1.0/`. |
+
+## Freeze Criteria — v1.0 (2026-06-18)
 
 - [x] All P0 checklist items done
 - [x] Architectural P0 blockers resolved
 - [x] Substrate readiness ≥ 95/100 (96)
-- [x] `routing-matrix.yaml` derived from `skill-dependency-graph.yaml`
-- [x] WF-FEATURE canonical path + promotion evidence
-- [x] ≥1 `active` reference skill
-- [x] G-WF-05 structural evidence for 6 end-to-end workflows
-- [x] Four planned delivery skills promoted
-- [x] WF-SECURITY / WF-PERF / WF-DOCS normative specs
-- [x] `simulate-workflow.sh` in CI
 - [x] Principal Architect sign-off
 
-### Principal Architect Sign-Off
+### Principal Architect Sign-Off — v1.0
 
 | Field | Value |
 |-------|-------|
 | reviewer | Principal Architect |
 | review_date | 2026-06-18 |
 | decision | **approved** |
-| substrate_readiness_at_signoff | 96/100 |
 | active_playbooks | 32 |
-| open_p0 | 0 |
-| notes | Platform frozen as AI Development OS v1.0. No further architectural changes to v1.0 substrate. |
+| notes | Playbook substrate frozen. No further architectural changes to v1.0. |
 
 ---
 
-## Release Bundle
+## Release Bundles
+
+### v1.1 (current)
+
+| Document | Path |
+|----------|------|
+| Platform Manifest | `release/v1.1/PLATFORM-MANIFEST.md` |
+| Version Report | `release/v1.1/VERSION-REPORT.md` |
+| Bundled Skills | `release/v1.1/BUNDLED-SKILLS.yaml` |
+
+### v1.0 (playbook substrate)
 
 | Document | Path |
 |----------|------|

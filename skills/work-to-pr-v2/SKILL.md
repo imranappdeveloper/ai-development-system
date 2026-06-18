@@ -1,6 +1,6 @@
 ---
 name: work-to-pr-v2
-description: Improved work-to-pr — issue branch per ticket, PR into dev, spec preflight, PR readiness gate, merge-aware --continue. Uses pr-open until PR merges; done only after merge. Parallel work uses git worktree. Use after /plan-to-issue-v2 or standalone.
+description: Improved work-to-pr — issue branch per ticket, PR into dev, spec preflight, PR readiness gate. Task done when PR opens — do not wait for merge; start next unblocked issue immediately. Parallel work uses git worktree. Use after /plan-to-issue-v2 or standalone.
 ---
 
 # Work to PR v2
@@ -9,23 +9,23 @@ Process GitHub issues autonomously. Human gates at **PR review** — never merge
 
 **Prerequisite:** `/setup-project-agents` must have run. Read `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, and `docs/agents/engineering-standards.md` (if present) before starting.
 
-Ensure the `pr-open` label exists in the tracker (see `docs/agents/triage-labels.md`). Create it via `gh label create "pr-open" --description "PR open — awaiting human merge"` if missing.
+Ensure `done` and `in-progress` labels exist (see `docs/agents/triage-labels.md`).
 
 ## Issue state machine
 
 ```
-ready-for-agent → in-progress → pr-open → done
-                      ↓              ↓
-                  needs-info    (human merges PR)
+ready-for-agent → in-progress → done
+                      ↓
+                  needs-info
 ```
 
 | Label | Meaning |
 |---|---|
 | `in-progress` | Agent claimed; branch exists; work not yet PR'd |
-| `pr-open` | PR opened into `dev` — **awaiting human merge** |
-| `done` | PR **merged** into `dev` — set only by sync/`--continue`, never at PR create |
+| `done` | **Agent work complete** — PR opened into `dev`. Unblocks dependents immediately. Human merges PR when ready (agent does not wait). |
+| `pr-open` | Legacy — repair to `done` on state sync if PR still open |
 
-**Do NOT** add `done` when opening a PR.
+**Mark `done` when the PR is created** — not when it merges.
 
 ## Invocation
 
@@ -33,7 +33,7 @@ ready-for-agent → in-progress → pr-open → done
 /work-to-pr-v2 43                      # single issue
 /work-to-pr-v2 42                      # all unblocked children of epic #42
 /work-to-pr-v2 42 --lean               # stamp-based preflight skip
-/work-to-pr-v2 42 --continue           # after human merged PRs — sync + next issues
+/work-to-pr-v2 42 --continue           # state sync + resume queue (optional — loop does not wait for merges)
 /work-to-pr-v2 42 --continue --lean
 /work-to-pr-v2 --ready                 # all ready-for-agent (max 5 per run)
 ```
@@ -55,21 +55,22 @@ gh pr list --search "closes #<N>" --state all --json number,state,mergedAt,headR
 
 | Issue labels | PR state | Action |
 |---|---|---|
-| `pr-open` | `MERGED` | `done` + remove `pr-open`. Comment: merged PR link |
-| `pr-open` | `OPEN` | Skip — awaiting human merge |
-| `pr-open` | `CLOSED` (not merged) | Remove `pr-open`, add `ready-for-agent`. Comment: PR closed unmerged — re-run work |
-| `in-progress` | `OPEN` | Add `pr-open`, remove `in-progress` (fix label drift) |
+| `done` | `OPEN` | No change — agent complete; human may merge later |
+| `done` | `MERGED` | No change — stay `done` |
+| `done` | `CLOSED` (not merged) | Remove `done`, add `ready-for-agent`. Comment: PR closed unmerged — re-run work |
+| `pr-open` | `OPEN` | **Legacy repair** — add `done`, remove `pr-open` |
+| `pr-open` | `MERGED` | Add `done`, remove `pr-open` |
+| `in-progress` | `OPEN` | Add `done`, remove `in-progress` (fix label drift) |
 | `in-progress` | `MERGED` | `done` + remove `in-progress` |
 | `in-progress` | none | **Stuck recovery** — remove `in-progress`, add `ready-for-agent`, comment with branch name if known |
-| `done` | not `MERGED` | **Legacy repair** — remove `done`, add `pr-open` if PR open else `ready-for-agent` |
 
 ```
-State sync: <N> merged → done, <N> awaiting merge, <N> recovered stuck in-progress
+State sync: <N> done (ok), <N> reopened (closed PR), <N> recovered stuck in-progress
 ```
 
-5. Build dependency graph from `## Blocked by` sections
+5. Build dependency graph from `## Blocked by` sections — **`done` = PR opened satisfies blocker** (merge not required)
 6. Execution queue: unblocked issues labeled `ready-for-agent` only
-7. Skip `ready-for-human`, `needs-info`, `pr-open` (awaiting human), `done`
+7. Skip `ready-for-human`, `needs-info`, `done`
 
 ### Auto-infer lean
 
@@ -95,18 +96,18 @@ TDD and `pr-readiness-check` are **never** skipped.
 
 ## `--continue`
 
-Use after merging one or more issue PRs into `dev`:
+Optional — main loop does **not** wait for merges. Use to repair labels or resume after interruption:
 
 1. Re-fetch epic and all children
-2. Run **state sync + recovery** (marks newly merged PRs as `done`)
+2. Run **state sync + recovery**
 3. Auto-infer lean from stamps
-4. Rebuild dependency graph — newly unblocked children enter queue
+4. Rebuild dependency graph
 5. Process remaining `ready-for-agent` issues
 
 Report:
 
 ```
-Continue sync: <N> newly done (merged), <N> still pr-open, <N> ready to implement
+Continue sync: <N> done, <N> reopened, <N> ready to implement
 ```
 
 ## Git branching
@@ -199,16 +200,18 @@ gh pr create --base dev \
 <paste checkboxes, mark completed ones>"
 ```
 
-Then — **pr-open, not done:**
+Then — **done immediately** (task complete; do not wait for merge):
 
 ```bash
-gh issue edit <N> --add-label pr-open --remove-label in-progress
-gh issue comment <N> --body "> *PR ready for review.*
+gh issue edit <N> --add-label done --remove-label in-progress
+gh issue comment <N> --body "> *Task complete — PR ready for review.*
 
-<PR URL>"
+<PR URL>
+
+Human: merge when ready. Agent queue continues — dependents unblocked."
 ```
 
-**Do NOT merge the PR.** **Do NOT** add `done`.
+**Do NOT merge the PR.** Start the **next unblocked** issue without waiting.
 
 ### 7. Ambiguous spec (fallback)
 
@@ -237,8 +240,8 @@ git worktree add .worktrees/issue-<N> -b issue/<N>-<short-slug> origin/dev
 ```
 
 - Subagent runs in `.worktrees/issue-<N>/`
-- Each worktree: claim → implement → PR readiness → push → `gh pr create` → `pr-open`
-- After batch PRs opened:
+- Each worktree: claim → implement → PR readiness → push → `gh pr create` → `done`
+- After each PR opened: remove worktree, **immediately** pick next unblocked issue
 
 ```bash
 git worktree remove .worktrees/issue-<N>
@@ -250,11 +253,11 @@ Orchestrator main checkout: stay on `dev`, no parallel branch checkouts in root 
 
 Single checkout flow (steps 2–6 above). **Do not** use worktrees.
 
-Wait for all PRs in a parallel batch before starting the next batch.
+**Do not wait for human merge** between issues — only wait for subagent/PR create to finish.
 
 ## Epic release (dev → main)
 
-When **all** child issues are labeled `done` **and** state sync confirms every issue has a merged PR into `dev`:
+When **all** child issues are labeled `done` (each has an open or merged PR into `dev`):
 
 ```bash
 gh pr create --base main --head dev --title "release: <epic title> (#<epic>)"
@@ -262,12 +265,12 @@ gh pr create --base main --head dev --title "release: <epic title> (#<epic>)"
 
 Tell the user to review and merge. Do not merge yourself.
 
-If any child is `pr-open` or `in-progress` → epic not ready for release.
+If any child is `in-progress` or not `done` → epic not ready for release.
 
 ## Stop conditions
 
 - Queue empty and no new unblocked issues
-- All remaining issues are `pr-open` (awaiting human), `done`, `needs-info`, or blocked
+- All remaining issues are `done`, `needs-info`, or blocked
 - Critical unrecoverable build failure
 
 ## Autonomous mode
@@ -280,9 +283,8 @@ Report summary:
 
 ```
 Work complete.
-- PRs opened: #<list> (labeled pr-open)
-- Merged → done (sync): #<list>
-- Awaiting your merge: #<list>
+- Done (PR opened): #<list>
+- PRs awaiting your merge: #<list> (informational — agent did not wait)
 - Recovered stuck: #<list>
 - Skipped needs-info: #<list>
 ```

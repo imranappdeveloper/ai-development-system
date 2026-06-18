@@ -1,0 +1,10 @@
+[Unit]
+Description=Poll GitHub for ready-for-agent issues (%i)
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

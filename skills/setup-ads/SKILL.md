@@ -40,6 +40,8 @@ Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
 | `ai-paths` | on PATH or under OS scripts | **stop** |
 | `setup-ads` skill | `$AI_DEV_OS_HOME/skills/setup-ads/SKILL.md` | **stop** |
 | `setup-project-agents` | `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md` | **stop** |
+| `setup-task-run` | `$AI_DEV_OS_HOME/skills/setup-task-run/SKILL.md` | **stop** |
+| `task-run` | `$AI_DEV_OS_HOME/skills/task-run/SKILL.md` | **stop** |
 
 **If check fails — do not proceed.** Tell user exactly:
 
@@ -73,6 +75,19 @@ Or: `$AI_DEV_OS_HOME/scripts/new-project.sh .`
 
 Idempotent — creates only missing: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, git if needed.
 
+Also runs **graphify setup** (via `setup-graphify.sh`):
+
+| Step | When |
+|------|------|
+| `git init` | No `.git` yet and `git` on PATH |
+| graphify CLI | Install via `uv tool` or `pip` if missing |
+| post-commit hook | `graphify hook install` when git repo exists |
+| Initial graph build | Existing codebase with app code, no `graphify-out/graph.json` yet (`--no-viz`) |
+
+Greenfield empty folders skip the initial build; the hook updates the graph after commits.
+
+Manual re-run: `$AI_DEV_OS_HOME/scripts/setup-graphify.sh . [--build|--skip-build]`
+
 Then optionally: `ai-paths sync`
 
 **Do not overwrite** existing `AGENTS.md` or user code.
@@ -90,7 +105,7 @@ Load: `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md`
 | No `docs/agents/issue-tracker.md` | Full `/setup-project-agents` |
 | `docs/agents/` exists | `/setup-project-agents --detect-only` |
 
-**Team default (GitHub remote):** propose GitHub + default triage labels + `pr-open` label. Confirm with **A/B/C** — one section at a time per the skill (tracker → labels → domain → engineering standards).
+**Team default (GitHub remote):** propose GitHub + default triage labels (`ready-for-agent`, `in-progress`, `done`, `needs-info`; optional legacy `pr-open`). Confirm with **A/B/C** — one section at a time per the skill (tracker → labels → domain → engineering standards).
 
 **Writes:**
 
@@ -99,7 +114,34 @@ Load: `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md`
 
 **Stop** Phase 3+ if `docs/agents/` incomplete and user has not completed setup.
 
-Create GitHub labels if missing (`ready-for-agent`, `in-progress`, `pr-open`, `done`, `needs-info`).
+Create GitHub labels if missing (`ready-for-agent`, `in-progress`, `done`, `needs-info`). Optional legacy: `pr-open`.
+
+---
+
+## Phase 1.6 — Server AFK (`/setup-task-run`)
+
+**Required** before `task-run-server.sh` / Phase 7 Start AFK.
+
+Load: `$AI_DEV_OS_HOME/skills/setup-task-run/SKILL.md`
+
+`ai-new` already ran `setup-task-run.sh` with defaults. **Confirm** with user:
+
+| # | Question | Options |
+|---|----------|---------|
+| Q1 | Server AFK agent | A) grok B) agy |
+| Q2 | Auto-poll new tickets | A) yes (`cron.example`) B) manual only |
+
+Then run:
+
+```bash
+$AI_DEV_OS_HOME/scripts/setup-task-run.sh . --agent grok|agy --poll|--no-poll
+```
+
+**Writes:** `docs/agents/task-run.md`, `work/task-run/`, `ai-dev-os.yaml` → `task_run`
+
+**Skills bundled:** `task-run`, `work-to-pr-v2`, `issue-processor`, `tdd`, `issue-spec-review`, `pr-readiness-check`
+
+Stop Phase 3+ if `docs/agents/task-run.md` missing and user has not completed Q1–Q2.
 
 ---
 
@@ -210,6 +252,7 @@ Present **≤8 lines**:
 │ Assumptions cleared: …                      │
 │ Open:      … or none                        │
 ├─────────────────────────────────────────────┤
+│ AFK:       grok | agy, poll yes | no        │
 │ Files: CONTEXT.md, work/kickoff/, docs/     │
 │ Reply: yes  |  revise: <one correction>     │
 └─────────────────────────────────────────────┘
@@ -251,23 +294,35 @@ User never reads ISS specs. Adjust from their option.
 
 ---
 
-## Phase 7 — Start AFK handoff
+## Phase 7 — Start AFK handoff (server only)
 
-After task list confirmed, **do not implement in this chat**. Hand off:
+After task list confirmed, **do not implement in this chat**. Batch code runs on the **server only**.
 
 ```text
-A) Start AFK local
-B) Start AFK server
+A) Start AFK on server (grok)
+B) Start AFK on server (agy / Antigravity)
 C) Not yet
 ```
 
-On A or B:
+On **A** or **B**:
 
-1. Run `task-run.sh <epic> --local|--server [--detach]` from `project_root`
-2. Tell user to open **new Grok chat** and paste handoff from `work/task-run/`
-3. New chat runs `/task-run` — autonomous until queue empty
+1. On the Ubuntu server, from `project_root`:
 
-For **bugs only** (no GitHub queue): fix plan A/B/C → **Start coding** in same chat.
+```bash
+task-run-server.sh --agent grok --epic <N>   # Grok Build
+task-run-server.sh --agent agy --epic <N>    # Antigravity (agy)
+# or all ready tickets:
+task-run-server.sh --agent agy
+# auto-poll when new tickets land:
+task-run-poll.sh --agent agy
+```
+
+2. Script starts **tmux** + **grok** automatically — processes all unblocked `ready-for-agent` issues via `/task-run --server`
+3. Agent marks `done` when PR opens and continues queue — you merge PRs when ready (no agent wait)
+
+Attach: `task-run-server.sh --attach` | Status: `task-run-server.sh --status`
+
+For **bugs only** (no GitHub queue): triage + plan on any machine; implementation still on server via issue or `task-run-server.sh --ready`.
 
 Reference `$AI_DEV_OS_HOME/docs/AFK-TASK-RUN.md` + `USER-FLOW.md`.
 

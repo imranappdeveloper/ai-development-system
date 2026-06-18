@@ -16,3 +16,6 @@ __pycache__/
 # Secrets
 .env
 *.pem
+# graphify cache (graph.json + GRAPH_REPORT.md may be committed)
+graphify-out/.graphify_*
+graphify-out/.graphify_chunk_*.json

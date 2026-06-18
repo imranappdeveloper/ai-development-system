@@ -29,7 +29,9 @@
 | `bash`, `git` | CLI, version control | Always |
 | `gh` | GitHub issues + AFK PR flow | Per-project; optional for non-GitHub |
 | Grok / Antigravity | Agent chat | IDE — not bundled |
-| `tmux` | Server AFK detach | Optional |
+| `tmux` | Server AFK (`task-run-server.sh`) | Required on server |
+| `grok` | Server AFK agent (Grok Build) | One of grok or agy |
+| `agy` | Server AFK agent (Antigravity) | One of grok or agy |
 
 Nothing else from the internet at runtime except your git remote and GitHub API.
 
@@ -46,7 +48,7 @@ check-cli
 ./scripts/verify-standalone.sh
 ```
 
-`install-cli.sh` syncs `skills/` → `~/.grok/skills/` **only** so Grok discovers slash commands. The OS repo remains SSOT — re-run `install-cli.sh` after every `git pull`.
+`install-cli.sh` symlinks `skills/` → `~/.grok/skills/` and `~/.gemini/config/skills/` so **grok** and **agy** discover slash commands. SSOT stays in `$AI_DEV_OS_HOME/skills/` — `git pull` updates skills immediately via symlinks. Re-run `install-cli.sh` only when adding new manifest skills or fixing broken links.
 
 ---
 
@@ -73,7 +75,7 @@ All skills invoked are in `skills/MANIFEST.yaml`.
 
 ```bash
 ./scripts/verify-standalone.sh   # no external skill refs; manifest complete
-check-cli                        # CLI + 18 bundled skills
+check-cli                        # CLI + 19 bundled skills (symlink check)
 ```
 
 ---

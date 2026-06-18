@@ -27,14 +27,14 @@
 ### Interactive (human in chat)
 
 ```
-understand → spec → tasks → Start AFK → done (merge PRs)
+understand → spec → tasks → Start AFK → done (PRs opened; merge when ready)
      ↑           ↑        ↑
   questions   questions  questions (only at forks)
 ```
 
 ### AFK (new chat — `/task-run`)
 
-After tasks published to GitHub and you pick **Start AFK local / server**:
+After tasks published to GitHub and you pick **Start AFK on server**:
 
 ```
 task manager → subagent + /tdd per task → PR → next unblocked → until queue empty
@@ -42,12 +42,13 @@ task manager → subagent + /tdd per task → PR → next unblocked → until qu
 
 | Mode | Where | Concurrency |
 |------|-------|-------------|
-| **Start AFK local** | New Grok chat or `task-run.sh <epic> --local` | 1 task at a time |
-| **Start AFK server** | Server + `task-run.sh <epic> --server --detach` (tmux) | up to 3 parallel |
+| **Start AFK on server** | `task-run-server.sh --agent grok\|agy` (tmux + auto-start) | up to 3 parallel |
+
+**Batch code runs on the server only.** Grill and planning can happen on any machine; implementation does not.
 
 **During AFK:** no questions. Issues use `ready-for-agent` + `## Blocked by`. Ambiguity → `needs-info` + epic comment; queue continues.
 
-**You merge PRs on GitHub.** Then: `/task-run <epic> --continue`.
+**You merge PRs on GitHub when ready** — agent marks `done` at PR create and continues to next task without waiting.
 
 See [AFK-TASK-RUN.md](./AFK-TASK-RUN.md).
 
@@ -94,28 +95,28 @@ Tasks for buy-now (epic #42):
 2. #44 buy-now button — blocked by: #43
 3. #45 completion email — blocked by: #44
 
-A) Start AFK local
-B) Start AFK server
+A) Start AFK on server (grok)
+B) Start AFK on server (agy)
 C) Not yet — change split
 
-I recommend B on server if issues are AFK-stamped.
+I recommend A or B on Ubuntu — task-run-server.sh or task-run-poll.sh for auto-start.
 ```
 
 | User says | Agent does |
 |-----------|------------|
-| **Start AFK local** | `task-run.sh <epic> --local` + new chat `/task-run` |
-| **Start AFK server** | `task-run.sh <epic> --server --detach` + new chat |
+| **A — grok** | SSH server + `task-run-server.sh --agent grok [--epic N]` |
+| **B — agy** | SSH server + `task-run-server.sh --agent agy [--epic N]` |
 | **C** | Adjust split; republish; ask again |
 
 User never reads issue bodies. All doubts cleared **before** Start AFK.
 
 ### 4. Code (AFK — no human)
 
-Task manager (`/task-run`) spawns subagent per runnable issue (`ready-for-agent` + deps clear). Subagent uses `/tdd`. You only **merge PRs** on GitHub.
+Task manager (`/task-run`) spawns subagent per runnable issue (`ready-for-agent` + deps clear). Subagent uses `/tdd`. On PR create → label `done` → **next unblocked task immediately** (no merge wait).
 
 ### 5. Done
 
-After merge: `/task-run <epic> --continue`. Epic release when all children `done`.
+Epic complete when all children are `done` (PR opened). You **merge PRs on GitHub when ready** — agent does not wait. Optional: `/task-run <epic> --continue` only to resume after interruption or repair legacy labels.
 
 ---
 
@@ -148,7 +149,7 @@ Max **2** user decision points per bug: plan options + Start coding.
 |--------|------|
 | `yes` | After kickoff alignment summary |
 | `A` / `B` / `C` | Any fork question |
-| **Start AFK local / server** | After task list — begins autonomous run |
+| **Start AFK on server** | After task list — `task-run-server.sh` on Ubuntu |
 | **Start coding** | Single-task / bug path only (no GitHub queue) |
 | `Done.` | Optional — close out work |
 | `Bug Fix: …` | Start bug path |

@@ -99,7 +99,7 @@ cd /path/to/your-existing-app    # e.g. Odoo auction addon
 ai-new
 ```
 
-Creates only what is missing: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, `.gitignore`, `git init` — **never overwrites** existing files.
+Creates only what is missing: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, `.gitignore`, `git init`, **graphify** hook, **task-run** server config (`docs/agents/task-run.md`) — **never overwrites** existing files.
 
 ---
 
@@ -150,7 +150,7 @@ Agent builds or updates `CONTEXT.md` from your answers + code exploration, then 
 
 ## 4. Every piece of work (same for both)
 
-**Users:** [USER-FLOW.md](./USER-FLOW.md) — understand → spec → tasks → **Start AFK** → `/task-run` → merge PRs.
+**Users:** [USER-FLOW.md](./USER-FLOW.md) — understand → spec → tasks → **Start AFK** → `/task-run` → PRs opened (`done`); merge when ready.
 
 **Agents:** record internal gates silently when user picks options or says Start coding:
 

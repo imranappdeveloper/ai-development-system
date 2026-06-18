@@ -6,7 +6,8 @@ A vendor-agnostic **AI Development Operating System** — workflows, playbooks, 
 |-------|-------|
 | version | **1.0.0** |
 | status | **frozen** |
-| freeze_date | 2026-06-18 |
+| version | **1.1.0** |
+| freeze_date | 2026-06-19 |
 | active_skills | 32 |
 | workflows | 14 |
 
@@ -39,21 +40,17 @@ cd my-app && ai-new && grok
 
 ---
 
-## v1.0 Release Bundle
+## v1.1 Release Bundle (current)
 
-Frozen artifacts: [`release/v1.0/`](./release/v1.0/)
+Frozen artifacts: [`release/v1.1/`](./release/v1.1/)
 
 | Document | Description |
 |----------|-------------|
-| Platform Manifest | Identity, scope, sign-off |
-| Version Report | Component versions |
-| Architecture Report | Layer model, gates, flows |
-| Dependency Graph | Skill/workflow ordering |
-| Skill Registry | 32 delivery + 6 meta skills |
-| Workflow Registry | 14 workflows |
-| Standards Registry | 18 standards |
-| Roadmap v2 | v1.1 → v2.0 plan |
-| Future Enhancements | Post-freeze backlog |
+| Platform Manifest | Standalone execution scope, sign-off |
+| Version Report | Component versions at freeze |
+| Bundled Skills | 19 slash skills snapshot |
+
+**v1.0 playbook substrate** (immutable): [`release/v1.0/`](./release/v1.0/)
 
 ---
 
@@ -68,14 +65,15 @@ Frozen artifacts: [`release/v1.0/`](./release/v1.0/)
 | `templates/` | Artifact templates |
 | `checklists/` | Quality self-checks |
 | `standards/` | Engineering standards + contracts |
-| `skills/` | **Bundled agent skills (SSOT)** — see `skills/MANIFEST.yaml` |
-| `scripts/` | CLI (`install-cli`, `ai-new`, `check-cli`) + CI validation |
+| `skills/` | **Bundled slash skills (SSOT)** — 19 skills, `skills/MANIFEST.yaml` |
+| `scripts/` | CLI + server AFK (`task-run-server`, `task-run-poll`) + CI validation |
 
 ---
 
 ## CI Validation
 
 ```bash
+./scripts/verify-standalone.sh    # bundled skills + symlinks (v1.1 gate)
 ./scripts/verify-catalog.sh
 ./scripts/sync-routing-graph.sh
 ./scripts/simulate-workflow.sh all
@@ -85,4 +83,4 @@ Frozen artifacts: [`release/v1.0/`](./release/v1.0/)
 
 ## Roadmap
 
-v1.0 is frozen. See [release/v1.0/ROADMAP-v2.md](./release/v1.0/ROADMAP-v2.md) for v1.1+.
+v1.1 is frozen (standalone execution). v1.0 playbook substrate unchanged. See [release/v1.0/ROADMAP-v2.md](./release/v1.0/ROADMAP-v2.md) for v1.2+.

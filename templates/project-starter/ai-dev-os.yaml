@@ -38,3 +38,7 @@ bug_fix_commands:
   - "Bug Fix:"
   - "bug:"
   - "fix:"
+
+# Server AFK task manager — grok (Grok Build) or agy (Antigravity)
+task_run:
+  agent: grok

@@ -5,15 +5,17 @@ Machine- and human-readable registry for workflows, templates, playbooks, and ch
 | Field | Value |
 |-------|-------|
 | platform | **AI Development OS** |
-| version | **1.0.0** |
+| version | **1.1.0** |
 | status | **frozen** |
-| freeze_date | 2026-06-18 |
-| updated | 2026-06-18 |
-| spec_sha | `14d731c15af6532e` |
+| freeze_date | 2026-06-19 |
+| updated | 2026-06-19 |
+| spec_sha | `c969fe5de054aaac` |
 | engineering_standards | 14 active |
 | foundation | frozen |
-| active_skills | 32 |
-| release_bundle | `release/v1.0/` |
+| active_playbooks | 32 |
+| bundled_skills | 19 |
+| release_bundle | `release/v1.1/` |
+| prior_release | `release/v1.0/` |
 
 ---
 
@@ -22,7 +24,12 @@ Machine- and human-readable registry for workflows, templates, playbooks, and ch
 | document_id | Path | Purpose |
 |-------------|------|---------|
 | FOUNDATION | `FOUNDATION.md` | Version manifest, freeze criteria |
-| RELEASE-v1.0 | `release/v1.0/` | Frozen release bundle (manifest, registries, reports) |
+| RELEASE-v1.1 | `release/v1.1/` | Frozen standalone execution bundle |
+| RELEASE-v1.0 | `release/v1.0/` | Frozen playbook substrate (immutable) |
+| BUNDLED-SKILLS | `skills/MANIFEST.yaml` | 19 slash skills SSOT |
+| DOC-STANDALONE | `docs/STANDALONE.md` | Self-contained SSOT guide |
+| DOC-USER-FLOW | `docs/USER-FLOW.md` | User interaction model |
+| DOC-AFK | `docs/AFK-TASK-RUN.md` | Server AFK guide |
 | ARTIFACT-REGISTRY | `ARTIFACT-REGISTRY.yaml` | Artifact types, paths, producers |
 
 ---
@@ -120,7 +127,7 @@ Engine: `workflows/ENGINE.md` — Registry: `workflows/WORKFLOW-REGISTRY.yaml` �
 | PB-prepare-release | `playbooks/prepare-release/` | **active** | H-SHIP |
 | PB-maintenance-triage | `playbooks/maintenance-triage/` | active | H-OPERATE |
 
-**Path convention:** Playbook specs live under `playbooks/<kebab-name>/`. The `skills/` directory is reserved for platform adapter symlinks or copies — not the SSOT.
+**Path convention:** Playbook specs live under `playbooks/<kebab-name>/`. Bundled slash skills SSOT lives under `skills/<name>/` — see `skills/MANIFEST.yaml`. `install-cli.sh` symlinks to grok/agy discovery paths.
 
 ---
 

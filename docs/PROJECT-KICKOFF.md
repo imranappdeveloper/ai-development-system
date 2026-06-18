@@ -76,7 +76,7 @@ Say in chat: `New project: <one sentence>` + ask for PROJECT-KICKOFF grill.
 
 #### Phase A — `/setup-ads` → `/grill-me` (required for new projects)
 
-Load skills from **`$AI_DEV_OS_HOME/skills/`** — `setup-ads`, then `grill-me` or `grill-with-docs`.
+Load skills from **`$AI_DEV_OS_HOME/skills/`** — `setup-ads`, `setup-project-agents`, `setup-task-run`, then `grill-me` or `grill-with-docs`.
 
 Full script: [SETUP-ADS.md](./SETUP-ADS.md) Phase 3A.
 
@@ -182,7 +182,7 @@ Via **`/setup-ads`** → **`/grill-with-docs`**. Full script: [SETUP-ADS.md](./S
 See **[USER-FLOW.md](./USER-FLOW.md)** — user-facing phases:
 
 ```
-understand → spec (silent) → tasks → Start AFK → /task-run → merge PRs → done
+understand → spec (silent) → tasks → Start AFK → /task-run → PRs opened → done (merge when ready)
 ```
 
 | Phase | User does | Agent does |
@@ -222,7 +222,7 @@ Flow:
 1. Run /grill-me or /grill-with-docs — one question at a time; A/B/C at forks
 2. Summarize kickoff in ≤5 lines; wait for my "yes"
 3. Run spec + planning silently — never ask me to read work/ files
-4. Show short task list; Start AFK local/server or /task-run in new chat
+4. Show short task list; Start AFK on server (`task-run-server.sh`)
 5. Never ask me to read playbook files
 
 My idea: <one sentence>

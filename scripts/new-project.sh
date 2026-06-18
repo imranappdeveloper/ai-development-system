@@ -40,7 +40,7 @@ Usage:
   $(basename "$0") -h|--help
 
 Checks (create if missing; AGENTS.md merges missing OS blocks only):
-  AGENTS.md  ai-dev-os.yaml  work/  docs/  .gitignore  git repo
+  AGENTS.md  ai-dev-os.yaml  work/  docs/  .gitignore  git repo  graphify hook  task-run
 
 Examples:
   # Existing Odoo addon repo:
@@ -295,6 +295,10 @@ ai-dev-os.local.yaml
 
 .env
 *.local
+
+# graphify cache (graph.json + GRAPH_REPORT.md may be committed)
+graphify-out/.graphify_*
+graphify-out/.graphify_chunk_*.json
 GITIGNORE
     info ".gitignore — created"
     created=$((created + 1))
@@ -310,6 +314,18 @@ GITIGNORE
     created=$((created + 1))
   else
     info "git — not installed, skipped"
+  fi
+
+  # --- graphify (CLI + post-commit hook; initial build on existing codebases) ---
+  if [[ -x "$ROOT/scripts/setup-graphify.sh" ]]; then
+    echo ""
+    "$ROOT/scripts/setup-graphify.sh" "$PROJECT_DIR" || info "graphify — setup skipped or partial"
+  fi
+
+  # --- task-run server AFK (agent config, work/task-run/, docs/agents/task-run.md) ---
+  if [[ -x "$ROOT/scripts/setup-task-run.sh" ]]; then
+    echo ""
+    "$ROOT/scripts/setup-task-run.sh" "$PROJECT_DIR" --no-poll || info "task-run — setup skipped or partial"
   fi
 
   echo ""

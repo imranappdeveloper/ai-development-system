@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# task-run.sh — prepare AFK task manager session (tmux detach on server)
+# task-run.sh — prepare AFK task manager handoff (prefer task-run-server.sh on server)
 #
-# Grok runs the agent; this script prepares handoff + optional tmux session.
+# Server implementation: use task-run-server.sh (tmux + grok auto-start).
+# This script writes handoff files only — for manual grok paste if needed.
 #
 # Usage:
-#   task-run.sh <epic> --local [--continue]
+#   task-run-server.sh                      # preferred — all ready tickets
+#   task-run-server.sh --epic <N>           # preferred — one epic
 #   task-run.sh <epic> --server [--continue] [--detach]
-#   task-run.sh --ready --local
+#   task-run.sh --ready --server [--detach]
 #
 set -euo pipefail
 
@@ -32,12 +34,11 @@ Usage:
   $(basename "$0") <epic> --server [--continue] [--detach]
   $(basename "$0") --ready --local|--server [--detach]
 
-  --local     Sequential (1 task at a time) — Mac or watch mode
-  --server    Parallel up to 3 — Ubuntu server AFK
-  --continue  After you merged PRs on GitHub
-  --detach    Start tmux session (server AFK — session stays open)
+  --server    Parallel up to 3 — Ubuntu server AFK (required for batch code)
+  --continue  Resume after interruption (state sync; loop does not wait for merges)
+  --detach    Start tmux session (prints handoff — use task-run-server.sh to auto-run grok)
 
-Then open Grok in the tmux window (or new chat) and paste the handoff prompt.
+Batch implementation runs on server only. Use: task-run-server.sh
 
 Skill: \$AI_DEV_OS_HOME/skills/task-run/SKILL.md
 EOF
@@ -69,7 +70,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -n "$MODE" ]] || die "Specify --local or --server"
+[[ -n "$MODE" ]] || die "Specify --server (batch code runs on server — use task-run-server.sh)"
+if [[ "$MODE" == "local" ]]; then
+  echo "WARN: --local is deprecated. Batch implementation runs on server only." >&2
+  echo "      Use: task-run-server.sh" >&2
+fi
 PROJECT_ROOT="$(pwd)"
 [[ -d "$PROJECT_ROOT/.git" ]] || die "Not a git repo: $PROJECT_ROOT"
 command -v gh >/dev/null 2>&1 || die "gh CLI required for task-run"
@@ -107,9 +112,9 @@ Load: \$AI_DEV_OS_HOME/skills/task-run/SKILL.md
 ## Human phase complete
 
 - Issues published with dependencies
-- User chose: **${MODE}**${CONTINUE:+ (continue after merges)}
-- Merge PRs on GitHub when labeled pr-open
-- Then: task-run.sh ${EPIC:-} --${MODE} --continue
+- User chose: **${MODE}**${CONTINUE:+ (resume after interruption)}
+- Agent marks \`done\` when PR opens — starts next task without waiting for merge
+- Optional resume: task-run.sh ${EPIC:-} --${MODE} --continue
 EOF
 
 info "Handoff written: $HANDOFF_FILE"

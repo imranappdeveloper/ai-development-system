@@ -1,8 +1,7 @@
-# AI Dev OS — bundled skills (standalone SSOT)
-# This file is the only skill registry. All skills live under skills/<name>/.
+# AI Dev OS — bundled skills (frozen snapshot v1.1.0)
+# Live SSOT: skills/MANIFEST.yaml
 # install-cli.sh symlinks to ~/.grok/skills/ and ~/.gemini/config/skills/ (grok + agy).
 # Agents MUST load: $AI_DEV_OS_HOME/skills/<name>/SKILL.md
-# See docs/STANDALONE.md
 
 version: "1.1"
 

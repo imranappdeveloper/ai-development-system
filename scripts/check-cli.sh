@@ -6,12 +6,14 @@ set -euo pipefail
 
 _self="${BASH_SOURCE[0]}"
 while [[ -L "$_self" ]]; do
-  _dir="$(cd -P "$(dirname "$_self")" && pwd)"
+  _dir="$(cd -P "$(dirname "$_self")/.." && pwd)"
   _self="$(readlink "$_self")"
   [[ $_self != /* ]] && _self="$_dir/$_self"
 done
 OS_REPO="$(cd "$(dirname "$_self")/.." && pwd)"
 MANIFEST="$OS_REPO/skills/MANIFEST.yaml"
+GROK_SKILLS="${HOME}/.grok/skills"
+AGY_SKILLS="${HOME}/.gemini/config/skills"
 QUIET="${1:-}"
 
 missing=()
@@ -20,6 +22,13 @@ warn=()
 _ok() { [[ "$QUIET" != "--quiet" ]] && echo "  OK: $1" || true; }
 _fail() { missing+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  MISSING: $1" || true; }
 _warn() { warn+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  WARN: $1" || true; }
+
+_skill_link_ok() {
+  local link="$1"
+  local expected="$2"
+  [[ -e "$link" ]] || return 1
+  [[ "$(readlink -f "$link" 2>/dev/null)" == "$(readlink -f "$expected" 2>/dev/null)" ]]
+}
 
 [[ "$QUIET" != "--quiet" ]] && echo "=== AI Dev OS — CLI check ==="
 
@@ -50,21 +59,45 @@ elif [[ -x "$_h/scripts/ai-paths.sh" ]]; then
 else
   _fail "ai-paths"
 fi
+if command -v task-run-server >/dev/null 2>&1; then
+  _ok "task-run-server → $(command -v task-run-server)"
+elif [[ -x "$_h/scripts/task-run-server.sh" ]]; then
+  _warn "task-run-server not on PATH — run install-cli.sh"
+fi
+if command -v grok >/dev/null 2>&1; then
+  _ok "grok (server AFK agent)"
+elif command -v agy >/dev/null 2>&1; then
+  _ok "agy (server AFK agent)"
+else
+  _warn "neither grok nor agy on PATH — install on Ubuntu server for AFK"
+fi
 
 # Bundled skills — SSOT in $AI_DEV_OS_HOME/skills/
 [[ -f "$MANIFEST" ]] || _fail "skills/MANIFEST.yaml"
 if [[ -f "$MANIFEST" ]]; then
   while IFS= read -r skill; do
     [[ -z "$skill" ]] && continue
-    if [[ -f "$_h/skills/${skill}/SKILL.md" ]]; then
+    local_ssot="$_h/skills/${skill}"
+    if [[ -f "$local_ssot/SKILL.md" ]]; then
       _ok "bundled: skills/${skill}/SKILL.md"
     else
       _fail "bundled skill: skills/${skill}/SKILL.md"
     fi
-    if [[ -f "$HOME/.grok/skills/${skill}/SKILL.md" ]]; then
+    if _skill_link_ok "$GROK_SKILLS/${skill}" "$local_ssot"; then
       [[ "$QUIET" == "--quiet" ]] || true
+    elif [[ -f "$GROK_SKILLS/${skill}/SKILL.md" ]]; then
+      _warn "~/.grok/skills/${skill} is not symlinked to SSOT — run install-cli.sh"
     else
-      _warn "not synced to ~/.grok/skills/${skill}/ — run install-cli.sh"
+      _warn "~/.grok/skills/${skill} missing — run install-cli.sh (grok slash commands)"
+    fi
+    if command -v agy >/dev/null 2>&1 || [[ -d "$AGY_SKILLS" ]]; then
+      if _skill_link_ok "$AGY_SKILLS/${skill}" "$local_ssot"; then
+        [[ "$QUIET" == "--quiet" ]] || true
+      elif [[ -f "$AGY_SKILLS/${skill}/SKILL.md" ]]; then
+        _warn "~/.gemini/config/skills/${skill} is not symlinked to SSOT — run install-cli.sh"
+      else
+        _warn "~/.gemini/config/skills/${skill} missing — run install-cli.sh (agy)"
+      fi
     fi
   done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
 fi
@@ -89,6 +122,7 @@ CLI or bundled skill missing. Run once on this machine:
   source ~/.bashrc   # Ubuntu
 
 Skills SSOT: \$AI_DEV_OS_HOME/skills/ (see skills/MANIFEST.yaml)
+Symlinks: ~/.grok/skills/ + ~/.gemini/config/skills/ → SSOT
 Agents load: \$AI_DEV_OS_HOME/skills/<name>/SKILL.md
 
 Then verify:

@@ -16,7 +16,7 @@ Read **one** base grill skill before starting — do not modify those files; fol
 | Has `CONTEXT.md`, `docs/adr/`, or meaningful `src/` to explore | `$AI_DEV_OS_HOME/skills/grill-with-docs/SKILL.md` |
 | Greenfield — no repo, no code, no domain docs yet | `$AI_DEV_OS_HOME/skills/grill-me/SKILL.md` |
 
-**AntiGravity:** same paths under `~/.gemini/config/skills/` via `view_file` with `IsSkillFile: true`.
+All agents load the same SSOT path. `install-cli.sh` symlinks `~/.grok/skills/` and `~/.gemini/config/skills/` to `$AI_DEV_OS_HOME/skills/` for slash discovery only.
 
 The base skill provides interviewing style. This skill adds the **exit bar** required before PRD/issue creation.
 

@@ -51,7 +51,7 @@ Load skills from **`$AI_DEV_OS_HOME/skills/<name>/SKILL.md`** — see **`skills/
 | `~/.agent-skills/shared/` | `$AI_DEV_OS_HOME/skills/` |
 | External skill paths | Bundled manifest skills |
 
-`install-cli.sh` syncs to `~/.grok/skills/` for slash commands; **SSOT is the OS repo**.
+`install-cli.sh` symlinks `~/.grok/skills/` + `~/.gemini/config/skills/` → `$AI_DEV_OS_HOME/skills/` for slash commands (grok + agy). **SSOT is the OS repo**.
 <!-- /ADS-BLOCK:skills-source -->
 
 <!-- ADS-BLOCK:agent-skills -->
@@ -79,13 +79,16 @@ See `docs/agents/engineering-standards.md`.
 <!-- ADS-BLOCK:afk-task-run -->
 ## AFK task execution (batch features)
 
-After GitHub issues published and user says **Start AFK local / server**:
+Configured in **`/setup-ads` Phase 1.6** — see `docs/agents/task-run.md`.
 
-1. User runs `task-run.sh <epic> --local|--server [--detach]` — handoff in `work/task-run/`
-2. **New Grok chat** — load **`$AI_DEV_OS_HOME/skills/task-run/SKILL.md`**
-3. Task manager polls `ready-for-agent` issues; respects `## Blocked by`
-4. Subagent per issue + `/tdd`; local=1, server≤3 parallel
-5. PR → `pr-open`; user merges on GitHub; `/task-run --continue`
+After GitHub issues published and user says **Start AFK on server**:
+
+1. On Ubuntu server: `task-run-server.sh --agent grok|agy [--epic <N>]`
+2. Auto-poll (if enabled): `task-run-poll.sh` — see `work/task-run/cron.example`
+3. Load **`$AI_DEV_OS_HOME/skills/task-run/SKILL.md`** as task manager
+4. Poll `ready-for-agent` issues; respect `## Blocked by`
+5. Subagent per issue + `/tdd`; ≤3 parallel (worktrees)
+6. PR → `done` immediately; agent starts next task; user merges PRs when ready
 
 **No questions during AFK.** `needs-info` + epic comment; continue queue.
 
@@ -145,7 +148,7 @@ Flow: `check-cli` → `ai-new` → grill → summary → **`yes`** → silent sp
 4. Alignment summary → **`yes`**
 5. Run spec + planning playbooks **silently** — no Approve intake / frame / plan
 6. Publish GitHub issues (`/plan-to-issue-v2` or `/to-issues`); short task list + deps
-7. **Start AFK local / server / not yet** — then `/task-run` in new chat (not inline implement)
+7. **Start AFK on server / not yet** — `task-run-server.sh` on Ubuntu (not inline implement)
 <!-- /ADS-BLOCK:setup-ads-behavior -->
 
 <!-- ADS-BLOCK:implementation-tdd -->

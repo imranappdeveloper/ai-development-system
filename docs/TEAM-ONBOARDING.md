@@ -42,7 +42,7 @@ source ~/.zshrc    # Mac
 source ~/.bashrc   # Ubuntu
 ```
 
-Installs: `ai-new`, `ai-paths`, `check-cli`, all bundled skills from `skills/MANIFEST.yaml` → synced to `~/.grok/skills/`
+Installs: `ai-new`, `ai-paths`, `check-cli`, `task-run-server`, `task-run-poll` — skills symlinked to `~/.grok/skills/` + `~/.gemini/config/skills/` from `skills/MANIFEST.yaml`
 
 ### 3. Verify CLI
 
@@ -80,7 +80,7 @@ ai-new my-app "Auction alerts — email when outbid"
 cd my-app
 ```
 
-Creates: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, `.gitignore`, `git init` if needed.
+Creates: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, `.gitignore`, `git init` if needed, graphify post-commit hook (+ initial graph on existing codebases).
 
 ### 5a. Kickoff
 
@@ -192,7 +192,7 @@ Spec: [BUG-FIX.md](./BUG-FIX.md) · [USER-FLOW.md](./USER-FLOW.md)
 | `/grill-me` | ✅ auto | — |
 | `/grill-with-docs` | — | ✅ auto |
 | `A` / `B` / `C` | ✅ forks | ✅ forks |
-| **Start AFK local / server** | ✅ batch features | ✅ batch features |
+| **Start AFK on server** | ✅ batch features (Ubuntu) | ✅ batch features (Ubuntu) |
 | `/task-run` | New chat — task manager | New chat — task manager |
 | **Start coding** | bugs / single task | bugs / single task |
 | `Bug Fix: …` | ✅ | ✅ |

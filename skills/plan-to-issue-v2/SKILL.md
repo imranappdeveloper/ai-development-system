@@ -57,7 +57,7 @@ Requires `--auto`. Propagate `--lean` to Phase 1, Phase 2, and (with `--execute`
 /plan-to-issue-v2 --auto                      # full ceremony auto (also gets AFK stamp)
 /plan-to-issue-v2 --from-context --auto --lean
 /plan-to-issue-v2 --from-issue <N> --auto --lean
-/work-to-pr-v2 <epic> --continue --lean       # resume epic after merges
+/work-to-pr-v2 <epic> --continue --lean       # resume epic after interruption
 ```
 
 ### `--execute`
@@ -88,7 +88,7 @@ Plan complete (v2)<auto><lean>.
 
 <if not --execute>
 /work-to-pr-v2 <epic>              # auto-infers lean from stamps
-/work-to-pr-v2 <epic> --continue --lean   # after merges
+/work-to-pr-v2 <epic> --continue --lean   # resume after interruption (optional)
 </if>
 ```
 

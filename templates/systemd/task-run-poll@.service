@@ -1,0 +1,14 @@
+[Unit]
+Description=AI Dev OS task-run poll for %i
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%i
+Environment=TASK_RUN_AGENT=grok
+ExecStart=%h/.local/bin/task-run-poll.sh
+# Or Antigravity: Environment=TASK_RUN_AGENT=agy
+
+[Install]
+WantedBy=multi-user.target

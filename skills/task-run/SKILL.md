@@ -1,80 +1,66 @@
 ---
 name: task-run
 description: >
-  AFK task manager — polls GitHub issues for an epic, runs unblocked ready-for-agent
-  tasks via subagents + /tdd, opens PRs, loops until queue empty. Use in a NEW Grok chat
-  after /plan-to-issue-v2 published tasks. Flags: --local (sequential), --server (parallel≤3),
-  --continue (after PR merges). Never ask questions during execution.
+  AFK task manager — polls GitHub issues, runs unblocked ready-for-agent tasks via
+  subagents + /tdd, opens PRs, marks done at PR create, starts next task immediately
+  (no wait for merge). Server only — task-run-server.sh. Never ask questions.
 ---
 
-# Task Run — AFK Task Manager
+# Task Run — AFK Task Manager (server only)
 
-Run in a **new Grok chat** after human grill + issue publish. You are the **task manager** — not the implementer.
+Started on the **Ubuntu server** by `task-run-server.sh` — tmux + **grok** or **agy** (Antigravity) with this skill. You are the **task manager** — not the implementer.
 
-**Prerequisites (human phase complete):**
+**Core rule:** Task **complete when PR is created** → label `done` → **immediately** start next unblocked issue. **Do not wait for human merge.**
 
-- `/plan-to-issue-v2 --auto --lean` or `/to-issues` published child issues
-- User confirmed task list + dependencies
-- User said **Start AFK local** or **Start AFK server**
-- Issues labeled `ready-for-agent` with `## Blocked by` filled in
-- AFK slices only — HITL / `needs-info` issues are not in queue
+---
 
-**Read before starting:**
+## Prerequisites
 
-| Skill / doc | Purpose |
-|-------------|---------|
-| `work-to-pr-v2` | `$AI_DEV_OS_HOME/skills/work-to-pr-v2/SKILL.md` — state machine, PR flow, worktrees |
-| `issue-processor` | `$AI_DEV_OS_HOME/skills/issue-processor/SKILL.md` — batch loop, one subagent per issue |
-| `tdd` | `$AI_DEV_OS_HOME/skills/tdd/SKILL.md` — subagent implementation |
-| `issue-spec-review` | Preflight when AFK stamp missing |
-| `pr-readiness-check` | Before each PR |
+- `/grill-me` or `/grill-with-docs` + issues published
+- Issues: `ready-for-agent`, `## Blocked by` set
+- User said **Start AFK on server**
 
-Project: `CONTEXT.md`, `AGENTS.md`, `docs/agents/*` if present.
+**Read:** `work-to-pr-v2`, `issue-processor`, `tdd`, `issue-spec-review`, `pr-readiness-check`
+
+---
+
+## Server entry
+
+```bash
+task-run-server.sh --agent grok|agy [--epic N]
+task-run-poll.sh --agent agy    # cron
+task-run-server.sh --status
+```
 
 ---
 
 ## Invocation
 
 ```text
-/task-run <epic>
-/task-run <epic> --local
 /task-run <epic> --server
-/task-run <epic> --continue
-/task-run --ready --local
+/task-run --ready --server
 ```
 
 | Flag | Behavior |
 |------|----------|
-| `--local` | **Sequential** — 1 subagent at a time; user may watch |
-| `--server` | **Parallel** — up to **3** concurrent subagents when no file overlap |
-| `--continue` | After human merged PRs — state sync, then next unblocked issues |
-| `--ready` | All `ready-for-agent` issues (max 5 per run), no epic filter |
-
-Default if no flag: **`--local`**.
-
-Shell wrapper (tmux detach on server):
-
-```bash
-task-run.sh <epic> --server --detach
-```
+| `--server` | ≤3 parallel subagents (worktrees, no file overlap) |
+| `--continue` | State sync + resume (optional; loop does not wait for merges) |
+| `--ready` | All runnable `ready-for-agent` issues |
 
 ---
 
 ## Role: task manager
 
-You **orchestrate**. You **do not** implement application code yourself.
-
 ```
 loop:
-  1. Fetch epic children (or --ready set)
-  2. State sync + recovery (work-to-pr-v2 rules)
-  3. Build dependency graph from ## Blocked by
-  4. Queue = unblocked + ready-for-agent only
-  5. Pick batch (size 1 local | ≤3 server, no path overlap)
-  6. For each issue → spawn fresh subagent (Task tool)
-  7. Subagent → /tdd → PR readiness → gh pr create → pr-open
-  8. On needs-info → label issue + comment on epic; continue queue
-  9. Repeat until stop conditions
+  1. Fetch issues
+  2. State sync (work-to-pr-v2)
+  3. Dependency graph from ## Blocked by (done = PR opened satisfies blocker)
+  4. Queue = unblocked + ready-for-agent
+  5. Batch ≤3 (no path overlap)
+  6. Subagent → /tdd → PR → label done → NEXT issue (no merge wait)
+  7. needs-info → skip, continue queue
+  8. Until queue empty
 ```
 
 ---
@@ -82,142 +68,59 @@ loop:
 ## Issue state machine
 
 ```
-ready-for-agent → in-progress → pr-open → done
+ready-for-agent → in-progress → done
                       ↓
                   needs-info
 ```
 
 | Label | Meaning |
 |-------|---------|
-| `ready-for-agent` | Runnable — deps satisfied, spec complete |
-| `in-progress` | Claimed — subagent working |
-| `pr-open` | PR open — **human merges** |
-| `done` | PR merged into `dev` |
-| `needs-info` | Blocked on ambiguity — skip until human fixes spec |
+| `ready-for-agent` | Runnable now |
+| `in-progress` | Subagent working |
+| `done` | PR opened — **task complete**, unblocks dependents |
+| `needs-info` | Spec gap — skip until fixed |
 
-**Runnable rule:** issue must be **unblocked** (all blockers `done`) AND labeled **`ready-for-agent`**.
+**On PR create:**
 
----
-
-## Subagent prompt (per issue)
-
-Spawn **one fresh subagent per issue** (`Task` tool). Include:
-
-```markdown
-Implement GitHub issue #<N> using /tdd.
-
-Working directory: <repo root or .worktrees/issue-<N>/>
-Issue body: <full body — AC are the spec>
-Read: CONTEXT.md, AGENTS.md, docs/agents/engineering-standards.md (if present)
-
-Rules:
-- Follow $AI_DEV_OS_HOME/skills/tdd/SKILL.md
-- Match neighbouring code — no drive-by refactors
-- Skip UI tests unless AC requires
-- Run tests + build before returning
-- Return: files changed, test results, branch name
+```bash
+gh issue edit <N> --add-label done --remove-label in-progress
+gh issue comment <N> --body "PR: <url>"
 ```
 
-Task manager verifies AC, runs `pr-readiness-check`, opens PR.
+Then **immediately** pick next unblocked `ready-for-agent` issue.
 
 ---
 
 ## Parallelism
 
-| Mode | Concurrency | Isolation |
-|------|-------------|-----------|
-| `--local` | 1 | Single checkout on `dev` |
-| `--server` | ≤3 | `git worktree add .worktrees/issue-<N>` per parallel issue |
-
-Before parallel batch: compare paths/modules in issue bodies. **Overlap → run sequentially.**
-
-Never two subagents in the same working tree.
+≤3 worktrees; after each PR opens → `done` → next issue. **No wait for merge** between batches.
 
 ---
 
-## Ambiguity during AFK (Q6)
+## Autonomous mode
 
-If subagent or spec review hits missing spec:
-
-```bash
-gh issue edit <N> --add-label needs-info --remove-label in-progress
-gh issue comment <N> --body "> Blocked: <specific gap>"
-gh issue comment <epic> --body "Task #<N> needs-info: <one line>"
-```
-
-**Continue** other unblocked issues. Do **not** pause whole run.
-
----
-
-## Autonomous mode (mandatory)
-
-- **No** `AskQuestion` / user prompts during execution
-- **No** merging PRs
-- **No** commits to `main` or `dev` directly
-- **No** implementing code in task-manager context — subagents only
-
-Human gates: **PR merge on GitHub** only.
+- No user prompts
+- No merging PRs (human merges when ready)
+- No direct commits to `main`/`dev`
 
 ---
 
 ## Stop conditions
 
-- Queue empty — no unblocked `ready-for-agent` issues
-- All remaining: `pr-open` (awaiting merge), `done`, `needs-info`, or blocked
-- Unrecoverable build failure on project root
+- No unblocked `ready-for-agent` issues remain
+- Only `done`, `needs-info`, or blocked issues left
 
 ---
 
-## Report (end of run)
+## Report
 
 ```text
-Task run complete — epic #<epic> (<local|server>)
+Task run complete
 
-PRs opened (pr-open):     #<list>
-Merged → done (sync):      #<list>
-Awaiting your merge:       #<list>
-needs-info (skipped):      #<list>
-Blocked (deps):            #<list>
-
-Next: merge PRs on GitHub, then:
-  /task-run <epic> --continue --local
-  or: task-run.sh <epic> --server --detach --continue
+Done (PR opened):        #<list>
+PRs for human merge:     #<list>  (informational)
+needs-info:              #<list>
+Blocked:                 #<list>
 ```
-
----
-
-## Handoff from human chat
-
-Human chat ends with:
-
-```text
-A) Start AFK local
-B) Start AFK server
-C) Not yet
-```
-
-On A or B:
-
-1. Open **new Grok chat** (or `task-run.sh --detach` tmux on server)
-2. Paste:
-
-```text
-/task-run <epic> --local
-project_root: <absolute path>
-```
-
-3. Task manager runs until stop conditions
-
----
-
-## Skill map
-
-| Step | Skill |
-|------|-------|
-| Publish tasks | `plan-to-issue-v2`, `to-issues` |
-| Execute queue | **task-run** (this) |
-| Per-issue impl | `work-to-pr-v2` patterns + `tdd` |
-| Preflight | `issue-spec-review` |
-| Pre-PR | `pr-readiness-check` |
 
 SSOT: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`

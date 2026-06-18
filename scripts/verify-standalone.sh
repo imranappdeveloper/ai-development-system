@@ -28,9 +28,10 @@ while IFS= read -r skill; do
 done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
 
 # 3. No external agent-skills load paths (allow "never" / "no external" warnings in docs)
-_bad_refs="$(grep -rE '~/.agent-skills|agent-skills/shared' "$ROOT/skills" "$ROOT/scripts" 2>/dev/null \
-  | grep -v 'verify-standalone.sh' \
-  | grep -vE 'never |no external|No external|not external' || true)"
+_bad_refs="$(grep -rE '~/.agent-skills|agent-skills/shared|~/.gemini/config/skills|~/.grok/skills' "$ROOT/skills" 2>/dev/null \
+  | grep -vE 'never |no external|No external|not external|symlink|Symlink|slash discovery|slash commands' || true)"
+_bad_refs="$(printf '%s\n%s' "$_bad_refs" "$(grep -rE '~/.agent-skills|agent-skills/shared' "$ROOT/scripts" 2>/dev/null \
+  | grep -v 'verify-standalone.sh' || true)")"
 if [[ -n "$_bad_refs" ]]; then
   echo "$_bad_refs" >&2
   die "external agent-skills reference found in skills/ or scripts/"
@@ -45,10 +46,17 @@ done
 ok "core SSOT docs present"
 
 # 5. CLI scripts executable
-for s in install-cli.sh check-cli.sh new-project.sh task-run.sh ai-paths.sh; do
+for s in install-cli.sh check-cli.sh new-project.sh task-run.sh task-run-server.sh \
+  task-run-poll.sh setup-task-run.sh setup-graphify.sh test-task-run-session.sh ai-paths.sh; do
   [[ -x "$ROOT/scripts/$s" ]] || die "not executable: scripts/$s"
 done
 ok "CLI scripts executable"
+
+if "$ROOT/scripts/test-task-run-session.sh" >/dev/null 2>&1; then
+  ok "test-task-run-session.sh"
+else
+  die "test-task-run-session.sh failed"
+fi
 
 # 6. check-cli (quiet)
 if AI_DEV_OS_HOME="$ROOT" "$ROOT/scripts/check-cli.sh" --quiet; then

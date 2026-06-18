@@ -7,6 +7,8 @@ SCRIPT="$ROOT/scripts/new-project.sh"
 BIN_DIR="${HOME}/.local/bin"
 MARKER="# AI Development OS — ai-new CLI"
 MANIFEST="$ROOT/skills/MANIFEST.yaml"
+GROK_SKILLS="${HOME}/.grok/skills"
+AGY_SKILLS="${HOME}/.gemini/config/skills"
 
 die() { echo "ERROR: $1" >&2; exit 1; }
 info() { echo "  $1"; }
@@ -17,18 +19,29 @@ info() { echo "  $1"; }
 
 mkdir -p "$BIN_DIR"
 chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.sh" \
-  "$ROOT/scripts/bind-project.sh" "$ROOT/scripts/task-run.sh" 2>/dev/null || true
+  "$ROOT/scripts/bind-project.sh" "$ROOT/scripts/task-run.sh" \
+  "$ROOT/scripts/task-run-server.sh" \
+  "$ROOT/scripts/task-run-poll.sh" \
+  "$ROOT/scripts/setup-task-run.sh" \
+  "$ROOT/scripts/lib/task-run-agent.sh" \
+  "$ROOT/scripts/lib/task-run-session.sh" \
+  "$ROOT/scripts/test-task-run-session.sh" \
+  "$ROOT/scripts/setup-graphify.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
 ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
 ln -sf "$ROOT/scripts/task-run.sh" "$BIN_DIR/task-run"
+ln -sf "$ROOT/scripts/task-run-server.sh" "$BIN_DIR/task-run-server"
+ln -sf "$ROOT/scripts/task-run-poll.sh" "$BIN_DIR/task-run-poll"
 info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
 info "Linked: $BIN_DIR/check-cli"
 info "Linked: $BIN_DIR/ai-bind"
 info "Linked: $BIN_DIR/task-run"
+info "Linked: $BIN_DIR/task-run-server"
+info "Linked: $BIN_DIR/task-run-poll"
 
 _ensure_path_in_rc() {
   local rc="$1"
@@ -72,24 +85,37 @@ _write_shell_block() {
 _write_shell_block "$HOME/.bashrc"
 _write_shell_block "$HOME/.zshrc"
 
-# Install skills from OS bundle only ($ROOT/skills/) — no external agent-skills deps
-_install_skill_dir() {
+# Symlink bundled skills — SSOT stays in $ROOT/skills/ (git pull updates all agents)
+_link_skill_dir() {
   local name="$1"
+  local link_root="$2"
+  local label="$3"
   local src="$ROOT/skills/${name}"
-  local dst="$HOME/.grok/skills/${name}"
+  local dst="${link_root}/${name}"
+
   if [[ ! -f "$src/SKILL.md" ]]; then
     die "Missing bundled skill: $ROOT/skills/${name}/SKILL.md"
   fi
-  mkdir -p "$(dirname "$dst")"
-  rm -rf "$dst"
-  cp -a "$src" "$dst"
-  info "Installed skill: ~/.grok/skills/${name}/ ← \$AI_DEV_OS_HOME/skills/${name}/"
+  mkdir -p "$link_root"
+  if [[ -L "$dst" ]]; then
+    rm -f "$dst"
+  elif [[ -e "$dst" ]]; then
+    rm -rf "$dst"
+  fi
+  ln -sfn "$src" "$dst"
+  info "Symlink: ${label}/${name} → \$AI_DEV_OS_HOME/skills/${name}/"
 }
 
-info "Installing skills from \$AI_DEV_OS_HOME/skills/ (MANIFEST.yaml)..."
+info "Linking skills from \$AI_DEV_OS_HOME/skills/ (MANIFEST.yaml)..."
 while IFS= read -r skill; do
   [[ -z "$skill" ]] && continue
-  _install_skill_dir "$skill"
+  _link_skill_dir "$skill" "$GROK_SKILLS" "~/.grok/skills"
+done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
+
+mkdir -p "$(dirname "$AGY_SKILLS")"
+while IFS= read -r skill; do
+  [[ -z "$skill" ]] && continue
+  _link_skill_dir "$skill" "$AGY_SKILLS" "~/.gemini/config/skills"
 done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
 
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
@@ -99,15 +125,15 @@ if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
 fi
 
 echo ""
-echo "Done. This repo is standalone SSOT — see docs/STANDALONE.md"
-echo "Skills: \$AI_DEV_OS_HOME/skills/ (MANIFEST.yaml)"
+echo "Done. Skills SSOT: \$AI_DEV_OS_HOME/skills/"
+echo "Symlinks: ~/.grok/skills/ + ~/.gemini/config/skills/ (grok + agy slash discovery)"
 echo "Verify: ./scripts/verify-standalone.sh && check-cli"
 echo ""
 echo "Verify:"
 echo "  source ~/.zshrc    # Mac"
 echo "  hash -r"
 echo "  check-cli"
-echo "  which ai-new ai-paths task-run"
+echo "  which ai-new ai-paths task-run task-run-server task-run-poll grok agy"
 echo ""
 echo "In project chat:"
 echo "  /setup-ads"

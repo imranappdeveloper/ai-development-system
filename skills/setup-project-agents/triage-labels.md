@@ -17,10 +17,10 @@ Used by `/work-to-pr-v2` during execution (not general triage):
 | Label | Meaning |
 |---|---|
 | `in-progress` | Agent claimed issue; branch exists |
-| `pr-open` | PR opened into `dev` — awaiting human merge |
-| `done` | PR merged into `dev` |
+| `done` | Agent work complete — PR opened. Unblocks dependents. Human merges when ready. |
+| `pr-open` | Legacy only — repair to `done` on state sync |
 
-Create `pr-open` on GitHub if missing: `gh label create "pr-open" --description "PR open — awaiting merge"`.
+Create `done` on GitHub if missing: `gh label create "done" --description "Agent complete — PR opened"`.
 
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 

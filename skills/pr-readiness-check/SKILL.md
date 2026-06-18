@@ -19,11 +19,9 @@ Gate between "implementation done" and `gh pr create`. Reduces broken PRs reachi
 - Subagent's test/build output
 - `docs/agents/engineering-standards.md` when present (read at start of this check)
 
-## Step 1 — Load verification skill
+## Step 1 — Verify diff and build
 
-Read `$AI_DEV_OS_HOME/skills/check-work/SKILL.md` and follow its verification approach on the current diff.
-
-**AntiGravity:** `~/.gemini/config/skills/check-work/SKILL.md` via `view_file` with `IsSkillFile: true`.
+Run tests and build per `docs/agents/engineering-standards.md`. Review the branch diff against `dev` using the checks in Steps 2–5 below (same rigor as `/check-work` when available).
 
 ## Step 2 — Acceptance criteria audit
 

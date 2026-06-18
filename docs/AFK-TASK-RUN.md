@@ -1,121 +1,153 @@
-# AFK Task Run — Task Manager
+# AFK Task Run — Server Only
 
-Autonomous implementation after human grill + GitHub issues published. **No questions during run.**
+Autonomous implementation after human grill (`/grill-me` or `/grill-with-docs`) + GitHub issues published. **No questions during run.**
+
+**Batch code runs on the Ubuntu server only** — not on Mac/local IDE.
 
 | Phase | Where | Who |
 |-------|-------|-----|
-| Grill + publish | Main Grok chat | You + agent |
-| Execute queue | **New** Grok chat `/task-run` | Task manager + subagents |
-| Merge PRs | GitHub | You |
+| Grill + publish | Any machine (Grok or Antigravity chat) | You + agent |
+| Execute queue | **Server** — `task-run-server.sh` | tmux + **grok** or **agy** |
+| Merge PRs | GitHub | You (optional timing — agent does not wait) |
+
+---
+
+## Agent choice: grok or agy
+
+| Agent | CLI | Launch flags |
+|-------|-----|--------------|
+| **grok** | Grok Build | `grok --always-approve` |
+| **agy** | Antigravity | `agy --print --dangerously-skip-permissions` |
+
+Set default in project `ai-dev-os.yaml`:
+
+```yaml
+task_run:
+  agent: agy   # or grok
+```
+
+Or per run: `--agent grok` / `--agent agy`  
+Or env: `TASK_RUN_AGENT=agy`
+
+Resolution order: `--agent` flag → `TASK_RUN_AGENT` → `ai-dev-os.local.yaml` → `ai-dev-os.yaml` → first CLI found on PATH.
 
 ---
 
 ## Prerequisites
 
-1. **Per project:** `/setup-project-agents` — runs automatically in `/setup-ads` Phase 1.5 → `docs/agents/` + GitHub labels
-2. **Per machine:** `install-cli.sh` installs all skills from `$AI_DEV_OS_HOME/skills/MANIFEST.yaml` (no external deps)
-3. `gh` authenticated; `dev` branch on project repo
-4. Child issues published (`/plan-to-issue-v2 --auto --lean` or `/to-issues`)
-5. Each AFK task: label `ready-for-agent`, `## Blocked by` set, fat acceptance criteria
-6. You confirmed short task list + dependencies
+1. **Per project:** `/setup-project-agents` — runs in `/setup-ads` Phase 1.5
+2. **Per server:** `install-cli.sh` — `task-run-server`, `task-run-poll`, `gh`, `tmux`, **grok and/or agy**
+3. `gh` authenticated on server; `dev` branch on project repo
+4. Child issues published with `ready-for-agent` + `## Blocked by`
 
 ---
 
-## Human handoff
-
-After task list:
-
-```text
-A) Start AFK local
-B) Start AFK server
-C) Not yet
-```
-
-### Local (watch, 1 at a time)
+## Start manually
 
 ```bash
 cd /path/to/project
-task-run.sh 42 --local
+
+# Grok — all ready tickets:
+task-run-server.sh --agent grok
+
+# Antigravity (agy) — all ready tickets:
+task-run-server.sh --agent agy
+
+# One epic:
+task-run-server.sh --agent agy --epic 42
+
+# Resume after interruption (optional — loop does not wait for merges):
+task-run-server.sh --agent agy --continue
 ```
 
-Open **new Grok chat** → paste handoff from `work/task-run/epic-42-handoff.md`:
+Creates tmux session `task-run-ready` or `task-run-epic-42`, auto-starts the agent.
 
-```text
-/task-run 42 --local
-project_root: /path/to/project
-```
-
-### Server (AFK, up to 3 parallel)
+### Monitor
 
 ```bash
-cd /path/to/project
-task-run.sh 42 --server --detach
-tmux attach -t task-run-epic-42
-# run grok, paste handoff block
+task-run-server.sh --status    # health: none | healthy | stale
+task-run-server.sh --attach
+task-run-server.sh --stop      # kill tmux session
+# logs: work/task-run/<slug>-<agent>.log
+```
+
+Stale = tmux exists but grok/agy exited and log idle > `TASK_RUN_STALE_MINUTES` (default 45).
+
+---
+
+## Auto-start (cron / systemd)
+
+When work is queued, `task-run-poll.sh` starts or **resumes** the server:
+
+| Condition | Poll action |
+|-----------|-------------|
+| Healthy tmux + agent running | Skip |
+| Stale session (agent exited) | Kill + restart |
+| `ready-for-agent` > 0 | Start (`--continue` if prior run — state sync only) |
+| Stale session + work queued | Restart (no merge wait) |
+| Nothing queued | Skip |
+
+### Cron (every 15 min)
+
+```bash
+# Grok
+*/15 * * * * cd /path/to/project && task-run-poll.sh --agent grok >> work/task-run/poll.log 2>&1
+
+# Antigravity
+*/15 * * * * cd /path/to/project && task-run-poll.sh --agent agy >> work/task-run/poll.log 2>&1
+```
+
+Dry run: `task-run-poll.sh --agent agy --dry-run`
+
+### systemd timer
+
+Templates in `$AI_DEV_OS_HOME/templates/systemd/`:
+
+```bash
+# Edit service: set WorkingDirectory + TASK_RUN_AGENT
+sudo cp templates/systemd/task-run-poll@.service /etc/systemd/system/task-run-poll@.service
+sudo cp templates/systemd/task-run-poll@.timer /etc/systemd/system/task-run-poll@.timer
+# Set WorkingDirectory=/path/to/project and Environment=TASK_RUN_AGENT=agy in the .service file
+sudo systemctl daemon-reload
+sudo systemctl enable --now task-run-poll@.timer
 ```
 
 ---
 
 ## What task manager does
 
-1. Fetch epic children; **state sync** (merged PRs → `done`)
-2. Build graph from `## Blocked by`
-3. Queue: **unblocked** + `ready-for-agent` only
-4. **Local:** 1 subagent at a time | **Server:** ≤3 parallel (worktrees, no file overlap)
-5. Subagent: issue body + `CONTEXT.md` + `/tdd`
-6. PR → label `pr-open` — **you merge**, not the agent
-7. `needs-info` on issue + comment on epic → **continue** other tasks
-8. Loop until queue empty
+1. Fetch issues (`--ready` or epic children); state sync (legacy label repair)
+2. Build graph from `## Blocked by` (`done` = PR opened satisfies blocker)
+3. Queue: unblocked + `ready-for-agent` only
+4. Server: ≤3 parallel (worktrees, no file overlap)
+5. Subagent per issue + `/tdd` (Grok: Task tool; agy: invoke_subagent)
+6. PR created → label `done` → **start next unblocked task** (no merge wait)
+7. Loop until queue empty
 
 Skill: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`
-Implementation patterns: `work-to-pr-v2`, `issue-processor`
-
----
-
-## After you merge PRs
-
-```bash
-task-run.sh 42 --local --continue
-# or server:
-task-run.sh 42 --server --detach --continue
-```
-
-New chat:
-
-```text
-/task-run 42 --continue --local
-project_root: /path/to/project
-```
 
 ---
 
 ## Issue labels
 
 ```
-ready-for-agent → in-progress → pr-open → done
+ready-for-agent → in-progress → done
                       ↓
                   needs-info
 ```
 
-| Label | Meaning |
-|-------|---------|
-| `ready-for-agent` | Runnable now |
-| `in-progress` | Subagent claimed |
-| `pr-open` | Awaiting your merge |
-| `done` | Merged to `dev` |
-| `needs-info` | Spec gap — fix on GitHub, then re-label |
+`done` = PR opened. Human merges when ready — agent does not wait.
 
 ---
 
-## Install
+## Install (server)
 
 ```bash
 cd ~/ai-development-system && git pull
 ./scripts/install-cli.sh
-source ~/.zshrc   # or ~/.bashrc
+source ~/.bashrc
+which task-run-server task-run-poll grok agy gh tmux
 ```
-
-Verifies: `check-cli` (all skills in `skills/MANIFEST.yaml`) and `which task-run`
 
 ---
 
@@ -123,8 +155,7 @@ Verifies: `check-cli` (all skills in `skills/MANIFEST.yaml`) and `which task-run
 
 | Skill | Role |
 |-------|------|
-| `/plan-to-issue-v2` | Grill + publish epic + children |
-| `/to-issues` | Vertical slices + dependencies |
-| `/task-run` | Task manager loop |
-| `/work-to-pr-v2` | Per-issue PR + state machine |
-| `/issue-processor` | Batch subagent pattern |
+| `/grill-me` | New project requirements |
+| `/grill-with-docs` | Existing project |
+| `/task-run` | Task manager (invoked by grok or agy on server) |
+| `/work-to-pr-v2` | Per-issue PR flow |

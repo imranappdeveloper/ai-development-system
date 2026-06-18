@@ -28,21 +28,39 @@ Platform frozen. No further architectural changes to v1.0 substrate.
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-06-19
+
+### Frozen — AI Development OS v1.1 (Standalone Execution)
+
+Adds runnable standalone execution on frozen v1.0 playbook substrate. Release bundle: `release/v1.1/`. `spec_sha: c969fe5de054aaac`.
+
 ### Added
 
-- `docs/OS-STATUS-FOOTER.md` — mandatory footer on every agent reply (`✅ Used` / `⚠️ Partial` / `❌ Not used`)
-- `docs/BUG-FIX.md` — simple bug path: `Bug Fix: …` → `/triage` → `/diagnose` → 3 formatted approval cards; silent OS artifacts
-- Implementation flow — **`/tdd` mandatory** for all `PB-implement-*` lanes (03-workflow, 09-system-prompt, checklists, PROJECT-KICKOFF, AGENTS.md)
-- Docs + scaffold output — **Grok / Antigravity** workflow (replaced Cursor-only `cursor .` steps)
-- **`/setup-ads` skill** — ai-new + grill-me (new) / grill-with-docs (existing); [SETUP-ADS.md](./docs/SETUP-ADS.md); installed via install-cli.sh
-- Portable multi-machine paths — `env:AI_DEV_OS_HOME` in `ai-dev-os.yaml`, `ai-paths` CLI, `ai-dev-os.local.yaml` (gitignored), [MULTI-MACHINE.md](./docs/MULTI-MACHINE.md)
-- `ai-new` — idempotent setup for existing projects (create AGENTS.md/git/work only if missing; no overwrite)
-- `scripts/install-cli.sh` — one-time install for `ai-new` (`~/.local/bin` symlink + optional `~/.bashrc` alias)
-- `scripts/new-project.sh` — run from any folder; default scaffolds **current directory**; optional subfolder name creates `./<name>` under pwd; symlink-safe path resolution for `ai-new`
-- `templates/project-starter/` — project template for new-project.sh
-- `docs/PROJECT-KICKOFF.md` — grill-first flow (`/grill-with-docs` before intake; users answer questions only)
-- `templates/context/OPEN-QUESTIONS-template.md` — deferred kickoff questions
-- `docs/GETTING-STARTED.md` — reframed; users → PROJECT-KICKOFF, agents → playbooks
+- **19 bundled slash skills** — `skills/MANIFEST.yaml` SSOT; `install-cli.sh` symlinks to `~/.grok/skills/` and `~/.gemini/config/skills/`
+- **`/setup-task-run` skill** — Phase 1.6 in setup-ads; `docs/agents/task-run.md`, cron example
+- **Server AFK stack** — `task-run-server.sh`, `task-run-poll.sh`, `lib/task-run-agent.sh`, `lib/task-run-session.sh`
+- **`setup-graphify.sh`** — graphify CLI + post-commit hook
+- **`verify-standalone.sh`** — manifest, symlinks, session unit tests
+- **`test-task-run-session.sh`** — poll/session helper tests
+- **`docs/STANDALONE.md`** — self-contained SSOT guide
+- **`docs/USER-FLOW.md`** — understand → spec → tasks → Start AFK (no spec dumps)
+- **`docs/AFK-TASK-RUN.md`** — server-only AFK guide (grok/agy)
+- **systemd templates** — `templates/systemd/task-run-poll@.*`
+- **`docs/OS-STATUS-FOOTER.md`** — mandatory footer on every agent reply
+- **`docs/BUG-FIX.md`** — bug path: `/triage` → `/diagnose` → 3 approval cards
+- **`/setup-ads` skill** — ai-new + grill-me / grill-with-docs; [SETUP-ADS.md](./docs/SETUP-ADS.md)
+- Portable paths — `env:AI_DEV_OS_HOME`, `ai-paths`, `ai-dev-os.local.yaml`, [MULTI-MACHINE.md](./docs/MULTI-MACHINE.md)
+- `templates/project-starter/` — project template with `task_run` config
+- `docs/PROJECT-KICKOFF.md` — grill-first kickoff
+
+### Changed
+
+- **Done-at-PR-create policy** — task `done` when PR opens; no merge wait; next issue starts immediately
+- `skills/task-run/SKILL.md`, `skills/work-to-pr-v2/SKILL.md` — aligned state machine
+- `install-cli.sh` — symlinks (not copies) for grok + agy skill discovery
+- `check-cli.sh` — verifies symlinks point to `$AI_DEV_OS_HOME/skills/`
+- `scripts/new-project.sh` — graphify + task-run setup hooks
+- Deprecated `--local` AFK path — server-only batch code
 
 ## [1.0.0] — 2026-06-18 (continued)
 

@@ -3,3 +3,6 @@
 #
 # ai_dev_os_home: /Users/you/ai-development-system
 # project_root: /Users/you/projects/auction
+#
+# task_run:
+#   agent: agy   # grok | agy — server AFK task manager
