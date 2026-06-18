@@ -43,7 +43,7 @@ flowchart TD
 
 ### Phase 0 — Triage (`/triage`)
 
-Load skill: `triage` (`~/.grok/skills/triage/SKILL.md`).
+Load skill: `$AI_DEV_OS_HOME/skills/triage/SKILL.md`.
 
 | Do | Don't |
 |----|-------|
@@ -59,7 +59,7 @@ I need one thing to reproduce: <specific question>
 
 ### Phase 1 — Diagnose (`/diagnose`)
 
-Load skill: `diagnose` (`~/.grok/skills/diagnose/SKILL.md`).
+Load skill: `$AI_DEV_OS_HOME/skills/diagnose/SKILL.md`.
 
 | Step | Agent action |
 |------|----------------|

@@ -42,7 +42,7 @@ source ~/.zshrc    # Mac
 source ~/.bashrc   # Ubuntu
 ```
 
-Installs: `ai-new`, `ai-paths`, `check-cli`, skills → `~/.grok/skills/` (`setup-ads`, `task-run`, `setup-matt-pocock-skills`, AFK pipeline)
+Installs: `ai-new`, `ai-paths`, `check-cli`, all bundled skills from `skills/MANIFEST.yaml` → synced to `~/.grok/skills/`
 
 ### 3. Verify CLI
 

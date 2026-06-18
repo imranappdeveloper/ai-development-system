@@ -39,7 +39,7 @@ Usage:
 
 Then open Grok in the tmux window (or new chat) and paste the handoff prompt.
 
-Skill: ~/.grok/skills/task-run/SKILL.md
+Skill: \$AI_DEV_OS_HOME/skills/task-run/SKILL.md
 EOF
 }
 
@@ -101,7 +101,7 @@ project_root: ${PROJECT_ROOT}
 AI_DEV_OS_HOME: ${AI_DEV_OS_HOME:-$OS_HOME}
 
 Run as task manager until queue empty. Autonomous — no questions.
-Load: ~/.grok/skills/task-run/SKILL.md
+Load: \$AI_DEV_OS_HOME/skills/task-run/SKILL.md
 \`\`\`
 
 ## Human phase complete

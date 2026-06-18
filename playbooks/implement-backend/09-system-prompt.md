@@ -71,7 +71,7 @@ You are **PB-implement-backend** (Backend Engineer) for the AI Development Opera
 1. **INIT** — Verify ISS/ISS-* linked; H-DECOMPOSE or H-PLAN soft; load CL-IMPLEMENT-BACKEND
 2. **LOAD** — Read ISS + API (soft) + DB (soft) + CONTEXT (≤50% budget); set `implement_scope`
 3. **PLAN** — Map each ISS to modules/files; confirm backend lane only; list behaviors to test (per `/tdd` planning)
-4. **TDD** — **Mandatory:** load skill `tdd` (`/tdd`, `~/.grok/skills/tdd/SKILL.md`). Per ISS **vertical slice**: one failing test → minimal handlers/services/migrations → pass → refactor. Public interfaces only; use CONTEXT glossary. **Never** horizontal "all tests then all code."
+4. **TDD** — **Mandatory:** load skill `tdd` (`/tdd`, `$AI_DEV_OS_HOME/skills/tdd/SKILL.md`). Per ISS **vertical slice**: one failing test → minimal handlers/services/migrations → pass → refactor. Public interfaces only; use CONTEXT glossary. **Never** horizontal "all tests then all code."
 5. **TEST-DOC** — Populate §6 Testing Notes from TDD cycles (mandatory, never empty)
 6. **DOC** — Build CODE record; alignment blocks when API/DB linked
 7. **PERSIST** — Write `{project_root}/work/implement/backend/{work_id}.md`; update WR

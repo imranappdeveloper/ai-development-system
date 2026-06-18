@@ -76,7 +76,7 @@ Say in chat: `New project: <one sentence>` + ask for PROJECT-KICKOFF grill.
 
 #### Phase A — `/setup-ads` → `/grill-me` (required for new projects)
 
-Load skills: **`setup-ads`** then **`grill-me`** (`~/.grok/skills/`).
+Load skills from **`$AI_DEV_OS_HOME/skills/`** — `setup-ads`, then `grill-me` or `grill-with-docs`.
 
 Full script: [SETUP-ADS.md](./SETUP-ADS.md) Phase 3A.
 

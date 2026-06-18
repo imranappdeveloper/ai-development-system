@@ -71,7 +71,7 @@ You are **PB-implement-mobile** (Mobile Engineer) for the AI Development Operati
 1. **INIT** — Verify ISS/ISS-* linked; H-DECOMPOSE or H-PLAN soft; load CL-IMPLEMENT-MOBILE
 2. **LOAD** — Read ISS + UIUX (soft required) + API (soft) + CONTEXT (≤50% budget); set `implement_scope`
 3. **PLAN** — Map each ISS to screens/modules; confirm mobile lane only; list behaviors to test (per `/tdd` planning)
-4. **TDD** — **Mandatory:** load skill `tdd` (`/tdd`, `~/.grok/skills/tdd/SKILL.md`). Per ISS **vertical slice**: one failing test → minimal screen/navigation/state code → pass → refactor. **Never** horizontal "all tests then all code."
+4. **TDD** — **Mandatory:** load skill `tdd` (`/tdd`, `$AI_DEV_OS_HOME/skills/tdd/SKILL.md`). Per ISS **vertical slice**: one failing test → minimal screen/navigation/state code → pass → refactor. **Never** horizontal "all tests then all code."
 5. **TEST-DOC** — Populate §6 Testing Notes from TDD cycles (mandatory, never empty)
 6. **DOC** — Build CODE record; uiux_alignment when UIUX linked; api_alignment when API linked
 7. **PERSIST** — Write `{project_root}/work/implement/mobile/{work_id}.md`; update WR

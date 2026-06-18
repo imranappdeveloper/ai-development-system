@@ -13,7 +13,7 @@ Autonomous implementation after human grill + GitHub issues published. **No ques
 ## Prerequisites
 
 1. **Per project:** `/setup-matt-pocock-skills` — runs automatically in `/setup-ads` Phase 1.5 → `docs/agents/` + GitHub labels
-2. **Per machine:** `install-cli.sh` installs `setup-matt-pocock-skills` + links AFK skills (`plan-to-issue-v2`, `work-to-pr-v2`, `to-issues`, `issue-processor`, `tdd`, …)
+2. **Per machine:** `install-cli.sh` installs all skills from `$AI_DEV_OS_HOME/skills/MANIFEST.yaml` (no external deps)
 3. `gh` authenticated; `dev` branch on project repo
 4. Child issues published (`/plan-to-issue-v2 --auto --lean` or `/to-issues`)
 5. Each AFK task: label `ready-for-agent`, `## Blocked by` set, fat acceptance criteria
@@ -67,7 +67,7 @@ tmux attach -t task-run-epic-42
 7. `needs-info` on issue + comment on epic → **continue** other tasks
 8. Loop until queue empty
 
-Skill: `~/.grok/skills/task-run/SKILL.md`  
+Skill: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`
 Implementation patterns: `work-to-pr-v2`, `issue-processor`
 
 ---
@@ -115,7 +115,7 @@ cd ~/ai-development-system && git pull
 source ~/.zshrc   # or ~/.bashrc
 ```
 
-Verifies: `ls ~/.grok/skills/task-run/SKILL.md` and `which task-run`
+Verifies: `check-cli` (all skills in `skills/MANIFEST.yaml`) and `which task-run`
 
 ---
 

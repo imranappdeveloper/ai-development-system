@@ -13,11 +13,17 @@ Bind **AI Development OS** to a project folder, align with the user via grilling
 
 **User never reads playbooks or spec files.** One question at a time with **A/B/C options** at forks. Batch features: **Start AFK** → `/task-run` in new chat. Bugs/single task: **Start coding**. End every reply with OS status footer — `$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`.
 
-**User interaction SSOT:** `$AI_DEV_OS_HOME/docs/USER-FLOW.md`
+**User interaction SSOT:** `$AI_DEV_OS_HOME/docs/USER-FLOW.md`  
+**Requirement check:** `$AI_DEV_OS_HOME/docs/REQUIREMENT-CHECK.md`  
+**Skills SSOT:** `$AI_DEV_OS_HOME/skills/` — never `~/.agent-skills/`
 
 ---
 
-## Phase 0 — CLI check (required before anything else)
+## Phase 0 — CLI check + requirement discipline
+
+Before every user message in this session: apply **`$AI_DEV_OS_HOME/docs/REQUIREMENT-CHECK.md`** (restate → context → impact → use cases → edge cases → confirm if unclear).
+
+## Phase 0b — CLI check (required before anything else)
 
 Run:
 
@@ -32,8 +38,8 @@ Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
 | `AI_DEV_OS_HOME` | set + directory exists | — |
 | `ai-new` | on PATH or under OS scripts | **stop** |
 | `ai-paths` | on PATH or under OS scripts | **stop** |
-| `setup-ads` skill | `~/.grok/skills/setup-ads/SKILL.md` | **stop** |
-| `setup-matt-pocock-skills` | `~/.grok/skills/setup-matt-pocock-skills/SKILL.md` | **stop** |
+| `setup-ads` skill | `$AI_DEV_OS_HOME/skills/setup-ads/SKILL.md` | **stop** |
+| `setup-matt-pocock-skills` | `$AI_DEV_OS_HOME/skills/setup-matt-pocock-skills/SKILL.md` | **stop** |
 
 **If check fails — do not proceed.** Tell user exactly:
 
@@ -77,7 +83,7 @@ Then optionally: `ai-paths sync`
 
 **Required** before `/plan-to-issue-v2`, `/to-issues`, or `/task-run`.
 
-Load: `~/.grok/skills/setup-matt-pocock-skills/SKILL.md`
+Load: `$AI_DEV_OS_HOME/skills/setup-matt-pocock-skills/SKILL.md`
 
 | Project state | Action |
 |---------------|--------|
@@ -114,7 +120,7 @@ Is this a brand-new project or an existing codebase we're adding ADS to?
 
 ## Phase 3A — New project → `/grill-me`
 
-Load skill: `grill-me` (`~/.grok/skills/grill-me/SKILL.md`).
+Load skill: `grill-me` (`$AI_DEV_OS_HOME/skills/grill-me/SKILL.md`).
 
 **Goal:** Shared understanding of **product** — problem, features, flows, use cases, requirements, assumptions. **Not** standard engineering practices (agent applies those silently later).
 
@@ -152,7 +158,7 @@ Stop when Q1–Q10 resolved or deferred. Write `work/kickoff/WR-001.md` summary 
 
 ## Phase 3B — Existing project → `/grill-with-docs`
 
-Load skill: `grill-with-docs` (`~/.grok/skills/grill-with-docs/SKILL.md`).
+Load skill: `grill-with-docs` (`$AI_DEV_OS_HOME/skills/grill-with-docs/SKILL.md`).
 
 **Goal:** Understand **current** codebase + docs; align on goals; clear assumptions; create/update all OS files.
 

@@ -1,0 +1,4 @@
+- Explore the codebase to understand the context.
+- Skip UI tests
+- Use the tdd skill to complete this task.
+- Run automated feedback loops (like type checking and tests) when finished.

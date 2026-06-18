@@ -1,17 +1,19 @@
-# Skills (Platform Adapters)
+# Bundled Skills — AI Dev OS
 
-This directory is **not** the specification source of truth.
+**SSOT:** `$AI_DEV_OS_HOME/skills/<name>/SKILL.md`  
+**Manifest:** [MANIFEST.yaml](./MANIFEST.yaml)  
+**Install:** `./scripts/install-cli.sh` copies to `~/.grok/skills/` for slash-command discovery.
 
-| Use | Path |
-|-----|------|
-| Playbook specs (SSOT) | `../playbooks/<name>/` |
-| Workflow/template index | `../INDEX.md` |
-| Platform skill bundles | Copy or symlink from `playbooks/` here |
+Agents **always** load from `$AI_DEV_OS_HOME/skills/` — never `~/.agent-skills/shared/`.
 
-**Discovery:** `PB-discovery-research` → `../playbooks/discovery-research/`
+## Required skills (18)
 
-**Meta skills:** `skills/meta-skill/` → `../playbooks/meta-*/` (see [meta-skill/README.md](./meta-skill/README.md))
+| Group | Skills |
+|-------|--------|
+| OS bind | `setup-ads`, `setup-matt-pocock-skills` |
+| Grill | `grill-me`, `grill-with-docs` |
+| Plan + publish | `plan-to-issue-v2`, `grill-for-planning`, `plan-synthesis`, `plan-review`, `to-issues`, `to-prd` |
+| AFK execute | `task-run`, `work-to-pr-v2`, `issue-processor`, `issue-spec-review`, `pr-readiness-check`, `tdd` |
+| Bug | `triage`, `diagnose` |
 
-**Build catalog:** [meta-skill/SKILL-CATALOG.yaml](./meta-skill/SKILL-CATALOG.yaml)
-
-Do not author numbered spec files (`01-purpose.md`, etc.) in this directory.
+Verify: `check-cli`

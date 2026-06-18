@@ -23,9 +23,9 @@ Run in a **new Grok chat** after human grill + issue publish. You are the **task
 
 | Skill / doc | Purpose |
 |-------------|---------|
-| `work-to-pr-v2` | `~/.grok/skills/work-to-pr-v2/SKILL.md` — state machine, PR flow, worktrees |
-| `issue-processor` | `~/.grok/skills/issue-processor/SKILL.md` — batch loop, one subagent per issue |
-| `tdd` | `~/.grok/skills/tdd/SKILL.md` — subagent implementation |
+| `work-to-pr-v2` | `$AI_DEV_OS_HOME/skills/work-to-pr-v2/SKILL.md` — state machine, PR flow, worktrees |
+| `issue-processor` | `$AI_DEV_OS_HOME/skills/issue-processor/SKILL.md` — batch loop, one subagent per issue |
+| `tdd` | `$AI_DEV_OS_HOME/skills/tdd/SKILL.md` — subagent implementation |
 | `issue-spec-review` | Preflight when AFK stamp missing |
 | `pr-readiness-check` | Before each PR |
 
@@ -111,7 +111,7 @@ Issue body: <full body — AC are the spec>
 Read: CONTEXT.md, AGENTS.md, docs/agents/engineering-standards.md (if present)
 
 Rules:
-- Follow ~/.grok/skills/tdd/SKILL.md
+- Follow $AI_DEV_OS_HOME/skills/tdd/SKILL.md
 - Match neighbouring code — no drive-by refactors
 - Skip UI tests unless AC requires
 - Run tests + build before returning
@@ -220,4 +220,4 @@ project_root: <absolute path>
 | Preflight | `issue-spec-review` |
 | Pre-PR | `pr-readiness-check` |
 
-Canonical copy: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`
+SSOT: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`

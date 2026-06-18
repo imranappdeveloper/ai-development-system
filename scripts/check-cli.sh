@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check-cli.sh — verify AI Dev OS CLI + setup-ads skill; guide install if missing
+# check-cli.sh — verify AI Dev OS CLI + bundled skills; guide install if missing
 # Usage: check-cli.sh [--quiet]
 # Exit 0 = ready; exit 1 = missing tools (prints install instructions)
 set -euo pipefail
@@ -11,6 +11,7 @@ while [[ -L "$_self" ]]; do
   [[ $_self != /* ]] && _self="$_dir/$_self"
 done
 OS_REPO="$(cd "$(dirname "$_self")/.." && pwd)"
+MANIFEST="$OS_REPO/skills/MANIFEST.yaml"
 QUIET="${1:-}"
 
 missing=()
@@ -32,8 +33,9 @@ else
   _fail "AI_DEV_OS_HOME not set and OS repo not found"
 fi
 
-# Commands on PATH
 _h="${AI_DEV_OS_HOME:-$OS_REPO}"
+
+# Commands on PATH
 if command -v ai-new >/dev/null 2>&1; then
   _ok "ai-new → $(command -v ai-new)"
 elif [[ -x "$_h/scripts/new-project.sh" ]]; then
@@ -49,21 +51,22 @@ else
   _fail "ai-paths"
 fi
 
-# Grok skills
-if [[ -f "$HOME/.grok/skills/setup-ads/SKILL.md" ]]; then
-  _ok "setup-ads skill → ~/.grok/skills/setup-ads/SKILL.md"
-else
-  _fail "setup-ads skill (~/.grok/skills/setup-ads/SKILL.md)"
-fi
-if [[ -f "$HOME/.grok/skills/task-run/SKILL.md" ]]; then
-  _ok "task-run skill → ~/.grok/skills/task-run/SKILL.md"
-else
-  _warn "task-run skill missing — run install-cli.sh (needed for AFK batch)"
-fi
-if [[ -f "$HOME/.grok/skills/setup-matt-pocock-skills/SKILL.md" ]]; then
-  _ok "setup-matt-pocock-skills → ~/.grok/skills/setup-matt-pocock-skills/"
-else
-  _fail "setup-matt-pocock-skills (~/.grok/skills/setup-matt-pocock-skills/SKILL.md)"
+# Bundled skills — SSOT in $AI_DEV_OS_HOME/skills/
+[[ -f "$MANIFEST" ]] || _fail "skills/MANIFEST.yaml"
+if [[ -f "$MANIFEST" ]]; then
+  while IFS= read -r skill; do
+    [[ -z "$skill" ]] && continue
+    if [[ -f "$_h/skills/${skill}/SKILL.md" ]]; then
+      _ok "bundled: skills/${skill}/SKILL.md"
+    else
+      _fail "bundled skill: skills/${skill}/SKILL.md"
+    fi
+    if [[ -f "$HOME/.grok/skills/${skill}/SKILL.md" ]]; then
+      [[ "$QUIET" == "--quiet" ]] || true
+    else
+      _warn "not synced to ~/.grok/skills/${skill}/ — run install-cli.sh"
+    fi
+  done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
 fi
 
 # ~/.local/bin on PATH
@@ -78,15 +81,18 @@ if [[ ${#missing[@]} -gt 0 ]]; then
   [[ "$QUIET" != "--quiet" ]] && echo "=== Install required ==="
   [[ "$QUIET" != "--quiet" ]] && cat <<EOF
 
-CLI or skill missing. Run once on this machine:
+CLI or bundled skill missing. Run once on this machine:
 
-  cd $OS_REPO
+  cd $_h
   ./scripts/install-cli.sh
   source ~/.zshrc    # Mac
   source ~/.bashrc   # Ubuntu
 
+Skills SSOT: \$AI_DEV_OS_HOME/skills/ (see skills/MANIFEST.yaml)
+Agents load: \$AI_DEV_OS_HOME/skills/<name>/SKILL.md
+
 Then verify:
-  check-cli.sh
+  check-cli
   ai-paths check
 
 EOF
@@ -94,5 +100,5 @@ EOF
 fi
 
 [[ "$QUIET" != "--quiet" ]] && echo ""
-[[ "$QUIET" != "--quiet" ]] && echo "=== CLI ready ==="
+[[ "$QUIET" != "--quiet" ]] && echo "=== CLI ready (${#missing[@]} missing, ${#warn[@]} warnings) ==="
 exit 0

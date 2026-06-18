@@ -28,6 +28,32 @@ Committed `ai-dev-os.yaml` uses `env:AI_DEV_OS_HOME` — **never** hardcode `/Us
 Read `ai-dev-os.yaml` + `work_id` in this directory.
 <!-- /ADS-BLOCK:config -->
 
+<!-- ADS-BLOCK:requirement-check -->
+## Requirement check (every user request)
+
+Before acting on requirements, preferences, or changes — follow **`$AI_DEV_OS_HOME/docs/REQUIREMENT-CHECK.md`**:
+
+1. Restate what the user wants
+2. Check **context** (`CONTEXT.md`, codebase, `docs/agents/`)
+3. Assess **impact**, **use cases**, **edge cases**
+4. Confirm with **A/B/C** only when ambiguous or conflicting
+
+Never implement on unclear requirements.
+<!-- /ADS-BLOCK:requirement-check -->
+
+<!-- ADS-BLOCK:skills-source -->
+## Skills — project bundle only
+
+Load skills from **`$AI_DEV_OS_HOME/skills/<name>/SKILL.md`** — see **`skills/MANIFEST.yaml`**.
+
+| Never | Always |
+|-------|--------|
+| `~/.agent-skills/shared/` | `$AI_DEV_OS_HOME/skills/` |
+| External skill paths | Bundled manifest skills |
+
+`install-cli.sh` syncs to `~/.grok/skills/` for slash commands; **SSOT is the OS repo**.
+<!-- /ADS-BLOCK:skills-source -->
+
 <!-- ADS-BLOCK:agent-skills -->
 ## Agent skills
 
@@ -56,7 +82,7 @@ See `docs/agents/engineering-standards.md`.
 After GitHub issues published and user says **Start AFK local / server**:
 
 1. User runs `task-run.sh <epic> --local|--server [--detach]` — handoff in `work/task-run/`
-2. **New Grok chat** — load **`/task-run`** (`~/.grok/skills/task-run/SKILL.md`)
+2. **New Grok chat** — load **`$AI_DEV_OS_HOME/skills/task-run/SKILL.md`**
 3. Task manager polls `ready-for-agent` issues; respects `## Blocked by`
 4. Subagent per issue + `/tdd`; local=1, server≤3 parallel
 5. PR → `pr-open`; user merges on GitHub; `/task-run --continue`
@@ -127,7 +153,7 @@ Flow: `check-cli` → `ai-new` → grill → summary → **`yes`** → silent sp
 
 **Batch:** only in `/task-run` chat after Start AFK. **Bug:** after Start coding in same chat.
 
-1. Load **`/tdd`** skill (`~/.grok/skills/tdd/SKILL.md`)
+1. Load **`$AI_DEV_OS_HOME/skills/tdd/SKILL.md`**
 2. Per **task**: one failing test → minimal code → pass → refactor
 3. Never horizontal "all tests then all code"
 4. Record H-IMPLEMENT internally when user said Start coding

@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
-# install-cli.sh — install ai-new, ai-paths (and shell aliases) for AI Development OS
+# install-cli.sh — install ai-new, ai-paths, and bundled skills for AI Development OS
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT="$ROOT/scripts/new-project.sh"
 BIN_DIR="${HOME}/.local/bin"
 MARKER="# AI Development OS — ai-new CLI"
+MANIFEST="$ROOT/skills/MANIFEST.yaml"
 
 die() { echo "ERROR: $1" >&2; exit 1; }
 info() { echo "  $1"; }
 
 [[ -x "$SCRIPT" ]] || die "Missing script: $SCRIPT"
 [[ -f "$ROOT/scripts/ai-paths.sh" ]] || die "Missing script: $ROOT/scripts/ai-paths.sh"
+[[ -f "$MANIFEST" ]] || die "Missing skills manifest: $MANIFEST"
 
 mkdir -p "$BIN_DIR"
 chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.sh" \
@@ -42,9 +44,8 @@ _write_shell_block() {
   [[ -f "$rc" ]] || return 0
   _ensure_path_in_rc "$rc"
   if grep -qF "$MARKER" "$rc" 2>/dev/null; then
-    # Upgrade existing block: ensure AI_DEV_OS_HOME matches this clone
     if grep -qF 'export AI_DEV_OS_HOME=' "$rc" 2>/dev/null; then
-      info "Shell block exists in $rc — symlinks refreshed (re-run fixes ai-paths)"
+      info "Shell block exists in $rc — symlinks refreshed"
     else
       {
         echo ""
@@ -71,56 +72,25 @@ _write_shell_block() {
 _write_shell_block "$HOME/.bashrc"
 _write_shell_block "$HOME/.zshrc"
 
-# Install Grok skills
-_install_skill() {
-  local name="$1"
-  local src="$ROOT/skills/${name}/SKILL.md"
-  local dst="$HOME/.grok/skills/${name}/SKILL.md"
-  if [[ -f "$src" ]]; then
-    mkdir -p "$(dirname "$dst")"
-    cp "$src" "$dst"
-    info "Installed Grok skill: ~/.grok/skills/${name}/SKILL.md"
-  else
-    info "WARN: skills/${name}/SKILL.md missing — skip"
-  fi
-}
-
-# Full skill folder (templates + SKILL.md)
-_install_skill_bundle() {
+# Install skills from OS bundle only ($ROOT/skills/) — no external agent-skills deps
+_install_skill_dir() {
   local name="$1"
   local src="$ROOT/skills/${name}"
   local dst="$HOME/.grok/skills/${name}"
-  if [[ -d "$src" && -f "$src/SKILL.md" ]]; then
-    mkdir -p "$(dirname "$dst")"
-    rm -rf "$dst"
-    cp -a "$src" "$dst"
-    info "Installed Grok skill bundle: ~/.grok/skills/${name}/"
-  else
-    info "WARN: skills/${name}/ bundle missing — skip"
+  if [[ ! -f "$src/SKILL.md" ]]; then
+    die "Missing bundled skill: $ROOT/skills/${name}/SKILL.md"
   fi
+  mkdir -p "$(dirname "$dst")"
+  rm -rf "$dst"
+  cp -a "$src" "$dst"
+  info "Installed skill: ~/.grok/skills/${name}/ ← \$AI_DEV_OS_HOME/skills/${name}/"
 }
 
-# Symlink from ~/.agent-skills/shared when present (AFK pipeline)
-_link_agent_skill() {
-  local name="$1"
-  local shared="${AGENT_SKILLS:-$HOME/.agent-skills/shared}"
-  local dst="$HOME/.grok/skills/${name}"
-  if [[ -d "$shared/$name" ]]; then
-    mkdir -p "$(dirname "$dst")"
-    ln -sfn "$shared/$name" "$dst"
-    info "Linked Grok skill: ~/.grok/skills/${name} → $shared/$name"
-  elif [[ -f "$ROOT/skills/${name}/SKILL.md" ]]; then
-    _install_skill "$name"
-  fi
-}
-
-_install_skill "setup-ads"
-_install_skill "task-run"
-_install_skill_bundle "setup-matt-pocock-skills"
-
-for _s in plan-to-issue-v2 work-to-pr-v2 to-issues issue-processor grill-me grill-with-docs tdd; do
-  _link_agent_skill "$_s"
-done
+info "Installing skills from \$AI_DEV_OS_HOME/skills/ (MANIFEST.yaml)..."
+while IFS= read -r skill; do
+  [[ -z "$skill" ]] && continue
+  _install_skill_dir "$skill"
+done < <(awk '/^required:/{p=1;next} /^[a-zA-Z#]/{if(p&&$1!="required:")p=0} p && /^  - /{gsub(/^  - /,""); print}' "$MANIFEST")
 
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo ""
@@ -129,21 +99,15 @@ if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
 fi
 
 echo ""
-echo "Done. Verify:"
+echo "Done. Skills SSOT: \$AI_DEV_OS_HOME/skills/ (see skills/MANIFEST.yaml)"
+echo "Agents load: \$AI_DEV_OS_HOME/skills/<name>/SKILL.md"
+echo ""
+echo "Verify:"
 echo "  source ~/.zshrc    # Mac"
 echo "  hash -r"
 echo "  check-cli"
-echo "  which ai-new ai-paths"
-echo "  ai-paths check"
-echo "  ls ~/.grok/skills/setup-ads/SKILL.md ~/.grok/skills/task-run/SKILL.md"
-echo "  ls ~/.grok/skills/setup-matt-pocock-skills/SKILL.md"
-echo ""
-echo "AFK task manager (new chat after issues published):"
-echo "  task-run.sh <epic> --server --detach"
+echo "  which ai-new ai-paths task-run"
 echo ""
 echo "In project chat:"
 echo "  /setup-ads"
 echo "  New project: <idea>  |  Existing project: <goal>"
-echo ""
-echo "Or without PATH:"
-echo "  \$AI_DEV_OS_HOME/scripts/ai-paths.sh"

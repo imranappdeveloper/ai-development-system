@@ -10,6 +10,8 @@
 
 | Rule | Detail |
 |------|--------|
+| **Requirement check** | Restate → context → impact → use cases → edge cases → confirm if unclear ([REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md)) |
+| **Skills from project** | Load `$AI_DEV_OS_HOME/skills/<name>/SKILL.md` only — see `skills/MANIFEST.yaml` |
 | **No doc handoffs** | Never ask user to read `work/`, PRD, ISS, playbooks, or long summaries |
 | **Forks only** | Ask when multiple valid paths exist (scope, design, task split, trade-off) |
 | **Always options** | End questions with **A / B / C** (and your recommendation) |
@@ -171,3 +173,4 @@ Max **2** user decision points per bug: plan options + Start coding.
 | [BUG-FIX.md](./BUG-FIX.md) | Bug path |
 | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) | Kickoff detail |
 | [AFK-TASK-RUN.md](./AFK-TASK-RUN.md) | Task manager + server tmux |
+| [REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md) | Validate user input before acting |
