@@ -44,10 +44,15 @@ ai-paths check
 
 ```bash
 git clone git@github.com:imranappdeveloper/ai-development-system.git ~/ai-development-system
-~/ai-development-system/scripts/install-cli.sh
+cd ~/ai-development-system && git pull
+~/ai-development-system/scripts/install-cli.sh   # re-run after pull — installs ai-paths
 source ~/.zshrc
+which ai-paths
 ai-paths check
 ```
+
+**`command not found: ai-paths`?** Re-run `install-cli.sh` after `git pull`, then `source ~/.zshrc`.  
+Fallback: `$AI_DEV_OS_HOME/scripts/ai-paths.sh`
 
 Same repo path on both machines is **recommended** (`~/ai-development-system`) but not required — only `AI_DEV_OS_HOME` must point to the clone on that machine.
 
