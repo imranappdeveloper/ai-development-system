@@ -10,7 +10,7 @@ Agents **always** load from `$AI_DEV_OS_HOME/skills/` — never `~/.agent-skills
 
 | Group | Skills |
 |-------|--------|
-| OS bind | `setup-ads`, `setup-matt-pocock-skills` |
+| OS bind | `setup-ads`, `setup-project-agents` |
 | Grill | `grill-me`, `grill-with-docs` |
 | Plan + publish | `plan-to-issue-v2`, `grill-for-planning`, `plan-synthesis`, `plan-review`, `to-issues`, `to-prd` |
 | AFK execute | `task-run`, `work-to-pr-v2`, `issue-processor`, `issue-spec-review`, `pr-readiness-check`, `tdd` |

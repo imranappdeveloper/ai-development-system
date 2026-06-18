@@ -8,9 +8,10 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 | **After setup** | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) |
 | **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, options + Start coding |
 | **How you interact** | **[USER-FLOW.md](./USER-FLOW.md)** ← questions & options, no doc reading |
-| **GitHub / AFK setup** | **`/setup-matt-pocock-skills`** — in `/setup-ads` Phase 1.5 → `docs/agents/` |
+| **GitHub / AFK setup** | **`/setup-project-agents`** — in `/setup-ads` Phase 1.5 → `docs/agents/` |
 | **Validate user input** | **[REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md)** — context, impact, edge cases |
 | **Bundled skills** | **`skills/MANIFEST.yaml`** — load from `$AI_DEV_OS_HOME/skills/` only |
+| **Standalone SSOT** | **[STANDALONE.md](./STANDALONE.md)** — this repo only; no external deps |
 | First time installing the OS | [§1 One-time setup](#1-one-time-setup-5-minutes) |
 | Brand-new app / greenfield | [PROJECT-KICKOFF.md §1](./PROJECT-KICKOFF.md#1-new-project-kickoff) |
 | Code already exists | [PROJECT-KICKOFF.md §2](./PROJECT-KICKOFF.md#2-existing-project-kickoff) |

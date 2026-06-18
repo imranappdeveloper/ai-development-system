@@ -1,10 +1,10 @@
 ---
-name: setup-matt-pocock-skills
-description: Sets up an `## Agent skills` block in AGENTS.md/CLAUDE.md and `docs/agents/` so engineering skills know this repo's issue tracker, triage labels, domain doc layout, and implementation standards (logging, errors, architecture profile — detect-first, never force clean architecture). Use --detect-only to silently refresh detection on repos that already have docs/agents/. Run before first use of plan-to-issue-v2, work-to-pr-v2, to-issues, to-prd, triage, diagnose, tdd, or improve-codebase-architecture.
+name: setup-project-agents
+description: Sets up `docs/agents/` and `## Agent skills` in AGENTS.md so bundled OS skills know this project's issue tracker, triage labels, domain layout, and engineering standards. Bundled in AI Dev OS at $AI_DEV_OS_HOME/skills/setup-project-agents/. Use --detect-only to refresh existing docs/agents/. Required before plan-to-issue-v2, work-to-pr-v2, to-issues, or task-run.
 disable-model-invocation: true
 ---
 
-# Setup Matt Pocock's Skills
+# Setup Project Agents's Skills
 
 Scaffold the per-repo configuration that the engineering skills assume:
 
@@ -20,8 +20,8 @@ This is a prompt-driven skill, not a deterministic script. Explore, present what
 ## Invocation
 
 ```
-/setup-matt-pocock-skills                 # full setup — interview sections A–D
-/setup-matt-pocock-skills --detect-only   # refresh detection only (existing docs/agents/)
+/setup-project-agents                 # full setup — interview sections A–D
+/setup-project-agents --detect-only   # refresh detection only (existing docs/agents/)
 ```
 
 ## Process

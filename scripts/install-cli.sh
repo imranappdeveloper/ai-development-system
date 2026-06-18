@@ -99,8 +99,9 @@ if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
 fi
 
 echo ""
-echo "Done. Skills SSOT: \$AI_DEV_OS_HOME/skills/ (see skills/MANIFEST.yaml)"
-echo "Agents load: \$AI_DEV_OS_HOME/skills/<name>/SKILL.md"
+echo "Done. This repo is standalone SSOT — see docs/STANDALONE.md"
+echo "Skills: \$AI_DEV_OS_HOME/skills/ (MANIFEST.yaml)"
+echo "Verify: ./scripts/verify-standalone.sh && check-cli"
 echo ""
 echo "Verify:"
 echo "  source ~/.zshrc    # Mac"

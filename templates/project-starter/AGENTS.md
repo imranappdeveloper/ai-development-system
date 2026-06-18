@@ -57,11 +57,11 @@ Load skills from **`$AI_DEV_OS_HOME/skills/<name>/SKILL.md`** — see **`skills/
 <!-- ADS-BLOCK:agent-skills -->
 ## Agent skills
 
-Configured by **`/setup-matt-pocock-skills`** during `/setup-ads` (Phase 1.5). See `docs/agents/`.
+Configured by **`/setup-project-agents`** during `/setup-ads` (Phase 1.5). See `docs/agents/`.
 
 ### Issue tracker
 
-_Setup pending — run `/setup-matt-pocock-skills`._ See `docs/agents/issue-tracker.md`.
+_Setup pending — run `/setup-project-agents`._ See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

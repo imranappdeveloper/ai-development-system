@@ -1,13 +1,15 @@
-# AI Dev OS — bundled skills (SSOT: $AI_DEV_OS_HOME/skills/)
-# install-cli.sh syncs these to ~/.grok/skills/ for slash-command discovery.
-# Agents MUST load from $AI_DEV_OS_HOME/skills/<name>/SKILL.md — not external paths.
+# AI Dev OS — bundled skills (standalone SSOT)
+# This file is the only skill registry. All skills live under skills/<name>/.
+# install-cli.sh syncs to ~/.grok/skills/ for slash-command discovery only.
+# Agents MUST load: $AI_DEV_OS_HOME/skills/<name>/SKILL.md
+# See docs/STANDALONE.md
 
 version: "1.0"
 
 required:
   # OS bind + kickoff
   - setup-ads
-  - setup-matt-pocock-skills
+  - setup-project-agents
   - grill-me
   - grill-with-docs
   # Planning + issues

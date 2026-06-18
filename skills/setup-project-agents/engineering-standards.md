@@ -19,7 +19,7 @@ Implementation-time standards for AFK agents (`/work-to-pr-v2`). **Not** plannin
 
 ## Architecture profile
 
-<!-- Filled by /setup-matt-pocock-skills from codebase detection. One of: -->
+<!-- Filled by /setup-project-agents from codebase detection. One of: -->
 
 **Profile:** `<!-- conventional | layered | mvc-service | modular-monolith | unknown -->`
 

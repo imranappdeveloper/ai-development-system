@@ -39,7 +39,7 @@ Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
 | `ai-new` | on PATH or under OS scripts | **stop** |
 | `ai-paths` | on PATH or under OS scripts | **stop** |
 | `setup-ads` skill | `$AI_DEV_OS_HOME/skills/setup-ads/SKILL.md` | **stop** |
-| `setup-matt-pocock-skills` | `$AI_DEV_OS_HOME/skills/setup-matt-pocock-skills/SKILL.md` | **stop** |
+| `setup-project-agents` | `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md` | **stop** |
 
 **If check fails — do not proceed.** Tell user exactly:
 
@@ -79,16 +79,16 @@ Then optionally: `ai-paths sync`
 
 ---
 
-## Phase 1.5 — Project agent config (`/setup-matt-pocock-skills`)
+## Phase 1.5 — Project agent config (`/setup-project-agents`)
 
 **Required** before `/plan-to-issue-v2`, `/to-issues`, or `/task-run`.
 
-Load: `$AI_DEV_OS_HOME/skills/setup-matt-pocock-skills/SKILL.md`
+Load: `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md`
 
 | Project state | Action |
 |---------------|--------|
-| No `docs/agents/issue-tracker.md` | Full `/setup-matt-pocock-skills` |
-| `docs/agents/` exists | `/setup-matt-pocock-skills --detect-only` |
+| No `docs/agents/issue-tracker.md` | Full `/setup-project-agents` |
+| `docs/agents/` exists | `/setup-project-agents --detect-only` |
 
 **Team default (GitHub remote):** propose GitHub + default triage labels + `pr-open` label. Confirm with **A/B/C** — one section at a time per the skill (tracker → labels → domain → engineering standards).
 

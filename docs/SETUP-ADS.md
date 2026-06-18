@@ -45,7 +45,7 @@ Existing project: Odoo auction addon — <what you want to do>
 1. check-cli       → if fail: stop, tell user to run install-cli.sh
 2. ai-paths check
 3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
-4. setup-matt-pocock-skills → docs/agents/ + GitHub labels (Phase 1.5)
+4. setup-project-agents → docs/agents/ + GitHub labels (Phase 1.5)
 5. Grill           → new: grill-me | existing: grill-with-docs
 6. Summary card    → you: yes
 7. Spec (silent)   → agent writes work/ — you never read it

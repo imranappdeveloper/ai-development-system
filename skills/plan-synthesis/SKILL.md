@@ -10,7 +10,7 @@ Turn shared understanding into a published GitHub epic and child issues.
 ## Prerequisites
 
 - `/grill-for-planning` exit checklist passed
-- `/setup-matt-pocock-skills` has run in the repo
+- `/setup-project-agents` has run in the repo
 
 ## Load downstream skills (read only — do not edit)
 

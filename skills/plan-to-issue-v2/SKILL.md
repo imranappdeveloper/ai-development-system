@@ -7,7 +7,7 @@ description: Improved plan-to-issue pipeline — enhanced grilling, single synth
 
 Turn a feature idea into a reviewed GitHub epic and child issues — without assumptions on product behaviour.
 
-**Prerequisite:** Run `/setup-matt-pocock-skills` in the repo first so `docs/agents/` exists (use `--detect-only` to refresh on existing repos).
+**Prerequisite:** Run `/setup-project-agents` in the repo first so `docs/agents/` exists (use `--detect-only` to refresh on existing repos).
 
 **Difference from v1:** Uses `/grill-for-planning` + `/plan-synthesis` instead of inline grilling and separate `/to-prd` + `/to-issues` approval gates. Original skills (`/plan-to-issue`, `/grill-me`, `/grill-with-docs`, `/to-prd`, `/to-issues`) are untouched.
 

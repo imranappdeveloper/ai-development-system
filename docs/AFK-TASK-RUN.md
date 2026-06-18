@@ -12,7 +12,7 @@ Autonomous implementation after human grill + GitHub issues published. **No ques
 
 ## Prerequisites
 
-1. **Per project:** `/setup-matt-pocock-skills` — runs automatically in `/setup-ads` Phase 1.5 → `docs/agents/` + GitHub labels
+1. **Per project:** `/setup-project-agents` — runs automatically in `/setup-ads` Phase 1.5 → `docs/agents/` + GitHub labels
 2. **Per machine:** `install-cli.sh` installs all skills from `$AI_DEV_OS_HOME/skills/MANIFEST.yaml` (no external deps)
 3. `gh` authenticated; `dev` branch on project repo
 4. Child issues published (`/plan-to-issue-v2 --auto --lean` or `/to-issues`)

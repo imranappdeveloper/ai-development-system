@@ -17,9 +17,9 @@ QUIET="${1:-}"
 missing=()
 warn=()
 
-_ok() { [[ "$QUIET" != "--quiet" ]] && echo "  OK: $1"; }
-_fail() { missing+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  MISSING: $1"; }
-_warn() { warn+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  WARN: $1"; }
+_ok() { [[ "$QUIET" != "--quiet" ]] && echo "  OK: $1" || true; }
+_fail() { missing+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  MISSING: $1" || true; }
+_warn() { warn+=("$1"); [[ "$QUIET" != "--quiet" ]] && echo "  WARN: $1" || true; }
 
 [[ "$QUIET" != "--quiet" ]] && echo "=== AI Dev OS — CLI check ==="
 

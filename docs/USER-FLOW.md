@@ -53,7 +53,7 @@ See [AFK-TASK-RUN.md](./AFK-TASK-RUN.md).
 
 ### 1. Understand
 
-- `/setup-ads` → `ai-new` → **`/setup-matt-pocock-skills`** → grill (`/grill-me` or `/grill-with-docs`)
+- `/setup-ads` → `ai-new` → **`/setup-project-agents`** → grill (`/grill-me` or `/grill-with-docs`)
 - Alignment summary (≤8 lines) → user: **`yes`** or one correction
 - Agent runs classify + discovery + planning playbooks **silently**
 

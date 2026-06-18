@@ -48,6 +48,7 @@ Installs: `ai-new`, `ai-paths`, `check-cli`, all bundled skills from `skills/MAN
 
 ```bash
 check-cli
+./scripts/verify-standalone.sh   # from OS repo — confirms standalone SSOT
 ai-paths check
 ```
 
@@ -92,7 +93,7 @@ grok
 New project: Auction alerts — email when outbid
 ```
 
-**What happens:** `check-cli` → `ai-new` → **`/setup-matt-pocock-skills`** → **`/grill-me`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
+**What happens:** `check-cli` → `ai-new` → **`/setup-project-agents`** → **`/grill-me`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
 
 ### 6a. Commit (when ready)
 
@@ -137,7 +138,7 @@ grok
 Existing project: Odoo auction addon — add buy-now price on lots
 ```
 
-**What happens:** `check-cli` → `ai-new` → **`/setup-matt-pocock-skills`** → **`/grill-with-docs`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
+**What happens:** `check-cli` → `ai-new` → **`/setup-project-agents`** → **`/grill-with-docs`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
 
 Re-run `/setup-ads` anytime you start a new goal on the same codebase.
 

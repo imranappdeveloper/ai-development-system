@@ -7,7 +7,7 @@ description: Improved work-to-pr — issue branch per ticket, PR into dev, spec 
 
 Process GitHub issues autonomously. Human gates at **PR review** — never merge PRs, never ask questions mid-issue.
 
-**Prerequisite:** `/setup-matt-pocock-skills` must have run. Read `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, and `docs/agents/engineering-standards.md` (if present) before starting.
+**Prerequisite:** `/setup-project-agents` must have run. Read `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, and `docs/agents/engineering-standards.md` (if present) before starting.
 
 Ensure the `pr-open` label exists in the tracker (see `docs/agents/triage-labels.md`). Create it via `gh label create "pr-open" --description "PR open — awaiting human merge"` if missing.
 

@@ -18,6 +18,13 @@ docs:
   kickoff: docs/PROJECT-KICKOFF.md
   bug_fix: docs/BUG-FIX.md
   os_footer: docs/OS-STATUS-FOOTER.md
+  user_flow: docs/USER-FLOW.md
+  requirement_check: docs/REQUIREMENT-CHECK.md
+  standalone: docs/STANDALONE.md
+
+skills:
+  manifest: skills/MANIFEST.yaml
+  load_from: env:AI_DEV_OS_HOME/skills/
 
 start_commands:
   - /setup-ads

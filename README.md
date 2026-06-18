@@ -29,7 +29,8 @@ cd my-app && ai-new && grok
 → **[docs/SETUP-ADS.md](./docs/SETUP-ADS.md)** — bind + grill (new / existing).  
 **Bug fix?** → **[docs/BUG-FIX.md](./docs/BUG-FIX.md)** — `Bug Fix: …` and approve 3 cards.
 
-**Install OS?** → **[docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md)** — one-time setup.
+**Install OS?** → **[docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md)** — one-time setup.  
+**Standalone SSOT?** → **[docs/STANDALONE.md](./docs/STANDALONE.md)** — everything runs from this repo only.
 
 1. Set `AI_DEV_OS_HOME` to this repository
 2. Follow [Getting Started](./docs/GETTING-STARTED.md) — intake → gates → `work/` artifacts
@@ -67,8 +68,8 @@ Frozen artifacts: [`release/v1.0/`](./release/v1.0/)
 | `templates/` | Artifact templates |
 | `checklists/` | Quality self-checks |
 | `standards/` | Engineering standards + contracts |
-| `skills/` | Platform adapter pointers (not SSOT) |
-| `scripts/` | CI validation scripts |
+| `skills/` | **Bundled agent skills (SSOT)** — see `skills/MANIFEST.yaml` |
+| `scripts/` | CLI (`install-cli`, `ai-new`, `check-cli`) + CI validation |
 
 ---
 
