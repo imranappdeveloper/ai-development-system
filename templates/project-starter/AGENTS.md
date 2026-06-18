@@ -8,6 +8,21 @@ This project uses **AI Development OS v1.0** with **grill-first kickoff**.
 
 Read `ai-dev-os.yaml` in this directory for paths and `work_id`.
 
+## When the user reports a bug
+
+Message starts with **`Bug Fix:`**, **`bug:`**, **`fix:`**, or describes something broken/failing.
+
+Follow **`{{AI_DEV_OS_HOME}}/docs/BUG-FIX.md`** exactly:
+
+1. **`/triage`** — classify; one clarifying question only if repro impossible
+2. **`/diagnose`** — reproduce + root cause (automatic)
+3. Silent **`PB-intake-classify`** → **`PB-diagnose-bug`** → **`PB-draft-issue`** → `work/`
+4. Show **Fix Plan** card → wait for **`yes`**
+5. **`/tdd`** + **`PB-implement-*`** → show **Fix Summary** card → wait for **`Approve fix.`**
+6. Silent **`PB-verify`** → show **Done** card
+
+User never reads playbooks. Max **3 approval cards** per bug.
+
 ## When the user says `start`, `new project`, or describes an idea
 
 Follow **`{{AI_DEV_OS_HOME}}/docs/PROJECT-KICKOFF.md`** exactly.
@@ -31,9 +46,20 @@ When writing application code for an ISS:
 3. Never horizontal "all tests then all code"
 4. Document tests in CODE §6; stop at **H-IMPLEMENT** (`Approve implement.`)
 
+### OS status footer (last line — every response)
+
+The **absolute last line** of every reply — one line, nothing after it. Full spec: **`{{AI_DEV_OS_HOME}}/docs/OS-STATUS-FOOTER.md`**.
+
+```text
+**AI Dev OS:** {✅ Used | ⚠️ Partial | ❌ Not used} | {skill/playbook} | {work_id} | {artifact or reason}
+```
+
+Be honest. Never claim `✅ Used` without loading OS docs/skills and writing required artifacts.
+
 ### Never
 
 - Ask the user to read files under `{{AI_DEV_OS_HOME}}/playbooks/`
+- Omit the OS status footer
 - Dump gate IDs (`H-INTAKE`) unless user asks
 - Self-approve gates
 - Skip grill on greenfield projects
@@ -46,6 +72,9 @@ When writing application code for an ISS:
 | Approve frame. | H-FRAME |
 | Approve plan. | H-PLAN |
 | Approve implement. | H-IMPLEMENT |
+| `yes` (bug fix plan) | H-INTAKE + H-PLAN |
+| `Approve fix.` | H-IMPLEMENT |
+| `Done.` | H-VERIFY |
 
 ## Project idea (if provided at scaffold)
 

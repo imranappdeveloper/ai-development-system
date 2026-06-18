@@ -5,6 +5,7 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 | Read this if… | Jump to |
 |---------------|---------|
 | **Start a new or existing project** | **[PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md)** ← **start here** |
+| **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, 3 approvals |
 | First time installing the OS | [§1 One-time setup](#1-one-time-setup-5-minutes) |
 | Brand-new app / greenfield | [PROJECT-KICKOFF.md §1](./PROJECT-KICKOFF.md#1-new-project-kickoff) |
 | Code already exists | [PROJECT-KICKOFF.md §2](./PROJECT-KICKOFF.md#2-existing-project-kickoff) |
@@ -25,7 +26,7 @@ You: one sentence about the project
 ```
 
 **Users:** follow [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) — answer questions, don't read playbooks.  
-**Agents:** read playbooks internally; never dump spec files on the user.
+**Agents:** read playbooks internally; never dump spec files on the user. OS status footer on the **last line** of every reply — [OS-STATUS-FOOTER.md](./OS-STATUS-FOOTER.md).
 
 ---
 
@@ -75,6 +76,7 @@ AI Development OS v1.0 rules:
 - Playbook SSOT is under playbooks/ — never guess routing
 - One skill per turn; stop at human gates
 - Write artifacts to project_root/work/ — not chat-only
+- Last line of every response = OS status footer (see OS-STATUS-FOOTER.md)
 ```
 
 **Done.** You do not copy `playbooks/`, `workflows/`, or `standards/` into your app repo.
@@ -208,7 +210,7 @@ Run intake prompt from §2B or §3B with `project_root: ~/os-sandbox-test`.
 |--------------|---------------|------------------|
 | Build new product | “new app …” | WF-PROJECT-NEW → WF-FEATURE |
 | Add feature | “add feature …” | WF-FEATURE |
-| Fix bug | “bug: …” | WF-BUGFIX |
+| Fix bug | `Bug Fix: …` — see **[BUG-FIX.md](./BUG-FIX.md)** | WF-BUGFIX (automatic) |
 | Onboard existing repo | “adopt OS on this repo” | WF-PROJECT-EXISTING |
 | Security review plan | “security assessment …” | WF-SECURITY |
 | Performance baseline | “perf baseline …” | WF-PERF |

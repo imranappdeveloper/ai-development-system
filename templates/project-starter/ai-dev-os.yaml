@@ -15,3 +15,9 @@ start_commands:
   - start
   - new project
   - kickoff
+
+bug_fix_commands:
+  - "Bug Fix:"
+  - "bug:"
+  - "fix:"
+bug_fix_ref: {{AI_DEV_OS_HOME}}/docs/BUG-FIX.md

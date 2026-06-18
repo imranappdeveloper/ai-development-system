@@ -2,12 +2,13 @@
 
 **For users:** You answer short questions. The agent writes `CONTEXT.md` and project files. You never read playbook specs.
 
-**For agents:** Run **`/grill-with-docs`** first on every **new project**, then OS intake. One question at a time.
+**For agents:** Run **`/grill-with-docs`** first on every **new project**, then OS intake. One question at a time. OS status footer on the **last line** of every reply — [OS-STATUS-FOOTER.md](./OS-STATUS-FOOTER.md).
 
 | Project type | Start here |
 |--------------|------------|
 | **New project** | [§1 New project kickoff](#1-new-project-kickoff) |
 | **Existing project** | [§2 Existing project kickoff](#2-existing-project-kickoff) |
+| **Bug fix** | **[BUG-FIX.md](./BUG-FIX.md)** — `Bug Fix: …` (automatic triage → diagnose → fix) |
 | After kickoff | [§3 Then the OS takes over](#3-then-the-os-takes-over) |
 
 ---

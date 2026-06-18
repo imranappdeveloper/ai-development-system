@@ -26,7 +26,8 @@ cd my-app && ai-new && grok
 # then chat: start
 ```
 
-→ **[docs/PROJECT-KICKOFF.md](./docs/PROJECT-KICKOFF.md)** for details.
+→ **[docs/PROJECT-KICKOFF.md](./docs/PROJECT-KICKOFF.md)** for details.  
+**Bug fix?** → **[docs/BUG-FIX.md](./docs/BUG-FIX.md)** — `Bug Fix: …` and approve 3 cards.
 
 **Install OS?** → **[docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md)** — one-time setup.
 

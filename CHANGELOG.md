@@ -30,6 +30,8 @@ Platform frozen. No further architectural changes to v1.0 substrate.
 
 ### Added
 
+- `docs/OS-STATUS-FOOTER.md` — mandatory footer on every agent reply (`✅ Used` / `⚠️ Partial` / `❌ Not used`)
+- `docs/BUG-FIX.md` — simple bug path: `Bug Fix: …` → `/triage` → `/diagnose` → 3 formatted approval cards; silent OS artifacts
 - Implementation flow — **`/tdd` mandatory** for all `PB-implement-*` lanes (03-workflow, 09-system-prompt, checklists, PROJECT-KICKOFF, AGENTS.md)
 - Docs + scaffold output — **Grok / Antigravity** workflow (replaced Cursor-only `cursor .` steps)
 - `scripts/install-cli.sh` — one-time install for `ai-new` (`~/.local/bin` symlink + optional `~/.bashrc` alias)
