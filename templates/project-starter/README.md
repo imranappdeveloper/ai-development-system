@@ -13,7 +13,7 @@ start
 
 The agent will ask you questions one at a time (platforms, API, MVP scope, …) and write `CONTEXT.md` for you.
 
-When it summarizes, reply **`yes`**, then **`Approve intake.`** when asked.
+When it summarizes, reply **`yes`**. Answer **A / B / C** when asked. Say **Start coding** before any code.
 
 ## Files (agent creates)
 

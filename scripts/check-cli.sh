@@ -49,11 +49,16 @@ else
   _fail "ai-paths"
 fi
 
-# setup-ads Grok skill
+# Grok skills
 if [[ -f "$HOME/.grok/skills/setup-ads/SKILL.md" ]]; then
   _ok "setup-ads skill → ~/.grok/skills/setup-ads/SKILL.md"
 else
   _fail "setup-ads skill (~/.grok/skills/setup-ads/SKILL.md)"
+fi
+if [[ -f "$HOME/.grok/skills/task-run/SKILL.md" ]]; then
+  _ok "task-run skill → ~/.grok/skills/task-run/SKILL.md"
+else
+  _warn "task-run skill missing — run install-cli.sh (needed for AFK batch)"
 fi
 
 # ~/.local/bin on PATH

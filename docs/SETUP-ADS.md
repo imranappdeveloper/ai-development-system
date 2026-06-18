@@ -45,23 +45,29 @@ Existing project: Odoo auction addon — <what you want to do>
 1. check-cli       → if fail: stop, tell user to run install-cli.sh
 2. ai-paths check
 3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
-3. Grill session   → new: grill-me | existing: grill-with-docs
-4. Write           → CONTEXT.md, OPEN-QUESTIONS.md, work/kickoff/
+4. Grill           → new: grill-me | existing: grill-with-docs
 5. Summary card    → you: yes
-6. Intake (silent) → you: Approve intake.
+6. Spec (silent)   → agent writes work/ — you never read it
+7. Fork questions  → A / B / C only when paths diverge
+8. Task list       → short bullets → you pick an option
+9. Start AFK       → new chat `/task-run` (or Start coding for bugs only)
 ```
 
-You answer **one question at a time**. Agent recommends an answer each time.
+You answer **one question at a time** with **A / B / C**. Agent recommends each time. Full rules: [USER-FLOW.md](./USER-FLOW.md)
 
 ---
 
-## What you approve
+## What you say
 
 | Step | You say |
 |------|---------|
 | After alignment summary | `yes` |
-| After intake summary | `Approve intake.` |
-| Later work | See [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) §3 |
+| When agent asks a fork | `A` / `B` / `C` |
+| Before batch code | **Start AFK local / server** |
+| Before bug fix code | **Start coding** |
+| After work complete | `Done.` (optional) |
+
+**No** Approve intake / frame / plan / decompose — agent handles those silently.
 
 ---
 

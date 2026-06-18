@@ -1,9 +1,12 @@
+<!-- ADS-BLOCK:header -->
 # AI Development OS — This Project
 
 This project uses **AI Development OS v1.0** with **grill-first kickoff**.
 
 > Grok reads this file automatically from the project directory. Antigravity: open this folder as the workspace.
+<!-- /ADS-BLOCK:header -->
 
+<!-- ADS-BLOCK:path-resolution -->
 ## Path resolution (Mac / Ubuntu — every session)
 
 Resolve before loading any OS doc:
@@ -17,54 +20,98 @@ Resolve before loading any OS doc:
 If `$AI_DEV_OS_HOME` is unset: tell user to run `$OS_REPO/scripts/install-cli.sh` on this machine, or `ai-paths machine-setup`.
 
 Committed `ai-dev-os.yaml` uses `env:AI_DEV_OS_HOME` — **never** hardcode `/Users/...` or `/data/...` in project files.
+<!-- /ADS-BLOCK:path-resolution -->
 
+<!-- ADS-BLOCK:config -->
 ## Config
 
 Read `ai-dev-os.yaml` + `work_id` in this directory.
+<!-- /ADS-BLOCK:config -->
 
+<!-- ADS-BLOCK:afk-task-run -->
+## AFK task execution (batch features)
+
+After GitHub issues published and user says **Start AFK local / server**:
+
+1. User runs `task-run.sh <epic> --local|--server [--detach]` — handoff in `work/task-run/`
+2. **New Grok chat** — load **`/task-run`** (`~/.grok/skills/task-run/SKILL.md`)
+3. Task manager polls `ready-for-agent` issues; respects `## Blocked by`
+4. Subagent per issue + `/tdd`; local=1, server≤3 parallel
+5. PR → `pr-open`; user merges on GitHub; `/task-run --continue`
+
+**No questions during AFK.** `needs-info` + epic comment; continue queue.
+
+Spec: **`$AI_DEV_OS_HOME/docs/AFK-TASK-RUN.md`**
+<!-- /ADS-BLOCK:afk-task-run -->
+
+<!-- ADS-BLOCK:user-flow -->
+## User interaction (every feature & task)
+
+Follow **`$AI_DEV_OS_HOME/docs/USER-FLOW.md`** — SSOT for how you talk to the user.
+
+| Phase | User sees | Agent does silently |
+|-------|-----------|---------------------|
+| **Understand** | Grill + options at forks | `work/kickoff/`, `CONTEXT.md` |
+| **Spec** | Questions only when paths diverge | intake, discovery, PRD → `work/` |
+| **Tasks** | Short task list + A/B/C | decompose → `work/` (user never reads ISS) |
+| **Code** | **Start AFK** (batch) or **Start coding** (bug) | `/task-run` or `/tdd` |
+
+**Never** ask user to read spec documents. **Never** batch-implement without **Start AFK** + `/task-run`.
+<!-- /ADS-BLOCK:user-flow -->
+
+<!-- ADS-BLOCK:bug-fix -->
 ## When the user reports a bug
 
 Message starts with **`Bug Fix:`**, **`bug:`**, **`fix:`**, or describes something broken/failing.
 
-Follow **`$AI_DEV_OS_HOME/docs/BUG-FIX.md`** exactly:
+Follow **`$AI_DEV_OS_HOME/docs/BUG-FIX.md`** + **`USER-FLOW.md`**:
 
-1. **`/triage`** — classify; one clarifying question only if repro impossible
-2. **`/diagnose`** — reproduce + root cause (automatic)
-3. Silent **`PB-intake-classify`** → **`PB-diagnose-bug`** → **`PB-draft-issue`** → `work/`
-4. Show **Fix Plan** card → wait for **`yes`**
-5. **`/tdd`** + **`PB-implement-*`** → show **Fix Summary** card → wait for **`Approve fix.`**
-6. Silent **`PB-verify`** → show **Done** card
+1. **`/triage`** — one clarifying question only if repro impossible
+2. **`/diagnose`** — reproduce + root cause
+3. Silent playbooks → `work/`
+4. Fix plan as **A/B/C options** → **Start coding** to implement
+5. Short done summary
 
-User never reads playbooks. Max **3 approval cards** per bug.
+User never reads playbooks. Max **2** decision points per bug.
+<!-- /ADS-BLOCK:bug-fix -->
 
+<!-- ADS-BLOCK:setup-ads -->
 ## When the user runs `/setup-ads`, `start`, or `new project`
 
-Follow **`/setup-ads`** skill (`~/.grok/skills/setup-ads/SKILL.md`) — SSOT: **`$AI_DEV_OS_HOME/docs/SETUP-ADS.md`**.
+Follow **`/setup-ads`** skill — SSOT: **`$AI_DEV_OS_HOME/docs/SETUP-ADS.md`**.
 
 | Mode | Grill | Focus |
 |------|-------|-------|
-| **New** | `/grill-me` | Use cases, flows, MVP, assumptions — **not** standard practices |
-| **Existing** | `/grill-with-docs` | Explore codebase, glossary, goals, clear assumptions |
+| **New** | `/grill-me` | Use cases, flows, MVP |
+| **Existing** | `/grill-with-docs` | Codebase, glossary, goals |
 
-Flow: `check-cli` (stop + ask install-cli if fail) → `ai-new` → grill → `CONTEXT.md` → summary → **`yes`** → intake
+Flow: `check-cli` → `ai-new` → grill → summary → **`yes`** → silent spec → tasks → **Start AFK**
+<!-- /ADS-BLOCK:setup-ads -->
 
+<!-- ADS-BLOCK:setup-ads-behavior -->
 ### Required behavior (if /setup-ads not invoked manually)
 
 1. Run **`ai-new`** + path check first
-2. **New:** **`/grill-me`** one question at a time | **Existing:** **`/grill-with-docs`** + explore code
-3. Update **`CONTEXT.md`** (glossary only); defer to **`docs/OPEN-QUESTIONS.md`**
-4. Alignment summary card → wait for **`yes`**
-5. **`PB-intake-classify`** silently → **3-line INT summary** → **`Approve intake.`**
+2. Grill one question at a time; **A/B/C options** when paths diverge
+3. Update **`CONTEXT.md`**; defer unknowns to **`docs/OPEN-QUESTIONS.md`**
+4. Alignment summary → **`yes`**
+5. Run spec + planning playbooks **silently** — no Approve intake / frame / plan
+6. Publish GitHub issues (`/plan-to-issue-v2` or `/to-issues`); short task list + deps
+7. **Start AFK local / server / not yet** — then `/task-run` in new chat (not inline implement)
+<!-- /ADS-BLOCK:setup-ads-behavior -->
 
-### Implementation (PB-implement-* lanes)
+<!-- ADS-BLOCK:implementation-tdd -->
+### Implementation (code)
 
-When writing application code for an ISS:
+**Batch:** only in `/task-run` chat after Start AFK. **Bug:** after Start coding in same chat.
 
 1. Load **`/tdd`** skill (`~/.grok/skills/tdd/SKILL.md`)
-2. Per ISS **vertical slice**: one failing test → minimal code → pass → refactor
+2. Per **task**: one failing test → minimal code → pass → refactor
 3. Never horizontal "all tests then all code"
-4. Document tests in CODE §6; stop at **H-IMPLEMENT** (`Approve implement.`)
+4. Record H-IMPLEMENT internally when user said Start coding
+<!-- /ADS-BLOCK:implementation-tdd -->
 
+<!-- ADS-BLOCK:os-status-footer -->
 ### OS status footer (last line — every response)
 
 The **absolute last line** of every reply — one line, nothing after it. Full spec: **`$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`**.
@@ -74,28 +121,36 @@ The **absolute last line** of every reply — one line, nothing after it. Full s
 ```
 
 Be honest. Never claim `✅ Used` without loading OS docs/skills and writing required artifacts.
+<!-- /ADS-BLOCK:os-status-footer -->
 
+<!-- ADS-BLOCK:never -->
 ### Never
 
-- Ask the user to read files under `$AI_DEV_OS_HOME/playbooks/`
+- Ask the user to read files under `$AI_DEV_OS_HOME/playbooks/` or `work/` specs
+- Implement without **Start coding**
+- Ask Approve intake / frame / plan / decompose
 - Omit the OS status footer
-- Dump gate IDs (`H-INTAKE`) unless user asks
+- Dump gate IDs unless user asks
 - Self-approve gates
 - Skip grill on greenfield projects
-- Use absolute OS paths baked for another machine
+<!-- /ADS-BLOCK:never -->
 
-### User approvals (plain English)
+<!-- ADS-BLOCK:user-approvals -->
+### User phrases (plain English)
 
-| User says | Gate |
-|-----------|------|
-| Approve intake. | H-INTAKE |
-| Approve frame. | H-FRAME |
-| Approve plan. | H-PLAN |
-| Approve implement. | H-IMPLEMENT |
-| `yes` (bug fix plan) | H-INTAKE + H-PLAN |
-| `Approve fix.` | H-IMPLEMENT |
-| `Done.` | H-VERIFY |
+| User says | Meaning |
+|-----------|---------|
+| `yes` | Kickoff alignment OK |
+| `A` / `B` / `C` | Pick option on a fork question |
+| **Start coding** | Begin implementation (only coding gate) |
+| `Done.` | Close out current work |
+| `Bug Fix: …` | Start bug path |
 
+Internal gates (H-INTAKE, H-FRAME, H-PLAN, H-DECOMPOSE, H-IMPLEMENT) — record silently; never show user unless asked.
+<!-- /ADS-BLOCK:user-approvals -->
+
+<!-- ADS-BLOCK:project-idea -->
 ## Project idea (if provided at scaffold)
 
 {{PROJECT_IDEA}}
+<!-- /ADS-BLOCK:project-idea -->

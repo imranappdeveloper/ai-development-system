@@ -148,30 +148,19 @@ Agent runs `PB-intake-classify` **without exposing spec docs to the user**:
 - Write `work/intake/WR-001.md` + `work/WR-001.md`
 - Present **3-line INT summary** + recommended workflow
 
-User only says:
+Agent runs intake + discovery + planning **silently** (`USER-FLOW.md`). User does **not** say Approve intake.
 
-```text
-Approve intake.
-```
+At forks only → **A / B / C** question with recommendation.
 
-or
+**Do not** paste gate jargon unless user asks.
 
-```text
-Revise intake: <one correction>
-```
+#### Phase E — Spec + tasks (automatic)
 
-**Do not** paste "Human gate H-INTAKE" jargon unless user asks.
+Agent runs discovery, PRD, decompose internally. User sees:
 
-#### Phase E — Discovery (next turn)
-
-After intake approved, agent asks:
-
-```text
-Intake approved. Ready for discovery research (problem evidence and options)?
-Reply: yes / not yet
-```
-
-On **yes** → run `PB-discovery-research` internally; present DISC summary at H-FRAME.
+- Option questions when paths diverge
+- Short **task list** (not full specs)
+- **Start AFK** before batch implementation (`/task-run`)
 
 ---
 
@@ -183,36 +172,39 @@ Via **`/setup-ads`** → **`/grill-with-docs`**. Full script: [SETUP-ADS.md](./S
 2. Agent: `ai-new` → explore codebase → **`/grill-with-docs`**
 3. Questions focus on: **goal**, module scope, current behavior vs code, pain/gaps, constraints, domain terms, assumptions
 4. Update `CONTEXT.md` glossary; create OS files if missing
-5. Alignment summary → **`yes`** → `PB-intake-classify` → **`Approve intake`**
-6. If `existing_project` / onboard path → `PB-onboard-project` before discovery (one sentence why)
+5. Alignment summary → **`yes`** → silent spec + tasks per [USER-FLOW.md](./USER-FLOW.md)
+6. If `existing_project` / onboard path → `PB-onboard-project` silently before discovery
 
 ---
 
 ## 3. Then the OS takes over
 
-After kickoff + approved intake:
+See **[USER-FLOW.md](./USER-FLOW.md)** — user-facing phases:
 
-| Gate | User says |
-|------|-----------|
-| After discovery | `Approve frame.` or `Revise: …` |
-| After PRD | `Approve plan.` or `Revise: …` |
-| After decompose | `Approve decompose.` or `Revise: …` |
-| After implement | `Approve implement.` or `Revise: …` |
-| After verify | `Approve ship.` / `Looks good.` (per workflow) |
-| … | Same pattern — **short plain English** |
+```
+understand → spec (silent) → tasks → Start AFK → /task-run → merge PRs → done
+```
 
-### Implementation phase (code)
+| Phase | User does | Agent does |
+|-------|-----------|------------|
+| Understand | Answer grill + `yes` on summary | `CONTEXT.md`, kickoff |
+| Spec | Answer **A/B/C** only at forks | intake, discovery, PRD → `work/` |
+| Tasks | Confirm split via **A/B/C** | decompose → `work/` (user never reads) |
+| Code | **Start AFK** (batch) or **Start coding** (bug) | `/task-run` or `/tdd` |
+| Done | `Done.` optional | verify silently |
 
-When the workflow reaches **PB-implement-*** (backend, frontend, mobile, or devops):
+**Removed:** Approve intake, frame, plan, decompose, implement.
+
+### Implementation (code)
 
 | Rule | Detail |
 |------|--------|
-| **Mandatory skill** | Agent loads **`/tdd`** (`~/.grok/skills/tdd/SKILL.md`) |
-| **Loop** | Per ISS: one failing test → minimal code → pass → refactor (vertical slices) |
-| **Forbidden** | Writing all tests first, then all code (horizontal slices) |
-| **User role** | Review summary + changed files; say `Approve implement.` — no test jargon required |
+| **Gate** | Batch: **Start AFK** + `/task-run`. Bug: **Start coding** |
+| **Skill** | Agent loads **`/tdd`** |
+| **Loop** | Per **task**: failing test → minimal code → pass → refactor |
+| **User role** | Pick options; never read spec files |
 
-Agent handles playbooks, checklists, and file paths. User never loads `09-system-prompt.md`.
+Agent handles playbooks internally. User never loads `09-system-prompt.md`.
 
 ---
 
@@ -227,10 +219,10 @@ AI_DEV_OS_HOME: /data/project/ai-development-system
 project_root: <absolute path>
 
 Flow:
-1. Run /grill-with-docs — one question at a time; update CONTEXT.md as we go
+1. Run /grill-me or /grill-with-docs — one question at a time; A/B/C at forks
 2. Summarize kickoff in ≤5 lines; wait for my "yes"
-3. Run PB-intake-classify silently; show 3-line INT summary
-4. Wait for "Approve intake" — do not run discovery until I say so
+3. Run spec + planning silently — never ask me to read work/ files
+4. Show short task list; Start AFK local/server or /task-run in new chat
 5. Never ask me to read playbook files
 
 My idea: <one sentence>

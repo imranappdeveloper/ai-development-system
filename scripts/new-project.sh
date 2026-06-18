@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # new-project.sh — bind AI Dev OS to a project (new or existing)
 #
-# Idempotent: creates only what is missing — never overwrites AGENTS.md, ai-dev-os.yaml, README.md.
+# Idempotent: creates only what is missing — never overwrites ai-dev-os.yaml, README.md.
+# AGENTS.md: merges missing OS blocks (ADS-BLOCK markers) when file already exists.
 # Run from ANY directory. Default target is current folder (pwd).
 #
 # Usage:
@@ -38,7 +39,7 @@ Usage:
   $(basename "$0") -i|--interactive
   $(basename "$0") -h|--help
 
-Checks (create if missing, never overwrite):
+Checks (create if missing; AGENTS.md merges missing OS blocks only):
   AGENTS.md  ai-dev-os.yaml  work/  docs/  .gitignore  git repo
 
 Examples:
@@ -98,6 +99,111 @@ substitute() {
     "$src" > "$dst"
 }
 
+# Fingerprint fallback when AGENTS.md predates ADS-BLOCK markers (any match = block present).
+ads_block_present() {
+  local block="$1"
+  local file="$2"
+  if grep -qF "<!-- ADS-BLOCK:${block} -->" "$file" 2>/dev/null; then
+    return 0
+  fi
+  case "$block" in
+    header)             grep -qE 'AI Development OS|grill-first kickoff' "$file" ;;
+    path-resolution)    grep -qF 'Path resolution (Mac / Ubuntu' "$file" \
+                        || grep -qF 'env:AI_DEV_OS_HOME' "$file" ;;
+    afk-task-run)       grep -qF 'AFK-TASK-RUN.md' "$file" ;;
+    user-flow)          grep -qF 'USER-FLOW.md' "$file" ;;
+    config)             grep -qF 'Read `ai-dev-os.yaml`' "$file" ;;
+    bug-fix)            grep -qF 'BUG-FIX.md' "$file" ;;
+    setup-ads)          grep -qF 'SETUP-ADS.md' "$file" && grep -qF '/setup-ads' "$file" ;;
+    setup-ads-behavior) grep -qF 'check-cli' "$file" ;;
+    implementation-tdd) grep -qF '/tdd' "$file" && grep -qF 'PB-implement' "$file" ;;
+    os-status-footer)   grep -qF 'OS-STATUS-FOOTER' "$file" ;;
+    never)              grep -qF 'Skip grill on greenfield' "$file" ;;
+    user-approvals)     grep -qF 'Start coding' "$file" ;;
+    project-idea)       grep -qF 'Project idea (if provided' "$file" \
+                        || grep -qF '{{PROJECT_IDEA}}' "$file" ;;
+    *)                  return 1 ;;
+  esac
+}
+
+merge_agents_md() {
+  local idea="$1"
+  local existing="$PROJECT_DIR/AGENTS.md"
+  local template="$TEMPLATE/AGENTS.md"
+  local tmp_template merged=0
+  local block_name="" block_lines=() append_buf=""
+  MERGED_AGENTS_BLOCKS=0
+
+  [[ -f "$existing" ]] || return 1
+
+  tmp_template="$(mktemp)"
+  substitute "$template" "$tmp_template" "$idea"
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^BLOCK: ]]; then
+      block_name="${line#BLOCK:}"
+      block_lines=()
+      continue
+    fi
+    if [[ "$line" == "ENDBLOCK" ]]; then
+      [[ -n "$block_name" ]] || continue
+      if [[ "$block_name" == "project-idea" ]] \
+        && ! grep -qF '{{PROJECT_IDEA}}' "$existing"; then
+        block_name=""
+        continue
+      fi
+      if ads_block_present "$block_name" "$existing"; then
+        block_name=""
+        continue
+      fi
+      append_buf+="<!-- ADS-BLOCK:${block_name} -->"$'\n'
+      local l
+      for l in "${block_lines[@]}"; do
+        append_buf+="$l"$'\n'
+      done
+      append_buf+="<!-- /ADS-BLOCK:${block_name} -->"$'\n'
+      append_buf+=$'\n'
+      merged=$((merged + 1))
+      block_name=""
+      continue
+    fi
+    if [[ -n "$block_name" ]]; then
+      block_lines+=("$line")
+    fi
+  done < <(awk '
+    /^<!-- ADS-BLOCK:/ {
+      name = $0
+      sub(/^<!-- ADS-BLOCK:/, "", name)
+      sub(/ -->$/, "", name)
+      print "BLOCK:" name
+      in_block = 1
+      next
+    }
+    /^<!-- \/ADS-BLOCK:/ {
+      in_block = 0
+      print "ENDBLOCK"
+      next
+    }
+    in_block { print }
+  ' "$tmp_template")
+
+  rm -f "$tmp_template"
+
+  MERGED_AGENTS_BLOCKS=$merged
+  if [[ $merged -eq 0 ]]; then
+    info "AGENTS.md — exists, kept (all OS blocks present)"
+    return 0
+  fi
+
+  {
+    cat "$existing"
+    printf '\n---\n\n<!-- Merged by ai-new — AI Development OS blocks -->\n\n'
+    printf '%s' "$append_buf"
+  } > "${existing}.ai-new.tmp"
+  mv "${existing}.ai-new.tmp" "$existing"
+  info "AGENTS.md — merged $merged block(s)"
+}
+
 setup_os_binding() {
   local idea="$1"
   local created=0
@@ -120,10 +226,14 @@ setup_os_binding() {
   fi
   echo ""
 
-  # --- AGENTS.md ---
+  # --- AGENTS.md (merge missing OS blocks when file exists) ---
   if [[ -f "$PROJECT_DIR/AGENTS.md" ]]; then
-    info "AGENTS.md — exists, kept"
-    skipped=$((skipped + 1))
+    merge_agents_md "$idea"
+    if [[ "${MERGED_AGENTS_BLOCKS:-0}" -gt 0 ]]; then
+      created=$((created + 1))
+    else
+      skipped=$((skipped + 1))
+    fi
   else
     substitute "$TEMPLATE/AGENTS.md" "$PROJECT_DIR/AGENTS.md" "$idea"
     info "AGENTS.md — created"

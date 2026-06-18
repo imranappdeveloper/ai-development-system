@@ -35,9 +35,9 @@ flowchart TD
     B -->|ok| C[/diagnose — reproduce + root cause]
     C --> D[Silent: intake + diagnose + issue → work/]
     D --> E["Checkpoint 1: Fix Plan card"]
-    E -->|yes| F[/tdd — implement fix]
-    F --> G["Checkpoint 2: Fix Summary card"]
-    G -->|Approve fix| H[Silent: verify]
+    E -->|Start coding| F[/tdd — implement fix]
+    F --> G[Short done summary]
+    G --> H[Silent: verify]
     H --> I["Checkpoint 3: Done card"]
 ```
 
@@ -83,28 +83,23 @@ Assign `work_id` automatically (`WR-###` next free). Run internally — **no spe
 
 Workflow: **WF-BUGFIX**. Gates recorded as `pending` until user approves at checkpoints.
 
-### Phase 3 — Checkpoint 1: Fix Plan
+### Phase 3 — Fix plan (options — not a document)
 
-Present **only** this card. Wait for **`yes`** or **`revise: …`**.
+Present cause + fix as **A/B/C** per [USER-FLOW.md](./USER-FLOW.md). Wait for option or **Start coding**.
 
 ```text
-┌─────────────────────────────────────────────┐
-│ BUG FIX PLAN — {work_id}                    │
-├─────────────────────────────────────────────┤
-│ Bug:     {one line}                         │
-│ Repro:   {confirmed steps — pass/fail}      │
-│ Cause:   {root cause in plain English}      │
-│ Fix:     {what will change — 2–4 bullets}    │
-│ Test:    {regression test approach}         │
-│ Risk:    {low / medium — rollback note}     │
-├─────────────────────────────────────────────┤
-│ Artifacts: work/intake, diagnose, issue     │
-│ Reply: yes  |  revise: <one correction>     │
-└─────────────────────────────────────────────┘
+Bug: {one line}
+Cause: {plain English}
+
+A) Start coding — {fix approach in one line}
+B) Different approach — {short alt}
+C) Need one detail — {single question}
+
+I recommend A because …
 ```
 
-On **`yes`**: record H-INTAKE + H-PLAN approved in WR; proceed to implement.  
-On **`revise:`**: update artifacts; show card again (max one revision round before re-diagnose).
+On **Start coding** (A): record gates in WR; proceed to implement.  
+On **B**: one follow-up options question. On **C**: one answer, then re-offer A/B/C.
 
 ### Phase 4 — Implement (`/tdd`)
 
@@ -117,24 +112,11 @@ Load **`/tdd`**. Run `PB-implement-*` lane (backend / frontend / mobile / devops
 
 **No checkpoint mid-implement** — run to completion unless blocked (missing access, ambiguous fix).
 
-### Phase 5 — Checkpoint 2: Fix Summary
+### Phase 5 — Done summary
 
-```text
-┌─────────────────────────────────────────────┐
-│ FIX APPLIED — {work_id}                     │
-├─────────────────────────────────────────────┤
-│ Root cause: {confirmed}                     │
-│ Changed:    {file list — short}             │
-│ Test:       {name} — PASS                   │
-│ Repro:      original scenario — PASS        │
-├─────────────────────────────────────────────┤
-│ Reply: Approve fix.  |  revise: <correction>│
-└─────────────────────────────────────────────┘
-```
+Short summary (≤6 lines): cause, files changed, test pass. Run `PB-verify` silently.
 
-On **`Approve fix.`**: record H-IMPLEMENT; run `PB-verify` silently.
-
-### Phase 6 — Checkpoint 3: Done
+### Phase 6 — Done
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -150,14 +132,13 @@ On **`Approve fix.`**: record H-IMPLEMENT; run `PB-verify` silently.
 
 ---
 
-## User vocabulary (only 4 replies)
+## User vocabulary
 
 | You say | Meaning |
 |---------|---------|
-| `yes` | Approve fix plan (checkpoint 1) |
-| `Approve fix.` | Approve implemented fix (checkpoint 2) |
-| `Done.` | Accept verification (checkpoint 3) |
-| `revise: …` | One correction at any checkpoint |
+| `A` / `B` / `C` | Pick option on fix plan |
+| **Start coding** | Begin implementation |
+| `Done.` | Close out bug work |
 
 Never required: `H-INTAKE`, `work_id`, playbook names, `AI_DEV_OS_HOME` (agent reads `ai-dev-os.yaml` + env).
 

@@ -6,7 +6,8 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 |---------------|---------|
 | **Bind / kickoff any project** | **[SETUP-ADS.md](./SETUP-ADS.md)** — `/setup-ads` ← **start here** |
 | **After setup** | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) |
-| **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, 3 approvals |
+| **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, options + Start coding |
+| **How you interact** | **[USER-FLOW.md](./USER-FLOW.md)** ← questions & options, no doc reading |
 | First time installing the OS | [§1 One-time setup](#1-one-time-setup-5-minutes) |
 | Brand-new app / greenfield | [PROJECT-KICKOFF.md §1](./PROJECT-KICKOFF.md#1-new-project-kickoff) |
 | Code already exists | [PROJECT-KICKOFF.md §2](./PROJECT-KICKOFF.md#2-existing-project-kickoff) |
@@ -20,10 +21,10 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 ```
 You: /setup-ads + one sentence
     → ai-new + grill (new: /grill-me | existing: /grill-with-docs)
-    → Agent writes CONTEXT.md + work/ files (you don't read long docs)
-    → You: "yes" / "approve intake" in plain English
-    → Agent runs discovery, PRD, decompose, … — you approve each step briefly
-    → Agent implements code with /tdd (test-first per issue) — you: "Approve implement."
+    → Agent writes CONTEXT.md + work/ silently (you never read spec files)
+    → You: "yes" on summary; A/B/C only when paths diverge
+    → Agent plans + splits into tasks — short list, not documents
+    → You: Start AFK (batch) or Start coding (bugs) before implementation
 ```
 
 **Users:** follow [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) — answer questions, don't read playbooks.  
@@ -139,34 +140,33 @@ Existing project: <what you want to do on this codebase>
 Use PROJECT-KICKOFF — grill with /grill-with-docs; explore the repo; one question at a time.
 ```
 
-Agent builds or updates `CONTEXT.md` from your answers + code exploration, then intake → **`Approve intake`** → onboard or discovery as needed.
+Agent builds or updates `CONTEXT.md` from your answers + code exploration, then spec + tasks silently — see [USER-FLOW.md](./USER-FLOW.md).
 
 ---
 
 ## 4. Every piece of work (same for both)
 
-Same 4 steps every time:
+**Users:** [USER-FLOW.md](./USER-FLOW.md) — understand → spec → tasks → **Start AFK** → `/task-run` → merge PRs.
 
-### Step 1 — Kickoff or intake
+**Agents:** record internal gates silently when user picks options or says Start coding:
 
-**New/existing project:** [PROJECT-KICKOFF](./PROJECT-KICKOFF.md) first (grill → CONTEXT.md).  
-**New task on same project:** intake with new `work_id` (e.g. `WR-002`).
+| Internal gate | When to record (silent) |
+|---------------|-------------------------|
+| H-INTAKE | After kickoff `yes` |
+| H-FRAME | After discovery/onboard complete |
+| H-PLAN | After PRD/spec complete |
+| H-DECOMPOSE | After user confirms task split |
+| H-IMPLEMENT | When user says **Start AFK** or **Start coding** |
+| H-VERIFY / H-SHIP | After verify/release (silent) |
 
-### Step 2 — Approve gate
+User never says Approve intake / frame / plan / decompose.
 
-| Gate | When |
-|------|------|
-| H-INTAKE | After INT |
-| H-FRAME | After discovery or onboard |
-| H-PLAN | After PRD / issue / security assess / etc. |
-| H-DECOMPOSE | After issues broken down |
-| H-IMPLEMENT | After code |
-| H-VERIFY | After tests / review |
-| H-SHIP | After release prep |
+### Step 1 — Kickoff or new task
 
-Say plain English: `Approve intake` / `Approve frame` / `Approve plan` (agents map to H-* gates)
+**New/existing project:** [PROJECT-KICKOFF](./PROJECT-KICKOFF.md) (grill → CONTEXT.md).  
+**New task on same project:** new `work_id` (e.g. `WR-002`); same USER-FLOW phases.
 
-### Step 3 — Next skill only
+### Step 2 — Next skill only (agents)
 
 ```text
 Execute PB-<next-skill> ONLY.
@@ -179,7 +179,7 @@ Upstream artifacts must exist (see work/ folder).
 Stop after handoff.
 ```
 
-**Implementation (`PB-implement-*`):** agent must also load **`/tdd`** and implement per ISS vertical slice (RED→GREEN→refactor). You approve with `Approve implement.` when the summary looks right.
+**Implementation (`PB-implement-*`):** batch via **`/task-run`** after Start AFK; bugs after **Start coding**. Load **`/tdd`**; per **task** vertical slice (RED→GREEN→refactor).
 
 ### Step 4 — Check `work/` folder
 

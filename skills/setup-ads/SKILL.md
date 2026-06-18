@@ -11,7 +11,9 @@ description: >
 
 Bind **AI Development OS** to a project folder, align with the user via grilling, write `CONTEXT.md` + OS files, then hand off to intake.
 
-**User never reads playbooks.** One question at a time. End every reply with OS status footer — `$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`.
+**User never reads playbooks or spec files.** One question at a time with **A/B/C options** at forks. Batch features: **Start AFK** → `/task-run` in new chat. Bugs/single task: **Start coding**. End every reply with OS status footer — `$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`.
+
+**User interaction SSOT:** `$AI_DEV_OS_HOME/docs/USER-FLOW.md`
 
 ---
 
@@ -186,23 +188,57 @@ On **`yes`** → Phase 5. On **`revise:`** → update docs, re-show summary once
 
 ---
 
-## Phase 5 — Intake (silent)
+## Phase 5 — Spec (silent)
 
-Run `PB-intake-classify` internally (`09` + `04` + checklist). Write `work/intake/WR-001.md`, `work/WR-001.md`.
+Run playbooks internally — **no user document review**:
 
-Present **3-line INT summary** + recommended workflow. Wait for:
+1. `PB-intake-classify` → `work/intake/`
+2. `PB-discovery-research` (if needed) → `work/`
+3. PRD / feature / architecture playbooks as workflow requires → `work/`
 
-```text
-Approve intake.
-```
+**Only interrupt user** when a real fork exists (scope, design, assumption). Use **A/B/C + recommendation** per `USER-FLOW.md`.
 
-Do not auto-chain to discovery.
+Do **not** ask Approve intake / frame / plan.
 
 ---
 
-## Phase 6 — Handoff
+## Phase 6 — Tasks
 
-After intake approved, offer next step in plain English (discovery, feature, or bug per workflow). Reference `$AI_DEV_OS_HOME/docs/PROJECT-KICKOFF.md` §3 internally.
+Decompose feature into **tasks** (vertical slices). Present **short list only** (name + one line each):
+
+```text
+Tasks for <feature>:
+1. …
+2. …
+
+A) Split looks good
+B) Merge tasks
+C) Split finer
+```
+
+User never reads ISS specs. Adjust from their option.
+
+---
+
+## Phase 7 — Start AFK handoff
+
+After task list confirmed, **do not implement in this chat**. Hand off:
+
+```text
+A) Start AFK local
+B) Start AFK server
+C) Not yet
+```
+
+On A or B:
+
+1. Run `task-run.sh <epic> --local|--server [--detach]` from `project_root`
+2. Tell user to open **new Grok chat** and paste handoff from `work/task-run/`
+3. New chat runs `/task-run` — autonomous until queue empty
+
+For **bugs only** (no GitHub queue): fix plan A/B/C → **Start coding** in same chat.
+
+Reference `$AI_DEV_OS_HOME/docs/AFK-TASK-RUN.md` + `USER-FLOW.md`.
 
 ---
 
@@ -210,14 +246,18 @@ After intake approved, offer next step in plain English (discovery, feature, or 
 
 - Skip `ai-new` / path check
 - Grill on standard practices (lint rules, TDD ceremony, repo layout) unless user asks
-- Dump playbooks on user
-- Self-approve gates
+- Dump playbooks or `work/` specs on user
+- Ask Approve intake / frame / plan / decompose
+- Implement batch features in setup-ads chat (use `/task-run` instead)
+- Implement without **Start AFK** or **Start coding** (bugs)
+- Self-approve gates (record internally when user picks options or Start AFK/coding)
 - Omit OS status footer (last line)
 
 ## References (agent only)
 
 | Doc | Path |
 |-----|------|
+| User flow | `$AI_DEV_OS_HOME/docs/USER-FLOW.md` |
 | Kickoff | `$AI_DEV_OS_HOME/docs/PROJECT-KICKOFF.md` |
 | Multi-machine | `$AI_DEV_OS_HOME/docs/MULTI-MACHINE.md` |
 | Bug fix | `$AI_DEV_OS_HOME/docs/BUG-FIX.md` |

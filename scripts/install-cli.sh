@@ -15,16 +15,18 @@ info() { echo "  $1"; }
 
 mkdir -p "$BIN_DIR"
 chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.sh" \
-  "$ROOT/scripts/bind-project.sh" 2>/dev/null || true
+  "$ROOT/scripts/bind-project.sh" "$ROOT/scripts/task-run.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
 ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
+ln -sf "$ROOT/scripts/task-run.sh" "$BIN_DIR/task-run"
 info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
 info "Linked: $BIN_DIR/check-cli"
 info "Linked: $BIN_DIR/ai-bind"
+info "Linked: $BIN_DIR/task-run"
 
 _ensure_path_in_rc() {
   local rc="$1"
@@ -69,16 +71,21 @@ _write_shell_block() {
 _write_shell_block "$HOME/.bashrc"
 _write_shell_block "$HOME/.zshrc"
 
-# Install /setup-ads Grok skill
-SKILL_SRC="$ROOT/skills/setup-ads/SKILL.md"
-SKILL_DST="$HOME/.grok/skills/setup-ads/SKILL.md"
-if [[ -f "$SKILL_SRC" ]]; then
-  mkdir -p "$(dirname "$SKILL_DST")"
-  cp "$SKILL_SRC" "$SKILL_DST"
-  info "Installed Grok skill: ~/.grok/skills/setup-ads/SKILL.md"
-else
-  info "WARN: skills/setup-ads/SKILL.md missing — skip skill install"
-fi
+# Install Grok skills (setup-ads, task-run)
+_install_skill() {
+  local name="$1"
+  local src="$ROOT/skills/${name}/SKILL.md"
+  local dst="$HOME/.grok/skills/${name}/SKILL.md"
+  if [[ -f "$src" ]]; then
+    mkdir -p "$(dirname "$dst")"
+    cp "$src" "$dst"
+    info "Installed Grok skill: ~/.grok/skills/${name}/SKILL.md"
+  else
+    info "WARN: skills/${name}/SKILL.md missing — skip"
+  fi
+}
+_install_skill "setup-ads"
+_install_skill "task-run"
 
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo ""
@@ -93,7 +100,10 @@ echo "  hash -r"
 echo "  check-cli"
 echo "  which ai-new ai-paths"
 echo "  ai-paths check"
-echo "  ls ~/.grok/skills/setup-ads/SKILL.md"
+echo "  ls ~/.grok/skills/setup-ads/SKILL.md ~/.grok/skills/task-run/SKILL.md"
+echo ""
+echo "AFK task manager (new chat after issues published):"
+echo "  task-run.sh <epic> --server --detach"
 echo ""
 echo "In project chat:"
 echo "  /setup-ads"
