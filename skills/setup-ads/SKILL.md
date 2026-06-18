@@ -15,11 +15,40 @@ Bind **AI Development OS** to a project folder, align with the user via grilling
 
 ---
 
-## Phase 0 — Resolve paths
+## Phase 0 — CLI check (required before anything else)
 
-1. `ai-paths check` or verify `$AI_DEV_OS_HOME` is set and directory exists
-2. If unset → tell user: run `$AI_DEV_OS_HOME/scripts/install-cli.sh` (or `ai-paths machine-setup`)
-3. `project_root` = directory containing this work (cwd or user path)
+Run:
+
+```bash
+check-cli
+```
+
+Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
+
+| Check | Pass | Fail |
+|-------|------|------|
+| `AI_DEV_OS_HOME` | set + directory exists | — |
+| `ai-new` | on PATH or under OS scripts | **stop** |
+| `ai-paths` | on PATH or under OS scripts | **stop** |
+| `setup-ads` skill | `~/.grok/skills/setup-ads/SKILL.md` | **stop** |
+
+**If check fails — do not proceed.** Tell user exactly:
+
+```text
+AI Dev OS CLI is not installed on this machine.
+
+Run once:
+  cd <AI_DEV_OS_HOME or ~/ai-development-system>
+  ./scripts/install-cli.sh
+  source ~/.zshrc    # Mac
+  source ~/.bashrc   # Ubuntu
+
+Then: check-cli && ai-paths check
+```
+
+Only continue Phase 1 after `check-cli` exits 0 (or user confirms install completed and re-run check).
+
+Then: `ai-paths check` for project paths; `project_root` = cwd or user path.
 
 ---
 

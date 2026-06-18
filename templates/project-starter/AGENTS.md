@@ -46,7 +46,7 @@ Follow **`/setup-ads`** skill (`~/.grok/skills/setup-ads/SKILL.md`) — SSOT: **
 | **New** | `/grill-me` | Use cases, flows, MVP, assumptions — **not** standard practices |
 | **Existing** | `/grill-with-docs` | Explore codebase, glossary, goals, clear assumptions |
 
-Flow: `ai-new` → grill → `CONTEXT.md` → summary → **`yes`** → silent intake → **`Approve intake.`**
+Flow: `check-cli` (stop + ask install-cli if fail) → `ai-new` → grill → `CONTEXT.md` → summary → **`yes`** → intake
 
 ### Required behavior (if /setup-ads not invoked manually)
 

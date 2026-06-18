@@ -42,8 +42,9 @@ Existing project: Odoo auction addon — <what you want to do>
 ## What happens (automatic)
 
 ```
-1. ai-paths check
-2. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
+1. check-cli       → if fail: stop, tell user to run install-cli.sh
+2. ai-paths check
+3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
 3. Grill session   → new: grill-me | existing: grill-with-docs
 4. Write           → CONTEXT.md, OPEN-QUESTIONS.md, work/kickoff/
 5. Summary card    → you: yes
@@ -68,11 +69,11 @@ You answer **one question at a time**. Agent recommends an answer each time.
 
 ```bash
 cd ~/ai-development-system && git pull
-./scripts/install-cli.sh    # installs ai-new, ai-paths, setup-ads skill
+./scripts/install-cli.sh    # installs ai-new, ai-paths, check-cli, setup-ads skill
 source ~/.zshrc             # Mac
 ```
 
-Verify: `ls ~/.grok/skills/setup-ads/SKILL.md`
+Verify: `check-cli && ai-paths check`
 
 ---
 

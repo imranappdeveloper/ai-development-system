@@ -20,8 +20,10 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
+ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
 info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
+info "Linked: $BIN_DIR/check-cli"
 info "Linked: $BIN_DIR/ai-bind"
 
 _ensure_path_in_rc() {
@@ -88,6 +90,7 @@ echo ""
 echo "Done. Verify:"
 echo "  source ~/.zshrc    # Mac"
 echo "  hash -r"
+echo "  check-cli"
 echo "  which ai-new ai-paths"
 echo "  ai-paths check"
 echo "  ls ~/.grok/skills/setup-ads/SKILL.md"
