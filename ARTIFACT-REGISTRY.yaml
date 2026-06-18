@@ -1,0 +1,255 @@
+# Artifact type registry — machine SSOT
+# Shapes: standards/ARTIFACT-CONTRACT.md (STD-ARTIFACT-001)
+version: 1.0.0
+status: active
+updated: 2026-06-18
+
+artifacts:
+  INT:
+    name: Intake Record
+    template_id: TP-intake
+    path_pattern: "{project_root}/work/intake/{work_id}.md"
+    producer: PB-intake-classify
+    phase: Intake
+    gate: H-INTAKE
+
+  WR:
+    name: Work Record
+    template_id: TP-WR
+    path_pattern: "{project_root}/work/{work_id}.md"
+    producers: [PB-intake-classify, PB-discovery-research, ORCH-PROJECT]
+    phase: Meta
+    gate: none
+
+  ORS:
+    name: Orchestrator Run State
+    template_id: TP-ORS
+    path_pattern: "{project_root}/work/orchestrator/{work_id}.ors.md"
+    producer: ORCH-PROJECT
+    phase: Meta
+    gate: none
+
+  DISC:
+    name: Discovery Record
+    template_id: TP-discovery
+    path_pattern: "{project_root}/work/discovery/{work_id}.md"
+    producer: PB-discovery-research
+    phase: Frame
+    gate: H-FRAME
+
+  ONBOARD:
+    name: Onboarding Record
+    template_id: null
+    path_pattern: "{project_root}/work/onboard/{work_id}.md"
+    producer: PB-onboard-project
+    phase: Frame
+    gate: H-FRAME
+    status: active
+
+  SURVEY:
+    name: Codebase Survey
+    template_id: null
+    path_pattern: "{project_root}/work/survey/{work_id}.md"
+    producer: PB-survey-codebase
+    phase: Frame
+    gate: none
+    status: active
+
+  PRD:
+    name: Product Requirements
+    template_id: TP-prd
+    path_pattern: "{project_root}/work/prd/{work_id}.md"
+    producer: PB-draft-prd
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  FEAT:
+    name: Feature Specification
+    template_id: TP-feature
+    path_pattern: "{project_root}/work/feature/{work_id}.md"
+    producer: PB-draft-feature
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  ARCH:
+    name: Architecture
+    template_id: TP-architecture
+    path_pattern: "{project_root}/work/architecture/{work_id}.md"
+    producer: PB-draft-architecture
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  DB:
+    name: Database Design
+    template_id: TP-database
+    path_pattern: "{project_root}/work/database/{work_id}.md"
+    producer: PB-draft-database
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  API:
+    name: API Specification
+    template_id: TP-api
+    path_pattern: "{project_root}/work/api/{work_id}.md"
+    producer: PB-draft-api
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  UIUX:
+    name: UI/UX Plan
+    template_id: TP-uiux
+    path_pattern: "{project_root}/work/uiux/{work_id}.md"
+    producer: PB-draft-ui-ux
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  ISS:
+    name: Issue Specification
+    template_id: null
+    path_pattern: "{project_root}/work/issue/{work_id}.md"
+    producer: PB-draft-issue
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  DIAG:
+    name: Bug Diagnosis
+    template_id: null
+    path_pattern: "{project_root}/work/diagnose/{work_id}.md"
+    producer: PB-diagnose-bug
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  SEC-ASSESS:
+    name: Security Assessment
+    template_id: null
+    path_pattern: "{project_root}/work/security/{work_id}.md"
+    producer: PB-security-assess
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  PERF-BASE:
+    name: Performance Baseline
+    template_id: null
+    path_pattern: "{project_root}/work/performance/{work_id}.md"
+    producer: PB-perf-baseline
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  DOC-PLAN:
+    name: Documentation Plan
+    template_id: TP-doc-plan
+    path_pattern: "{project_root}/work/doc-plan/{work_id}.md"
+    producer: PB-draft-doc-update
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  SCAFFOLD:
+    name: Project Scaffold
+    template_id: null
+    path_pattern: "{project_root}/work/scaffold/{work_id}.md"
+    producer: PB-bootstrap-project
+    phase: Plan
+    gate: H-PLAN
+    status: active
+
+  CODE:
+    name: Implementation Record
+    template_id: null
+    path_pattern: "{project_root}/work/implement/{lane}/{work_id}.md"
+    producers: [PB-implement-backend, PB-implement-frontend, PB-implement-mobile, PB-implement-devops, PB-implement]
+    phase: Implement
+    gate: H-IMPLEMENT
+    status: active
+
+  TEST-PLAN:
+    name: Test Plan
+    template_id: TP-testing
+    path_pattern: "{project_root}/work/testing/plan/{work_id}.md"
+    producer: PB-test-plan
+    phase: Verify
+    gate: H-VERIFY
+    status: active
+    test_phase: plan
+
+  TEST-GEN:
+    name: Test Generation Record
+    template_id: TP-testing
+    path_pattern: "{project_root}/work/testing/generate/{work_id}.md"
+    producer: PB-test-generate
+    phase: Verify
+    gate: none
+    status: active
+    test_phase: generate
+
+  TEST-RPT:
+    name: Test Report
+    template_id: TP-testing
+    path_pattern: "{project_root}/work/testing/{work_id}.md"
+    producer: PB-verify
+    phase: Verify
+    gate: H-VERIFY
+    status: active
+
+  REVIEW:
+    name: Code Review
+    template_id: TP-review
+    path_pattern: "{project_root}/work/review/{work_id}.md"
+    producer: PB-review
+    phase: Verify
+    gate: H-VERIFY
+    status: active
+
+  PERF-REVIEW:
+    name: Performance Review
+    template_id: TP-review
+    path_pattern: "{project_root}/work/perf-review/{work_id}.md"
+    producer: PB-perf-review
+    phase: Verify
+    gate: H-VERIFY
+    status: active
+
+  SEC-REVIEW:
+    name: Security Code Review
+    template_id: TP-review
+    path_pattern: "{project_root}/work/security-review/{work_id}.md"
+    producer: PB-security-review
+    phase: Verify
+    gate: H-VERIFY
+    status: active
+
+  REL:
+    name: Release Record
+    template_id: TP-release
+    path_pattern: "{project_root}/work/release/{work_id}.md"
+    producer: PB-prepare-release
+    phase: Ship
+    gate: H-SHIP
+    status: active
+
+  MAINT:
+    name: Maintenance Triage
+    template_id: TP-maintenance
+    path_pattern: "{project_root}/work/maintenance/{work_id}.md"
+    producer: PB-maintenance-triage
+    phase: Operate
+    gate: H-OPERATE
+    status: active
+
+  raw_request:
+    name: Raw Work Request
+    template_id: null
+    path_pattern: session
+    producer: human
+    phase: Intake
+    gate: none

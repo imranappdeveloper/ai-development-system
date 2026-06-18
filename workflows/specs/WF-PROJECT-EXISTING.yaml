@@ -1,0 +1,115 @@
+workflow_id: WF-PROJECT-EXISTING
+display_name: Existing Project
+aliases:
+- Onboarding
+- Brownfield adopt
+class: end_to_end
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- existing_project
+phases_ref: ../WF-PROJECT-EXISTING/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+  - id: IN-WF-02
+    name: project_root
+    source: human
+  - id: IN-WF-03
+    name: context_md
+    source: project
+    description: CONTEXT.md or equivalent
+  optional:
+  - id: IN-WF-10
+    name: survey_artifact
+    source: artifact
+    description: Prior SURVEY if exists
+  prerequisites:
+  - description: Readable codebase or docs at project_root
+outputs:
+  primary_artifacts:
+  - INT
+  - ONBOARD
+  wr_terminal_status: onboard_approved
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-onboard-project
+  phase: Frame
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: false
+required_templates:
+- TP-intake
+- TP-WR
+- TP-ORS
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-PROMPT-001
+- STD-CTX-001
+- STD-MD-001
+- STD-SEC-001
+- STD-ARCH-001
+required_checklists:
+- CL-INTAKE
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-onboard-project
+- H-FRAME
+exit_criteria:
+- H-INTAKE approve on INT
+- ONBOARD artifact at H-FRAME
+- WR documents module map and OS adoption checklist
+quality_gates:
+- id: G-WF-01
+  criterion: Spec present
+- id: G-WF-ONB-01
+  criterion: CONTEXT.md referenced in ONBOARD
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait for promotion
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery matrix; max 3 retries
+  rewind: null
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-FRAME
+  binds:
+  - ONBOARD
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

@@ -1,0 +1,218 @@
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+contract: workflows/project-orchestrator/DESIGN.md#10
+gates:
+- id: H-INTAKE
+  after_skills:
+  - PB-intake-classify
+  binds:
+  - INT
+  blocks:
+  - Frame
+  - Plan
+  skippable: false
+- id: H-FRAME
+  after_skills:
+  - PB-discovery-research
+  - PB-onboard-project
+  binds:
+  - DISC
+  - ONBOARD
+  blocks:
+  - Plan
+  skippable_workflows:
+  - WF-BUGFIX
+  - WF-RELEASE
+  - WF-MAINTENANCE
+  - WF-DOCS
+  - WF-SECURITY
+  - WF-PERF
+- id: H-PLAN
+  after_skills:
+  - PB-draft-prd
+  - PB-draft-feature
+  - PB-draft-architecture
+  - PB-draft-issue
+  - PB-security-assess
+  - PB-perf-baseline
+  - PB-draft-doc-update
+  - PB-diagnose-bug
+  - PB-bootstrap-project
+  binds:
+  - PRD
+  - FEAT
+  - ARCH
+  - ISS
+  - SEC-ASSESS
+  - PERF-BASE
+  - DOC-PLAN
+  - DIAG
+  - SCAFFOLD
+  blocks:
+  - Decompose
+  - Implement
+  skippable_workflows:
+  - WF-PROJECT-EXISTING
+- id: H-DECOMPOSE
+  after_skills:
+  - PB-decompose-issues
+  binds:
+  - ISS-*
+  blocks:
+  - Implement
+  skippable_workflows:
+  - WF-BUGFIX
+  - WF-DOCS
+  - WF-RELEASE
+  - WF-ENHANCEMENT
+- id: H-IMPLEMENT
+  after_skills:
+  - PB-implement
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+  binds:
+  - CODE
+  blocks:
+  - Verify
+  skippable: true
+  advisory: true
+- id: H-VERIFY
+  after_skills:
+  - PB-verify
+  - PB-review
+  - PB-security-review
+  - PB-perf-review
+  - PB-test-plan
+  - PB-test-generate
+  binds:
+  - TEST-RPT
+  - REVIEW
+  - SEC-REVIEW
+  - PERF-REVIEW
+  - TEST-PLAN
+  - TEST-GEN
+  blocks:
+  - Ship
+  skippable_workflows:
+  - WF-MAINTENANCE
+- id: H-SHIP
+  after_skills:
+  - PB-prepare-release
+  binds:
+  - REL
+  blocks:
+  - Operate
+  skippable_workflows:
+  - WF-BUGFIX
+- id: H-OPERATE
+  after_skills:
+  - PB-maintenance-triage
+  binds:
+  - MAINT
+  blocks:
+  - DONE
+  skippable_workflows:
+  - WF-FEATURE
+  - WF-BUGFIX
+  - WF-PROJECT-NEW
+- id: H-META
+  after_skills: []
+  binds: []
+  blocks: []
+  skippable: false
+  advisory: true
+  scope: meta_review
+  description: Human approval for MS-* meta skill recommendations before OS changes
+waivable_gates:
+  WF-BUGFIX:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-SHIP
+  WF-RELEASE:
+  - H-FRAME
+  - H-PLAN
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  WF-MAINTENANCE:
+  - H-FRAME
+  - H-PLAN
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  WF-DOCS:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-SECURITY:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-PERF:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-PROJECT-EXISTING:
+  - H-PLAN
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-ENHANCEMENT:
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-REFACTOR:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-FEATURE: []
+  WF-PROJECT-NEW:
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-DISCOVERY:
+  - H-PLAN
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-PRD:
+  - H-FRAME
+  - H-DECOMPOSE
+  - H-IMPLEMENT
+  - H-VERIFY
+  - H-SHIP
+  - H-OPERATE
+  WF-TESTING:
+  - H-FRAME
+  - H-PLAN
+  - H-DECOMPOSE
+  - H-SHIP
+  - H-OPERATE
+resolved_decisions:
+  OD-05: Per-workflow allowlist in waivable_gates
+parent_run_id_max_depth: 2

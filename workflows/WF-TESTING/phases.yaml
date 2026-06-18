@@ -1,0 +1,28 @@
+workflow_id: WF-TESTING
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: workflows/specs/WF-TESTING.yaml
+spec_ref: specs/WF-TESTING.yaml
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-verify
+- &id004
+  playbook: PB-review
+- &id005
+  gate: H-VERIFY
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Verify
+  steps:
+  - *id003
+  - *id004
+  - *id005
+terminal_gate: H-VERIFY

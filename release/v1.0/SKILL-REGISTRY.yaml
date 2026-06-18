@@ -1,0 +1,843 @@
+version: 1.0.0
+status: frozen
+updated: '2026-06-18'
+platform: AI Development OS
+skills:
+- skill_id: PB-bootstrap-project
+  name: Bootstrap Project
+  path: playbooks/bootstrap-project/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-BOOTST
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PROJECT-NEW
+    produces_artifacts:
+    - SCAFFOLD
+    requires_artifacts:
+    - PRD
+    next_candidates: []
+- skill_id: PB-decompose-issues
+  name: Decompose Issues
+  path: playbooks/decompose-issues/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-DECOMPOSE
+  checklist_id: CL-DECOMP
+  orchestrator_phase:
+  - Decompose
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    produces_artifacts:
+    - ISS-*
+    requires_artifacts:
+    - PRD
+    next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+- skill_id: PB-diagnose-bug
+  name: Diagnose Bug
+  path: playbooks/diagnose-bug/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-DIAGNO
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows: []
+    produces_artifacts:
+    - DIAG
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-draft-issue
+- skill_id: PB-discovery-research
+  name: Research / Discovery
+  path: playbooks/discovery-research/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-FRAME
+  checklist_id: CL-DISCOVERY
+  orchestrator_phase:
+  - Frame
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PROJECT-NEW
+    - WF-PROJECT-EXISTING
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    produces_artifacts:
+    - DISC
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-draft-prd
+    - PB-draft-feature
+    - PB-intake-classify
+- skill_id: PB-draft-api
+  name: Draft API
+  path: playbooks/draft-api/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-API
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    produces_artifacts:
+    - API
+    requires_artifacts:
+    - ARCH
+    next_candidates:
+    - PB-implement-backend
+    - PB-decompose-issues
+- skill_id: PB-draft-architecture
+  name: Draft Architecture
+  path: playbooks/draft-architecture/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-ARCH
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PROJECT-NEW
+    - WF-FEATURE
+    - WF-REFACTOR
+    produces_artifacts:
+    - ARCH
+    requires_artifacts:
+    - PRD
+    next_candidates:
+    - PB-decompose-issues
+    - PB-draft-database
+    - PB-draft-api
+- skill_id: PB-draft-database
+  name: Draft Database
+  path: playbooks/draft-database/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-DATABASE
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-PERF
+    produces_artifacts:
+    - DB
+    requires_artifacts:
+    - ARCH
+    next_candidates:
+    - PB-draft-api
+    - PB-decompose-issues
+    - PB-implement
+- skill_id: PB-draft-doc-update
+  name: Documentation Planner
+  path: playbooks/draft-doc-update/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-DOC-UPDATE
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-DOCS
+    produces_artifacts:
+    - DOC-PLAN
+    requires_artifacts:
+    - INT
+    next_candidates: []
+- skill_id: PB-draft-feature
+  name: Draft Feature
+  path: playbooks/draft-feature/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-DRAFT
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    produces_artifacts:
+    - FEAT
+    requires_artifacts:
+    - DISC
+    next_candidates:
+    - PB-decompose-issues
+- skill_id: PB-draft-issue
+  name: Draft Issue
+  path: playbooks/draft-issue/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-ISSUE
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-BUGFIX
+    produces_artifacts:
+    - ISS
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-implement
+- skill_id: PB-draft-prd
+  name: Draft PRD
+  path: playbooks/draft-prd/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-PRD
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PROJECT-NEW
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-PRD
+    produces_artifacts:
+    - PRD
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-draft-architecture
+    - PB-decompose-issues
+    - PB-bootstrap-project
+- skill_id: PB-draft-ui-ux
+  name: Draft UI/UX
+  path: playbooks/draft-ui-ux/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-UIUX
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    produces_artifacts:
+    - UIUX
+    requires_artifacts:
+    - PRD
+    next_candidates:
+    - PB-implement-frontend
+    - PB-implement-mobile
+- skill_id: PB-feature-planner
+  name: Feature Planner (umbrella)
+  path: playbooks/feature-planner/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: none
+  checklist_id: null
+  orchestrator_phase: []
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows: []
+    produces_artifacts: []
+    requires_artifacts: []
+    next_candidates:
+    - PB-draft-feature
+    - PB-decompose-issues
+- skill_id: PB-implement-backend
+  name: Implement Backend
+  path: playbooks/implement-backend/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-IMPLEMENT
+  checklist_id: CL-IMPLEMENT-BACKEND
+  orchestrator_phase:
+  - Implement
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    produces_artifacts:
+    - CODE
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    next_candidates:
+    - PB-verify
+    - PB-review
+- skill_id: PB-implement-devops
+  name: Implement DevOps
+  path: playbooks/implement-devops/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-IMPLEMENT
+  checklist_id: CL-IMPLEMENT-DEVOPS
+  orchestrator_phase:
+  - Implement
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-RELEASE
+    produces_artifacts:
+    - CODE
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    next_candidates:
+    - PB-verify
+    - PB-prepare-release
+- skill_id: PB-implement-frontend
+  name: Implement Frontend
+  path: playbooks/implement-frontend/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-IMPLEMENT
+  checklist_id: CL-IMPLEMENT-FRONTEND
+  orchestrator_phase:
+  - Implement
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    produces_artifacts:
+    - CODE
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    next_candidates:
+    - PB-verify
+    - PB-review
+- skill_id: PB-implement-mobile
+  name: Implement Mobile
+  path: playbooks/implement-mobile/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-IMPLEMENT
+  checklist_id: CL-IMPLEMENT-MOBILE
+  orchestrator_phase:
+  - Implement
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    produces_artifacts:
+    - CODE
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    next_candidates:
+    - PB-verify
+    - PB-review
+- skill_id: PB-implement
+  name: Implementation (umbrella)
+  path: playbooks/implement/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: none
+  checklist_id: null
+  orchestrator_phase: []
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows: []
+    produces_artifacts: []
+    requires_artifacts: []
+    next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+- skill_id: PB-intake-classify
+  name: Business Analyst / Intake
+  path: playbooks/intake-classify/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-INTAKE
+  checklist_id: CL-INTAKE
+  orchestrator_phase:
+  - Intake
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-*
+    produces_artifacts:
+    - INT
+    requires_artifacts:
+    - raw_request
+    next_candidates:
+    - PB-discovery-research
+    - PB-onboard-project
+    - PB-draft-issue
+    - PB-security-assess
+    - PB-perf-baseline
+    - PB-draft-doc-update
+    - PB-prepare-release
+    - PB-maintenance-triage
+- skill_id: PB-maintenance-triage
+  name: Maintenance Triage
+  path: playbooks/maintenance-triage/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-OPERATE
+  checklist_id: CL-MAINT
+  orchestrator_phase:
+  - Operate
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-MAINTENANCE
+    - WF-RELEASE
+    produces_artifacts:
+    - MAINT
+    requires_artifacts:
+    - INT
+    next_candidates: []
+- skill_id: PB-onboard-project
+  name: Onboard Project
+  path: playbooks/onboard-project/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-FRAME
+  checklist_id: CL-ONBOAR
+  orchestrator_phase:
+  - Frame
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PROJECT-EXISTING
+    produces_artifacts:
+    - ONBOARD
+    requires_artifacts:
+    - INT
+    - CONTEXT
+    next_candidates:
+    - PB-survey-codebase
+    - PB-draft-prd
+    - PB-draft-doc-update
+- skill_id: PB-perf-baseline
+  name: Performance Baseline
+  path: playbooks/perf-baseline/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-PERF
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-PERF
+    produces_artifacts:
+    - PERF-BASE
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-implement
+    - PB-perf-review
+- skill_id: PB-perf-review
+  name: Performance Reviewer
+  path: playbooks/perf-review/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-VERIFY
+  checklist_id: CL-PERF-REVIEW
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-PERF
+    - WF-BUGFIX
+    produces_artifacts:
+    - PERF-REVIEW
+    requires_artifacts:
+    - CODE
+    next_candidates:
+    - PB-prepare-release
+    - PB-draft-doc-update
+- skill_id: PB-prepare-release
+  name: Release Manager
+  path: playbooks/prepare-release/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-SHIP
+  checklist_id: CL-RELEASE
+  orchestrator_phase:
+  - Ship
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-RELEASE
+    produces_artifacts:
+    - REL
+    requires_artifacts:
+    - CODE
+    next_candidates:
+    - PB-maintenance-triage
+- skill_id: PB-project-orchestrator
+  name: Project Orchestrator
+  path: playbooks/project-orchestrator/
+  status: active
+  spec_version: 0.2.0
+  prompt_version: 0.2.0
+  exit_gate: none
+  checklist_id: CL-ORCH
+  orchestrator_phase: null
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-*
+    produces_artifacts:
+    - ORS
+    requires_artifacts:
+    - WR
+    next_candidates:
+    - PB-intake-classify
+- skill_id: PB-review
+  name: Code Reviewer
+  path: playbooks/review/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-VERIFY
+  checklist_id: CL-REVIEW
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    - WF-DOCS
+    produces_artifacts:
+    - REVIEW
+    requires_artifacts:
+    - CODE
+    next_candidates:
+    - PB-prepare-release
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-verify
+- skill_id: PB-security-assess
+  name: Security Assess
+  path: playbooks/security-assess/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-PLAN
+  checklist_id: CL-SECURI
+  orchestrator_phase:
+  - Plan
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-SECURITY
+    produces_artifacts:
+    - SEC-ASSESS
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-implement
+    - PB-security-review
+- skill_id: PB-security-review
+  name: Security Review
+  path: playbooks/security-review/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-VERIFY
+  checklist_id: CL-SECURITY-REVIEW
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    produces_artifacts:
+    - SEC-REVIEW
+    requires_artifacts:
+    - CODE
+    next_candidates:
+    - PB-prepare-release
+    - PB-review
+- skill_id: PB-survey-codebase
+  name: Survey Codebase
+  path: playbooks/survey-codebase/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: none
+  checklist_id: CL-SURVEY
+  orchestrator_phase:
+  - Frame
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows: []
+    produces_artifacts:
+    - SURVEY
+    requires_artifacts:
+    - INT
+    next_candidates:
+    - PB-discovery-research
+- skill_id: PB-test-generate
+  name: Test Generator
+  path: playbooks/test-generate/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: none
+  checklist_id: CL-TEST-GEN
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    produces_artifacts:
+    - TEST-GEN
+    requires_artifacts: []
+    next_candidates:
+    - PB-verify
+    - PB-review
+- skill_id: PB-test-plan
+  name: Test Planner
+  path: playbooks/test-plan/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-VERIFY
+  checklist_id: CL-TEST-PLAN
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    produces_artifacts:
+    - TEST-PLAN
+    requires_artifacts: []
+    next_candidates:
+    - PB-test-generate
+    - PB-verify
+- skill_id: PB-verify
+  name: Test Executor / Verify
+  path: playbooks/verify/
+  status: active
+  spec_version: 1.0.0
+  prompt_version: 1.0.0
+  exit_gate: H-VERIFY
+  checklist_id: CL-VERIFY
+  orchestrator_phase:
+  - Verify
+  contract: STD-SKILL-001@1.0.0
+  kind: delivery
+  routing:
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    - WF-TESTING
+    produces_artifacts:
+    - TEST-RPT
+    requires_artifacts: []
+    next_candidates:
+    - PB-review
+    - PB-prepare-release
+meta_skills:
+- skill_id: MS-architecture-review
+  name: Architecture Review
+  path: playbooks/meta-architecture-review/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: 0.1.0
+  exit_gate: H-META
+  checklist_id: CL-META-ARCH
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+- skill_id: MS-dependency-analysis
+  name: Dependency Analysis
+  path: playbooks/meta-dependency-analysis/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: ''
+  exit_gate: H-META
+  checklist_id: CL-META-DEP
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+- skill_id: MS-quality-review
+  name: Quality Review
+  path: playbooks/meta-quality-review/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: ''
+  exit_gate: H-META
+  checklist_id: CL-META-QLT
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+- skill_id: MS-repository-review
+  name: Repository Review
+  path: playbooks/meta-repository-review/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: ''
+  exit_gate: H-META
+  checklist_id: CL-META-REPO
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+- skill_id: MS-standards-review
+  name: Standards Review
+  path: playbooks/meta-standards-review/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: ''
+  exit_gate: H-META
+  checklist_id: CL-META-STD
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+- skill_id: MS-workflow-review
+  name: Workflow Review
+  path: playbooks/meta-workflow-review/
+  status: draft
+  spec_version: 0.1.0
+  prompt_version: ''
+  exit_gate: H-META
+  checklist_id: CL-META-WF
+  orchestrator_phase: null
+  contract: STD-META-001@1.0.0
+  kind: meta
+counts:
+  delivery_active: 32
+  delivery_total: 32
+  meta_draft: 6

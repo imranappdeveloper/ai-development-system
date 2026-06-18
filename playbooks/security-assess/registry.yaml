@@ -1,0 +1,40 @@
+skill_id: PB-security-assess
+name: Security Assess
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-SECURI
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+
+enums:
+  assess_scope: [auth, data_protection, api_surface, infrastructure, dependencies, supply_chain, mixed_security]
+  threat_model_method: [stride, attack_trees, pwned_model, owasp_asvs, custom_documented]
+  assess_confidence: [high, medium, low]
+  risk_severity: [critical, high, medium, low]
+  remediation_priority: [P0, P1, P2, P3]
+
+routing:
+  workflows: [WF-SECURITY]
+  phases: [Plan]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: []
+  produces_artifacts: [SEC-ASSESS]
+  requires_gates: [H-INTAKE]
+  requires_gates_soft: []
+  requires_skills: [PB-intake-classify]
+  next_candidates:
+    - PB-implement
+    - PB-security-review
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-SECURI; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

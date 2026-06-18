@@ -1,0 +1,45 @@
+skill_id: PB-perf-review
+name: Performance Reviewer
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-VERIFY
+checklist_id: CL-PERF-REVIEW
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+optional: true
+
+enums:
+  perf_review_scope: [api_latency, database, memory, concurrency, frontend_render, mobile, infra, mixed]
+  perf_confidence: [high, medium, low]
+  baseline_alignment: [aligned, partial_mismatch, requires_baseline_revise, not_applicable]
+  baseline_gap: [none, missing, waiver]
+  code_alignment: [aligned, partial_mismatch, requires_code_revise, not_applicable]
+  finding_severity: [blocker, should_fix, nit, info]
+  review_outcome: [approve, revise, reject, pending]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-PERF, WF-BUGFIX]
+  phases: [Verify]
+  requires_artifacts: [CODE]
+  requires_artifacts_soft: [PERF-BASE]
+  produces_artifacts: [PERF-REVIEW]
+  requires_gates: [H-IMPLEMENT]
+  requires_gates_soft: [H-IMPLEMENT]
+  requires_skills_soft: [PB-verify, PB-review]
+  next_candidates:
+    - PB-prepare-release
+    - PB-draft-doc-update
+  entry_denied_redirect: PB-implement-backend
+  rewind_phase: Verify
+  rewind_triggers: [requires_code_revise, requires_baseline_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-PERF-REVIEW; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — quality chain placeholder
+
+contract_waivers: []

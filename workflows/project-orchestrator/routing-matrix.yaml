@@ -1,0 +1,831 @@
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: workflows/project-orchestrator/skill-dependency-graph.yaml
+skills:
+  PB-intake-classify:
+    status: active
+    phase: Intake
+    exit_gate: H-INTAKE
+    optional: false
+    workflows: []
+    requires_artifacts:
+    - raw_request
+    requires_artifacts_soft: []
+    requires_gates: []
+    requires_gates_soft: []
+    requires_skills: []
+    produces_artifacts:
+    - INT
+    next_candidates:
+    - PB-discovery-research
+    - PB-onboard-project
+    - PB-draft-issue
+    - PB-security-assess
+    - PB-perf-baseline
+    - PB-draft-doc-update
+    - PB-prepare-release
+    - PB-maintenance-triage
+    rewind_phase: Intake
+  PB-discovery-research:
+    status: active
+    phase: Frame
+    exit_gate: H-FRAME
+    optional: true
+    workflows: []
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - DISC
+    next_candidates:
+    - PB-draft-prd
+    - PB-draft-feature
+    - PB-intake-classify
+    rewind_phase: Frame
+  PB-onboard-project:
+    status: active
+    phase: Frame
+    exit_gate: H-FRAME
+    optional: false
+    workflows:
+    - WF-PROJECT-EXISTING
+    requires_artifacts:
+    - INT
+    - CONTEXT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - ONBOARD
+    next_candidates: []
+    rewind_phase: Frame
+  PB-survey-codebase:
+    status: active
+    phase: Frame
+    exit_gate: none
+    optional: true
+    workflows: []
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - SURVEY
+    next_candidates:
+    - PB-discovery-research
+    rewind_phase: Frame
+  PB-draft-prd:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: false
+    workflows: []
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft:
+    - DISC
+    requires_gates:
+    - H-FRAME
+    requires_gates_soft:
+    - H-FRAME
+    requires_skills:
+    - PB-intake-classify
+    - PB-discovery-research
+    produces_artifacts:
+    - PRD
+    next_candidates:
+    - PB-draft-architecture
+    - PB-decompose-issues
+    - PB-bootstrap-project
+    rewind_phase: Plan
+  PB-draft-feature:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows: []
+    requires_artifacts:
+    - DISC
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-FRAME
+    requires_gates_soft: []
+    requires_skills:
+    - PB-discovery-research
+    produces_artifacts:
+    - FEAT
+    next_candidates:
+    - PB-decompose-issues
+    rewind_phase: Plan
+  PB-draft-architecture:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows:
+    - WF-PROJECT-NEW
+    - WF-REFACTOR
+    - WF-FEATURE
+    requires_artifacts:
+    - PRD
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills:
+    - PB-draft-prd
+    produces_artifacts:
+    - ARCH
+    next_candidates:
+    - PB-draft-database
+    - PB-draft-api
+    - PB-draft-ui-ux
+    rewind_phase: Plan
+  PB-draft-database:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-PERF
+    requires_artifacts:
+    - ARCH
+    requires_artifacts_soft:
+    - PRD
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills_soft:
+    - PB-draft-architecture
+    produces_artifacts:
+    - DB
+    next_candidates:
+    - PB-draft-api
+    - PB-decompose-issues
+    rewind_phase: Plan
+  PB-draft-api:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    requires_artifacts:
+    - ARCH
+    requires_artifacts_soft:
+    - PRD
+    - DB
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills_soft:
+    - PB-draft-architecture
+    produces_artifacts:
+    - API
+    next_candidates:
+    - PB-implement-backend
+    - PB-decompose-issues
+    rewind_phase: Plan
+  PB-draft-ui-ux:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    requires_artifacts:
+    - PRD
+    requires_artifacts_soft:
+    - ARCH
+    - DISC
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft:
+    - H-FRAME
+    produces_artifacts:
+    - UIUX
+    next_candidates:
+    - PB-implement-frontend
+    - PB-implement-mobile
+    rewind_phase: Plan
+  PB-draft-issue:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: false
+    workflows:
+    - WF-BUGFIX
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft:
+    - DIAG
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    - PB-diagnose-bug
+    produces_artifacts:
+    - ISS
+    next_candidates:
+    - PB-implement
+    rewind_phase: Plan
+  PB-diagnose-bug:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows: []
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - DIAG
+    next_candidates:
+    - PB-draft-issue
+    rewind_phase: Plan
+  PB-security-assess:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: false
+    workflows:
+    - WF-SECURITY
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - SEC-ASSESS
+    next_candidates:
+    - PB-implement
+    - PB-security-review
+    rewind_phase: Plan
+  PB-perf-baseline:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: false
+    workflows:
+    - WF-PERF
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft:
+    - PRD
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - PERF-BASE
+    next_candidates:
+    - PB-implement
+    - PB-perf-review
+    rewind_phase: Plan
+  PB-draft-doc-update:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: false
+    workflows:
+    - WF-DOCS
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - DOC-PLAN
+    next_candidates: []
+    rewind_phase: Plan
+  PB-bootstrap-project:
+    status: active
+    phase: Plan
+    exit_gate: H-PLAN
+    optional: true
+    workflows:
+    - WF-PROJECT-NEW
+    requires_artifacts:
+    - PRD
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills:
+    - PB-draft-prd
+    produces_artifacts:
+    - SCAFFOLD
+    next_candidates: []
+    rewind_phase: Plan
+  PB-decompose-issues:
+    status: active
+    phase: Decompose
+    exit_gate: H-DECOMPOSE
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    requires_artifacts:
+    - PRD
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills:
+    - PB-draft-prd
+    produces_artifacts:
+    - ISS-*
+    next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+    rewind_phase: Decompose
+  PB-implement:
+    status: active
+    phase: Implement
+    exit_gate: H-IMPLEMENT
+    optional: true
+    workflows: []
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    requires_artifacts_soft: []
+    requires_gates:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_gates_soft: []
+    requires_skills:
+    - PB-decompose-issues
+    - PB-draft-issue
+    produces_artifacts:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-review
+    rewind_phase: Implement
+  PB-implement-backend:
+    status: active
+    phase: Implement
+    exit_gate: H-IMPLEMENT
+    optional: true
+    implement_lane: backend
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    requires_artifacts_soft:
+    - API
+    - DB
+    - ARCH
+    requires_gates:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_gates_soft:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_skills_soft:
+    - PB-decompose-issues
+    - PB-draft-issue
+    produces_artifacts:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-review
+    entry_denied_redirect: PB-decompose-issues
+    rewind_phase: Implement
+  PB-implement-frontend:
+    status: active
+    phase: Implement
+    exit_gate: H-IMPLEMENT
+    optional: true
+    implement_lane: frontend
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    requires_artifacts_soft:
+    - UIUX
+    - API
+    - ARCH
+    requires_gates:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_gates_soft:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_skills_soft:
+    - PB-decompose-issues
+    - PB-draft-issue
+    produces_artifacts:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-review
+    entry_denied_redirect: PB-decompose-issues
+    rewind_phase: Implement
+    rewind_triggers:
+    - requires_uiux_revise
+    - requires_api_revise
+  PB-implement-mobile:
+    status: active
+    phase: Implement
+    exit_gate: H-IMPLEMENT
+    optional: true
+    implement_lane: mobile
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    requires_artifacts_soft:
+    - UIUX
+    - API
+    - ARCH
+    requires_gates:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_gates_soft:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_skills_soft:
+    - PB-decompose-issues
+    - PB-draft-issue
+    produces_artifacts:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-review
+    entry_denied_redirect: PB-decompose-issues
+    rewind_phase: Implement
+    rewind_triggers:
+    - requires_uiux_revise
+    - requires_api_revise
+  PB-implement-devops:
+    status: active
+    phase: Implement
+    exit_gate: H-IMPLEMENT
+    optional: true
+    implement_lane: devops
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-RELEASE
+    requires_artifacts:
+    - ISS-*
+    - ISS
+    requires_artifacts_soft:
+    - ARCH
+    - REL
+    requires_gates:
+    - H-DECOMPOSE
+    requires_gates_soft:
+    - H-DECOMPOSE
+    - H-PLAN
+    requires_skills_soft:
+    - PB-decompose-issues
+    - PB-draft-issue
+    produces_artifacts:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-prepare-release
+    entry_denied_redirect: PB-decompose-issues
+    rewind_phase: Implement
+    rewind_triggers:
+    - requires_arch_revise
+    - requires_rel_prepare
+  PB-test-plan:
+    status: active
+    phase: Verify
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_plan_sub_artifact
+    optional: false
+    test_phase_output: plan
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    requires_artifacts: []
+    requires_artifacts_soft:
+    - CODE
+    - PRD
+    - ISS-*
+    - ISS
+    requires_gates: []
+    requires_gates_soft:
+    - H-IMPLEMENT
+    requires_skills_soft:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+    produces_artifacts:
+    - TEST-PLAN
+    next_candidates:
+    - PB-test-generate
+    - PB-verify
+    entry_denied_redirect: PB-implement-backend
+    rewind_phase: Verify
+    rewind_triggers:
+    - requires_code_revise
+    - missing_ac_grounding
+  PB-test-generate:
+    status: active
+    phase: Verify
+    exit_gate: none
+    optional: false
+    test_phase_output: generate
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    requires_artifacts: []
+    requires_artifacts_soft:
+    - TEST-PLAN
+    - CODE
+    requires_gates: []
+    requires_gates_soft: []
+    requires_skills: []
+    requires_skills_soft:
+    - PB-test-plan
+    produces_artifacts:
+    - TEST-GEN
+    next_candidates:
+    - PB-verify
+    - PB-review
+    entry_denied_redirect: PB-test-plan
+    rewind_phase: Verify
+    rewind_triggers:
+    - requires_plan_revise
+    - requires_code_revise
+    - missing_tc_catalog
+  PB-verify:
+    status: active
+    phase: Verify
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_evidence_sub_artifact
+    optional: false
+    test_phase_output: evidence
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    - WF-TESTING
+    requires_artifacts: []
+    requires_artifacts_soft:
+    - TEST-PLAN
+    - TEST-GEN
+    requires_gates: []
+    requires_gates_soft:
+    - H-IMPLEMENT
+    requires_skills: []
+    requires_skills_soft:
+    - PB-test-generate
+    produces_artifacts:
+    - TEST-RPT
+    next_candidates:
+    - PB-review
+    - PB-prepare-release
+    entry_denied_redirect: PB-test-generate
+    rewind_phase: Verify
+    rewind_triggers:
+    - test_failures
+    - requires_code_revise
+    - missing_execution_evidence
+    - requires_gen_revise
+  PB-review:
+    status: active
+    phase: Verify
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_review_sub_artifact
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    - WF-DOCS
+    requires_artifacts:
+    - CODE
+    requires_artifacts_soft:
+    - ISS-*
+    - ISS
+    - PRD
+    - TEST-PLAN
+    - TEST-RPT
+    requires_gates: []
+    requires_gates_soft:
+    - H-IMPLEMENT
+    requires_skills_soft:
+    - PB-test-plan
+    produces_artifacts:
+    - REVIEW
+    next_candidates:
+    - PB-security-review
+    - PB-perf-review
+    - PB-prepare-release
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-verify
+    entry_denied_redirect: PB-implement-backend
+    rewind_phase: Verify
+    rewind_triggers:
+    - requires_code_revise
+    - p0_blockers
+    note: PB-test-plan PASS prerequisite; PB-test-generate active — TEST-GEN soft when linked
+  PB-security-review:
+    status: active
+    phase: Verify
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_review_sub_artifact
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    requires_artifacts:
+    - CODE
+    requires_artifacts_soft:
+    - SEC-ASSESS
+    requires_gates:
+    - H-IMPLEMENT
+    requires_gates_soft:
+    - H-IMPLEMENT
+    - H-VERIFY
+    requires_skills:
+    - PB-implement
+    requires_skills_soft:
+    - PB-verify
+    - PB-review
+    produces_artifacts:
+    - SEC-REVIEW
+    next_candidates:
+    - PB-perf-review
+    - PB-prepare-release
+    - PB-implement-backend
+    entry_denied_redirect: PB-implement-backend
+    rewind_phase: Verify
+    rewind_triggers:
+    - requires_implement_revise
+    - P0_security_finding
+    note: Verify-phase security code review — NOT PB-security-assess (Plan)
+  PB-perf-review:
+    status: active
+    phase: Verify
+    exit_gate: H-VERIFY
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-PERF
+    - WF-BUGFIX
+    requires_artifacts:
+    - CODE
+    requires_artifacts_soft:
+    - PERF-BASE
+    requires_gates:
+    - H-IMPLEMENT
+    requires_gates_soft:
+    - H-IMPLEMENT
+    requires_skills:
+    - PB-implement
+    requires_skills_soft:
+    - PB-verify
+    - PB-review
+    produces_artifacts:
+    - PERF-REVIEW
+    next_candidates:
+    - PB-prepare-release
+    - PB-draft-doc-update
+    entry_denied_redirect: PB-implement-backend
+    rewind_phase: Verify
+    rewind_triggers:
+    - requires_code_revise
+    - requires_baseline_revise
+    note: PB-test-plan PASS prerequisite per LIFECYCLE quality-chain order
+  PB-prepare-release:
+    status: active
+    phase: Ship
+    exit_gate: H-SHIP
+    optional: true
+    workflows:
+    - WF-FEATURE
+    - WF-RELEASE
+    requires_artifacts:
+    - CODE
+    requires_artifacts_soft:
+    - TEST-RPT
+    - REVIEW
+    - SEC-REVIEW
+    - PERF-REVIEW
+    - DOC-PLAN
+    requires_gates: []
+    requires_gates_soft:
+    - H-VERIFY
+    requires_skills_soft:
+    - PB-test-plan
+    - PB-test-generate
+    - PB-review
+    - PB-security-review
+    - PB-perf-review
+    - PB-draft-doc-update
+    - PB-verify
+    produces_artifacts:
+    - REL
+    next_candidates:
+    - PB-maintenance-triage
+    entry_denied_redirect: PB-verify
+    rewind_phase: Ship
+    rewind_triggers:
+    - requires_code_revise
+    - test_rpt_fail
+    - p0_open_items
+    note: Quality chain terminal skill — WF-RELEASE waives H-VERIFY and TEST-RPT per gates.yaml
+  PB-maintenance-triage:
+    status: active
+    phase: Operate
+    exit_gate: H-OPERATE
+    optional: false
+    workflows:
+    - WF-MAINTENANCE
+    - WF-RELEASE
+    requires_artifacts:
+    - INT
+    requires_artifacts_soft:
+    - REL
+    - CONTEXT
+    requires_gates:
+    - H-INTAKE
+    requires_gates_soft: []
+    requires_skills:
+    - PB-intake-classify
+    produces_artifacts:
+    - MAINT
+    next_candidates: []
+    rewind_phase: Operate

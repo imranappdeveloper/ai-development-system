@@ -1,0 +1,39 @@
+# Copy to workflows/specs/WF-<NAME>.yaml
+workflow_id: WF-<NAME>
+display_name: <Human Name>
+aliases: []
+class: end_to_end  # end_to_end | slice | operate
+version: 1.0.0
+status: draft
+updated: 2026-06-18
+owner: Workflow Owner
+intake_work_types: []
+phases_ref: ../WF-<NAME>/phases.yaml
+
+inputs:
+  required: []
+  optional: []
+  prerequisites: []
+
+outputs:
+  primary_artifacts: []
+  wr_terminal_status: done
+  ors_terminal_status: done
+
+required_skills: []
+
+required_templates: []
+
+required_standards: []
+
+required_checklists: []
+
+execution_sequence: []  # mirror phases.yaml — playbooks and H-* gates
+
+exit_criteria: []
+
+quality_gates: []
+
+failure_recovery: []
+
+human_approval: []

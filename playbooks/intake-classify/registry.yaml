@@ -1,0 +1,70 @@
+skill_id: PB-intake-classify
+name: Business Analyst / Intake
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-INTAKE
+checklist_id: CL-INTAKE
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Intake]
+
+enums:
+  work_type:
+    - new_project
+    - existing_project
+    - feature
+    - enhancement
+    - bugfix
+    - refactor
+    - security
+    - performance
+    - documentation
+    - release
+    - maintenance
+  entry_mode: [new_project, existing_project, normal]
+  classification_confidence: [high, medium, low]
+  priority: [P0, P1, P2, P3]
+
+# Intake-specific routing hint (recommend only). Orchestrator SSOT: routing-matrix.yaml
+intake_next_skill:
+  new_project: PB-discovery-research
+  existing_project: PB-onboard-project
+  feature: PB-discovery-research
+  enhancement: PB-draft-prd
+  bugfix: PB-draft-issue
+  refactor: PB-draft-architecture
+  security: PB-security-assess
+  performance: PB-perf-baseline
+  documentation: PB-draft-doc-update
+  release: PB-prepare-release
+  maintenance: PB-maintenance-triage
+  low_confidence: PB-discovery-research
+
+routing:
+  workflows: [WF-*]
+  phases: [Intake]
+  requires_artifacts: [raw_request]
+  produces_artifacts: [INT]
+  requires_gates: []
+  next_candidates:
+    - PB-discovery-research
+    - PB-onboard-project
+    - PB-draft-issue
+    - PB-security-assess
+    - PB-perf-baseline
+    - PB-draft-doc-update
+    - PB-prepare-release
+    - PB-maintenance-triage
+  entry_denied_redirect: null
+  rewind_phase: Intake
+
+slice_workflows_note: WF-DISCOVERY, WF-PRD, WF-TESTING are child-run slice entry — not primary intake routing targets
+
+changelog:
+  - version: 1.0.1
+    date: 2026-06-18
+    change: Foundation P0 — promoted active; slice workflow routing note
+  - version: 1.0.0
+    date: 2026-06-18
+    change: P0 registry — enums + intake_next_skill SSOT
+contract_waivers: []

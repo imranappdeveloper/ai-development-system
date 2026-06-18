@@ -1,0 +1,45 @@
+skill_id: PB-maintenance-triage
+name: Maintenance Triage
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-OPERATE
+checklist_id: CL-MAINT
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Operate]
+
+enums:
+  cycle_type: [scheduled, reactive, hygiene]
+  triage_confidence: [high, medium, low]
+  health_signal: [green, yellow, red]
+  batch_depth_limit: 2
+
+routing:
+  workflows: [WF-MAINTENANCE, WF-RELEASE]
+  phases: [Operate]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: [REL, CONTEXT]
+  produces_artifacts: [MAINT]
+  requires_gates: [H-INTAKE]
+  requires_gates_soft: [H-SHIP]
+  requires_skills:
+    - PB-intake-classify
+  next_candidates: []
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Operate
+  rewind_triggers: [batch_depth_exceeded]
+
+note: >-
+  Operate-phase triage for WF-MAINTENANCE and post-release WF-RELEASE.
+  REL soft-required when invoked after PB-prepare-release / H-SHIP.
+  Agent never deploys, patches production, or approves H-OPERATE.
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-MAINT 10 checks; promoted active
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

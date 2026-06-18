@@ -1,0 +1,25 @@
+workflow_id: WF-DISCOVERY
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: workflows/specs/WF-DISCOVERY.yaml
+spec_ref: specs/WF-DISCOVERY.yaml
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-discovery-research
+- &id004
+  gate: H-FRAME
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Frame
+  steps:
+  - *id003
+  - *id004
+terminal_gate: H-FRAME

@@ -1,0 +1,76 @@
+version: 1.0.0
+status: frozen
+updated: '2026-06-18'
+contracts:
+- id: STD-SKILL-001
+  path: standards/SKILL-CONTRACT.md
+  applies_to: PB-*
+- id: STD-META-001
+  path: standards/META-SKILL-CONTRACT.md
+  applies_to: MS-*
+- id: STD-ARTIFACT-001
+  path: standards/ARTIFACT-CONTRACT.md
+  applies_to: WR, ORS, artifacts
+- id: STD-ORCH-001
+  path: workflows/project-orchestrator/DESIGN.md
+  applies_to: ORCH-PROJECT
+engineering:
+- id: STD-ARCH-001
+  path: standards/engineering/STD-ARCH-001.md
+  version: 1.0.0
+  status: active
+- id: STD-CTX-001
+  path: standards/engineering/STD-CTX-001.md
+  version: 1.0.0
+  status: active
+- id: STD-DOC-001
+  path: standards/engineering/STD-DOC-001.md
+  version: 1.0.0
+  status: active
+- id: STD-LOG-001
+  path: standards/engineering/STD-LOG-001.md
+  version: 1.0.0
+  status: active
+- id: STD-MD-001
+  path: standards/engineering/STD-MD-001.md
+  version: 1.0.0
+  status: active
+- id: STD-MEM-001
+  path: standards/engineering/STD-MEM-001.md
+  version: 1.0.0
+  status: active
+- id: STD-NAMING-001
+  path: standards/engineering/STD-NAMING-001.md
+  version: 1.0.0
+  status: active
+- id: STD-PERF-001
+  path: standards/engineering/STD-PERF-001.md
+  version: 1.0.0
+  status: active
+- id: STD-PROMPT-001
+  path: standards/engineering/STD-PROMPT-001.md
+  version: 1.0.0
+  status: active
+- id: STD-REVIEW-001
+  path: standards/engineering/STD-REVIEW-001.md
+  version: 1.0.0
+  status: active
+- id: STD-SEC-001
+  path: standards/engineering/STD-SEC-001.md
+  version: 1.0.0
+  status: active
+- id: STD-TEST-001
+  path: standards/engineering/STD-TEST-001.md
+  version: 1.0.0
+  status: active
+- id: STD-VER-001
+  path: standards/engineering/STD-VER-001.md
+  version: 1.0.0
+  status: active
+- id: STD-WF-001
+  path: standards/engineering/STD-WF-001.md
+  version: 1.0.0
+  status: active
+counts:
+  contracts: 4
+  engineering: 14

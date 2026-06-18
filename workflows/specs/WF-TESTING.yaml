@@ -1,0 +1,135 @@
+workflow_id: WF-TESTING
+display_name: Testing
+aliases:
+- Verify
+- QA pass
+class: slice
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- feature
+- enhancement
+- bugfix
+phases_ref: ../WF-TESTING/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+    description: Scope of verification
+  - id: IN-WF-02
+    name: code_artifact
+    source: artifact
+    artifact_type: CODE
+  optional:
+  - id: IN-WF-10
+    name: issue_artifact
+    source: artifact
+    artifact_type: ISS
+  prerequisites:
+  - artifact_type: CODE
+    description: Implementation exists or human waiver
+outputs:
+  primary_artifacts:
+  - INT
+  - TEST-RPT
+  - REVIEW
+  wr_terminal_status: verified
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-verify
+  phase: Verify
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: false
+- skill_id: PB-review
+  phase: Verify
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: true
+required_templates:
+- TP-intake
+- TP-WR
+- TP-testing
+- TP-review
+- TP-ORS
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-TEST-001
+- STD-REVIEW-001
+- STD-ARCH-001
+- STD-PERF-001
+required_checklists:
+- CL-INTAKE
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-verify
+- PB-review
+- H-VERIFY
+exit_criteria:
+- H-VERIFY approve
+- TEST-RPT linked
+- STD-REVIEW-001 satisfied
+quality_gates:
+- id: G-WF-TEST-01
+  criterion: Tests trace to ISS or INT acceptance
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery; max 3 retries
+  rewind: null
+- code: E-WF-NO-CODE
+  trigger: CODE missing
+  action: Block at preflight
+  rewind: null
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-IMPLEMENT
+  binds:
+  - CODE
+  required: true
+  skippable: true
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-VERIFY
+  binds:
+  - TEST-RPT
+  - REVIEW
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

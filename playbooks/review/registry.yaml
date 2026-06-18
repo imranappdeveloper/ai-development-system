@@ -1,0 +1,52 @@
+skill_id: PB-review
+name: Code Reviewer
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-VERIFY
+exit_gate_mode: soft_review_sub_artifact
+checklist_id: CL-REVIEW
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+optional: true
+
+enums:
+  review_type: [code, design, security, doc, release_readiness]
+  review_confidence: [high, medium, low]
+  code_alignment: [aligned, partial_mismatch, requires_code_revise]
+  finding_severity: [P0, P1, P2]
+  recommendation: [approve, revise, reject]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX, WF-PERF, WF-DOCS]
+  phases: [Verify]
+  requires_artifacts: [CODE]
+  requires_artifacts_soft: [ISS-*, ISS, PRD, TEST-PLAN, TEST-RPT]
+  produces_artifacts: [REVIEW]
+  requires_gates: []
+  requires_gates_soft: [H-IMPLEMENT]
+  requires_skills_soft: [PB-test-plan]
+  next_candidates:
+    - PB-prepare-release
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-verify
+  entry_denied_redirect: PB-implement-backend
+  rewind_phase: Verify
+  rewind_triggers: [requires_code_revise, p0_blockers]
+
+note: >-
+  Quality chain: PB-test-plan PASS prerequisite (TEST-PLAN at work/testing/plan/{work_id}.md).
+  PB-test-generate will gate invoke when authored — not blocking draft promotion.
+  H-VERIFY soft optional review sub-artifact; full H-VERIFY after PB-verify TEST-RPT.
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-REVIEW 10 checks; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

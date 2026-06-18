@@ -1,0 +1,9 @@
+skill_id: MS-workflow-review
+name: Workflow Review
+spec_version: 0.1.0
+status: draft
+exit_gate: H-META
+checklist_id: CL-META-WF
+contract: STD-META-001@1.0.0
+type: meta
+produces: [REV-WF]

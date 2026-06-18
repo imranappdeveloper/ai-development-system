@@ -1,0 +1,38 @@
+skill_id: PB-diagnose-bug
+name: Diagnose Bug
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-DIAGNO
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: true
+
+enums:
+  diagnosis_confidence: ['high', 'medium', 'low']
+  root_cause_category: ['logic', 'config', 'data', 'integration', 'regression', 'unknown']
+  repro_status: ['confirmed', 'partial', 'blocked']
+
+routing:
+  workflows: []
+  phases: [Plan]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: []
+  produces_artifacts: [DIAG]
+  requires_gates: [H-INTAKE]
+  requires_gates_soft: []
+  requires_skills: [PB-intake-classify]
+  next_candidates:
+    - PB-draft-issue
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-DIAGNO; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

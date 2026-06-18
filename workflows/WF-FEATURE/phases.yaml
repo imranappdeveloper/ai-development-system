@@ -1,0 +1,92 @@
+workflow_id: WF-FEATURE
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: workflows/project-orchestrator/routing-matrix.yaml
+note: Canonical end-to-end path — implement via PB-implement-backend (+ optional lanes); code written with /tdd vertical slices per ISS
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-discovery-research
+- &id004
+  gate: H-FRAME
+- &id005
+  playbook: PB-draft-prd
+- &id006
+  playbook: PB-draft-architecture
+- &id007
+  playbook: PB-draft-database
+- &id008
+  playbook: PB-draft-api
+- &id009
+  playbook: PB-draft-ui-ux
+- &id010
+  gate: H-PLAN
+- &id011
+  playbook: PB-decompose-issues
+- &id012
+  gate: H-DECOMPOSE
+- &id013
+  playbook: PB-implement-backend
+- &id014
+  gate: H-IMPLEMENT
+- &id015
+  playbook: PB-test-plan
+- &id016
+  playbook: PB-test-generate
+- &id017
+  playbook: PB-verify
+- &id018
+  playbook: PB-review
+- &id019
+  playbook: PB-security-review
+- &id020
+  playbook: PB-perf-review
+- &id021
+  gate: H-VERIFY
+- &id022
+  playbook: PB-prepare-release
+- &id023
+  gate: H-SHIP
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Frame
+  steps:
+  - *id003
+  - *id004
+- phase: Plan
+  steps:
+  - *id005
+  - *id006
+  - *id007
+  - *id008
+  - *id009
+  - *id010
+- phase: Decompose
+  steps:
+  - *id011
+  - *id012
+- phase: Implement
+  steps:
+  - *id013
+  - *id014
+- phase: Verify
+  steps:
+  - *id015
+  - *id016
+  - *id017
+  - *id018
+  - *id019
+  - *id020
+  - *id021
+- phase: Ship
+  steps:
+  - *id022
+  - *id023
+terminal_gate: H-SHIP

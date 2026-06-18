@@ -1,0 +1,52 @@
+skill_id: PB-prepare-release
+name: Release Manager
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-SHIP
+checklist_id: CL-RELEASE
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Ship]
+optional: true
+
+enums:
+  release_type: [major, minor, patch, hotfix]
+  release_confidence: [high, medium, low]
+  code_alignment: [aligned, partial_mismatch, requires_code_revise]
+
+routing:
+  workflows: [WF-FEATURE, WF-RELEASE]
+  phases: [Ship]
+  requires_artifacts: [CODE]
+  requires_artifacts_soft: [TEST-RPT, REVIEW, SEC-REVIEW, PERF-REVIEW, DOC-PLAN]
+  produces_artifacts: [REL]
+  requires_gates: []
+  requires_gates_soft: [H-VERIFY]
+  requires_skills_soft:
+    - PB-test-plan
+    - PB-test-generate
+    - PB-review
+    - PB-security-review
+    - PB-perf-review
+    - PB-draft-doc-update
+    - PB-verify
+  next_candidates:
+    - PB-maintenance-triage
+  entry_denied_redirect: PB-verify
+  rewind_phase: Ship
+  rewind_triggers: [requires_code_revise, test_rpt_fail, p0_open_items]
+
+note: >-
+  Quality chain terminal skill (last in chain). CODE required; TEST-RPT soft.
+  WF-RELEASE waives H-VERIFY and TEST-RPT per gates.yaml — document in REL §8.1.
+  H-SHIP binds REL; agent never deploys or approves ship.
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-RELEASE 10 checks; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

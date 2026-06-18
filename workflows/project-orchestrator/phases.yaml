@@ -1,0 +1,13 @@
+workflow_id: _default
+version: 1.0.0
+description: Default SDLC phase spine template
+phases:
+- Intake
+- Frame
+- Plan
+- Decompose
+- Implement
+- Verify
+- Ship
+- Operate
+- DONE

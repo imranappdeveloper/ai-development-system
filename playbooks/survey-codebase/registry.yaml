@@ -1,0 +1,40 @@
+skill_id: PB-survey-codebase
+name: Survey Codebase
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: none
+checklist_id: CL-SURVEY
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Frame]
+optional: true
+
+enums:
+  survey_type: [feature_context, existing_project, enhancement, exploratory]
+  survey_confidence: [high, medium, low]
+  scan_depth: [shallow, standard, deep]
+  alignment: [aligned, partial_mismatch, requires_re_intake]
+
+routing:
+  workflows: []
+  phases: [Frame]
+  requires_artifacts: [INT]
+  produces_artifacts: [SURVEY]
+  requires_gates: [H-INTAKE]
+  requires_skills:
+    - PB-intake-classify
+  next_candidates:
+    - PB-discovery-research
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Frame
+  rewind_triggers: [requires_re_intake]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-SURVEY 10 checks; promoted active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

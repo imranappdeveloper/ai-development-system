@@ -1,0 +1,52 @@
+skill_id: PB-verify
+name: Test Executor / Verify
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-VERIFY
+exit_gate_mode: soft_evidence_sub_artifact
+checklist_id: CL-VERIFY
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+optional: false
+
+enums:
+  test_scope: [unit, integration, contract, e2e, regression, security, perf, a11y, mixed]
+  test_confidence: [high, medium, low]
+  execution_result: [pass, fail, partial, blocked, skipped]
+  plan_alignment: [aligned, partial_mismatch, requires_plan_revise, not_applicable]
+  gen_alignment: [aligned, partial_mismatch, requires_gen_revise, not_applicable]
+  code_gap: [none, missing, waiver]
+  plan_gap: [none, missing, waiver]
+  gen_gap: [none, missing, waiver]
+  tc_status: [pass, fail, blocked, skipped, not_run]
+  test_phase: [evidence]
+  verify_handoff_target: [PB-review, PB-prepare-release]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX, WF-PERF, WF-TESTING]
+  phases: [Verify]
+  requires_artifacts: []
+  requires_artifacts_soft: [TEST-PLAN, TEST-GEN, CODE]
+  produces_artifacts: [TEST-RPT]
+  test_phase_output: evidence
+  requires_gates: []
+  requires_gates_soft: [H-IMPLEMENT]
+  requires_skills: []
+  requires_skills_soft: [PB-test-generate]
+  next_candidates:
+    - PB-review
+    - PB-prepare-release
+  entry_denied_redirect: PB-test-generate
+  rewind_phase: Verify
+  rewind_triggers: [test_failures, requires_code_revise, missing_execution_evidence, requires_gen_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures with upstream stubs, CL-VERIFY; promoted active after sequential gate PASS
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — quality chain placeholder
+
+contract_waivers: []

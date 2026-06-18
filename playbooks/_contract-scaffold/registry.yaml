@@ -1,0 +1,27 @@
+# Copy to playbooks/<kebab-name>/registry.yaml — fill all fields
+skill_id: PB-<kebab-name>
+name: <Human Name>
+spec_version: 0.1.0
+prompt_version: 0.1.0
+status: draft
+exit_gate: H-<GATE> | none
+checklist_id: CL-<SHORT>
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Intake]
+
+enums: {}
+
+routing:
+  workflows: []
+  phases: []
+  requires_artifacts: []
+  produces_artifacts: []
+  requires_gates: []
+  next_candidates: []
+  entry_denied_redirect: null
+  rewind_phase: null
+
+changelog: []
+contract_waivers: []
+superseded_by: null
+retirement_date: null

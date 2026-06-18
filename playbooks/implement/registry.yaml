@@ -1,0 +1,84 @@
+skill_id: PB-implement
+name: Implementation (umbrella)
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: none
+checklist_id: null
+contract: STD-SKILL-001@1.0.0
+type: umbrella
+note: Not a routing ID — orchestrator invokes PB-implement-backend, PB-implement-frontend, PB-implement-mobile, PB-implement-devops only
+
+routing_ids:
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+
+orchestrator_phase: []
+
+enums:
+  routing_target:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+    - PB-verify
+    - none_redirect
+  implement_lane: [backend, frontend, mobile, devops, multi_lane]
+  routing_confidence: [high, medium, low]
+
+routing:
+  workflows: []
+  phases: []
+  requires_artifacts: []
+  produces_artifacts: []
+  requires_gates: []
+  next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+  entry_denied_redirect: null
+  rewind_phase: null
+
+build_order:
+  catalog_position: 11
+  after:
+    - PB-draft-ui-ux
+  prerequisite_gate:
+    skill_id: PB-draft-ui-ux
+    verdict: PASS
+    documented_in: test-runs/latest-gate.md
+    date: 2026-06-18
+  children_authoring:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+  note: Umbrella documents children; children are separate routing IDs
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Complete STD-SKILL-001 umbrella spec — implementation lane routing documentation
+
+contract_waivers:
+  - id: W-UMB-01
+    rule: STD-SKILL-001 §1 exit_gate required
+    waiver: exit_gate none — umbrella is not invokable
+    approved_by: Platform Architect
+    date: 2026-06-18
+  - id: W-UMB-02
+    rule: STD-SKILL-001 §3.2 checklist_id at promotion
+    waiver: checklist_id null — CL-IMPLEMENT-UMBRELLA advisory only in 06-quality.md
+    approved_by: Platform Architect
+    date: 2026-06-18
+  - id: W-UMB-03
+    rule: STD-SKILL-001 §5 orchestrator invocation envelope
+    waiver: No IN/OUT execution contract — documentation-only umbrella
+    approved_by: Platform Architect
+    date: 2026-06-18
+
+superseded_by: null
+retirement_date: null

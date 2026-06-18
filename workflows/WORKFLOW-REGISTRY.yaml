@@ -1,0 +1,111 @@
+# Workflow engine catalog — machine SSOT
+# Normative specs: workflows/specs/WF-*.yaml
+# Execution DAGs: workflows/WF-*/phases.yaml
+version: 1.0.0
+status: frozen
+platform_version: 1.0.0
+freeze_date: 2026-06-18
+updated: 2026-06-18
+engine_ref: workflows/ENGINE.md
+schema_ref: workflows/WORKFLOW-SPEC-SCHEMA.md
+
+workflows:
+  WF-PROJECT-NEW:
+    display_name: New Project
+    class: end_to_end
+    spec: specs/WF-PROJECT-NEW.yaml
+    phases: WF-PROJECT-NEW/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-PROJECT-EXISTING:
+    display_name: Existing Project
+    class: end_to_end
+    spec: specs/WF-PROJECT-EXISTING.yaml
+    phases: WF-PROJECT-EXISTING/phases.yaml
+    terminal_gate: H-FRAME
+
+  WF-DISCOVERY:
+    display_name: Discovery
+    aliases: [Research]
+    class: slice
+    spec: specs/WF-DISCOVERY.yaml
+    phases: WF-DISCOVERY/phases.yaml
+    terminal_gate: H-FRAME
+
+  WF-PRD:
+    display_name: PRD
+    class: slice
+    spec: specs/WF-PRD.yaml
+    phases: WF-PRD/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-FEATURE:
+    display_name: Feature
+    class: end_to_end
+    spec: specs/WF-FEATURE.yaml
+    phases: WF-FEATURE/phases.yaml
+    terminal_gate: H-SHIP
+
+  WF-ENHANCEMENT:
+    display_name: Enhancement
+    class: end_to_end
+    spec: specs/WF-ENHANCEMENT.yaml
+    phases: WF-ENHANCEMENT/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-BUGFIX:
+    display_name: Bug Fix
+    class: end_to_end
+    spec: specs/WF-BUGFIX.yaml
+    phases: WF-BUGFIX/phases.yaml
+    terminal_gate: H-VERIFY
+
+  WF-REFACTOR:
+    display_name: Refactor
+    class: end_to_end
+    spec: specs/WF-REFACTOR.yaml
+    phases: WF-REFACTOR/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-TESTING:
+    display_name: Testing
+    class: slice
+    spec: specs/WF-TESTING.yaml
+    phases: WF-TESTING/phases.yaml
+    terminal_gate: H-VERIFY
+
+  WF-RELEASE:
+    display_name: Release
+    class: operate
+    spec: specs/WF-RELEASE.yaml
+    phases: WF-RELEASE/phases.yaml
+    terminal_gate: H-OPERATE
+
+  WF-MAINTENANCE:
+    display_name: Maintenance
+    class: operate
+    spec: specs/WF-MAINTENANCE.yaml
+    phases: WF-MAINTENANCE/phases.yaml
+    terminal_gate: H-OPERATE
+
+  # Extended catalog (not in user list — preserved)
+  WF-SECURITY:
+    display_name: Security
+    class: end_to_end
+    spec: specs/WF-SECURITY.yaml
+    phases: WF-SECURITY/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-PERF:
+    display_name: Performance
+    class: end_to_end
+    spec: specs/WF-PERF.yaml
+    phases: WF-PERF/phases.yaml
+    terminal_gate: H-PLAN
+
+  WF-DOCS:
+    display_name: Documentation
+    class: end_to_end
+    spec: specs/WF-DOCS.yaml
+    phases: WF-DOCS/phases.yaml
+    terminal_gate: H-PLAN

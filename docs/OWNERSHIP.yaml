@@ -1,0 +1,130 @@
+# Repository ownership registry — machine SSOT
+# Normative policy: docs/REPOSITORY-GOVERNANCE.md
+# Human table: docs/SSOT-HIERARCHY.md
+version: 1.0.0
+status: active
+updated: 2026-06-18
+policy_ref: docs/REPOSITORY-GOVERNANCE.md
+
+roles:
+  principal_architect:
+    title: Principal Architect
+    decides: [foundation_freeze, major_bumps, contract_waivers, skill_active_promotion]
+  platform_architect:
+    title: Platform Architect
+    decides: [architecture, contracts, orchestrator_design, artifact_registry]
+  workflow_owner:
+    title: Workflow Owner
+    decides: [workflow_specs, phases_yaml, workflow_registry]
+  maintainer:
+    title: Maintainer
+    decides: [index, routing_matrix, changelog, skills_adapters]
+  template_owner:
+    title: Template Owner
+    decides: [template_shapes, tp_catalog]
+  skill_author:
+    title: Skill Author
+    decides: [playbook_folder_content]
+  engineering_lead:
+    title: Engineering Lead
+    decides: [code_review_norms]
+
+top_level:
+  FOUNDATION.md:
+    owner_role: principal_architect
+    approval: principal_architect
+  INDEX.md:
+    owner_role: maintainer
+    approval: maintainer
+  CHANGELOG.md:
+    owner_role: maintainer
+    approval: maintainer
+  ROADMAP.md:
+    owner_role: maintainer
+    approval: maintainer
+  ARTIFACT-REGISTRY.yaml:
+    owner_role: platform_architect
+    approval: platform_architect
+
+folders:
+  docs/:
+    owner_role: platform_architect
+    readme: docs/README.md
+    index_section: Documentation
+  standards/:
+    owner_role: platform_architect
+    readme: standards/README.md
+    index_section: Standards
+  standards/engineering/:
+    owner_role: platform_architect
+    readme: standards/engineering/README.md
+    index_section: Engineering Standards
+    note: Per-file owner in standard metadata owner field
+  playbooks/:
+    owner_role: skill_author
+    readme_pattern: playbooks/{name}/README.md
+    index_section: Playbooks
+    note: Each subdirectory owned by assigned skill_author
+  workflows/:
+    owner_role: workflow_owner
+    readme: workflows/README.md
+    index_section: Workflows
+  workflows/specs/:
+    owner_role: workflow_owner
+    readme: workflows/specs/README.md
+  workflows/project-orchestrator/:
+    owner_role: platform_architect
+    design_ssot: workflows/project-orchestrator/DESIGN.md
+  templates/:
+    owner_role: template_owner
+    readme: templates/README.md
+    index_section: Templates
+  checklists/:
+    owner_role: skill_author
+    readme: checklists/README.md
+    index_section: Checklists
+    note: Bound to producing skill
+  skills/:
+    owner_role: maintainer
+    readme: skills/README.md
+    index_section: Adapters
+    constraint: pointer_only_no_spec
+
+workflows:
+  pattern: workflows/WF-*/
+  spec_pattern: workflows/specs/WF-*.yaml
+  owner_role: workflow_owner
+  registry: workflows/WORKFLOW-REGISTRY.yaml
+
+skills:
+  playbook_pattern: playbooks/{kebab-name}/
+  adapter_pattern: skills/{category}/{kebab-name}/
+  owner_role: skill_author
+  machine_record: playbooks/{kebab-name}/registry.yaml
+  promotion_approver: principal_architect
+  publish_role: maintainer
+
+templates:
+  pattern: templates/{type}/template.md
+  owner_role: template_owner
+  catalog: templates/README.md
+  id_pattern: TP-{kebab-name}
+
+standards:
+  contracts:
+    paths:
+      - standards/SKILL-CONTRACT.md
+      - standards/META-SKILL-CONTRACT.md
+      - standards/ARTIFACT-CONTRACT.md
+    owner_role: platform_architect
+  engineering:
+    pattern: standards/engineering/STD-*.md
+    owner_role: per_file_metadata
+    catalog: standards/engineering/README.md
+
+transfer_process:
+  steps:
+    - Update this file owner_role or skill_author assignment
+    - Update asset metadata owner field
+    - CHANGELOG entry under Changed
+    - Maintainer updates INDEX if display owner listed

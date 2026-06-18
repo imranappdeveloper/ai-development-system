@@ -1,0 +1,41 @@
+skill_id: PB-draft-feature
+name: Draft Feature
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-DRAFT
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: true
+alternative_to: PB-draft-prd
+
+enums:
+  feat_type: [new, enhancement]
+  feat_scope: [narrow_slice, vertical_slice]
+  discovery_alignment: [aligned, partial, not_applicable]
+  discovery_gap: [none, stale]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT]
+  phases: [Plan]
+  requires_artifacts: [DISC]
+  requires_artifacts_soft: []
+  produces_artifacts: [FEAT]
+  requires_gates: [H-FRAME]
+  requires_gates_soft: []
+  requires_skills: [PB-discovery-research]
+  next_candidates:
+    - PB-decompose-issues
+  entry_denied_redirect: PB-discovery-research
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-DRAFT; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

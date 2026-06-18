@@ -1,0 +1,200 @@
+# Implementation umbrella — lane routing decision matrix
+# SSOT for machine-readable routing rules (consult only — do not invoke PB-implement)
+
+version: 1.0.0
+umbrella: PB-implement
+never_invoke: PB-implement
+updated: 2026-06-18
+
+routing_ids:
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+
+siblings_documented:
+  - PB-verify
+  - PB-review
+  - PB-decompose-issues
+  - PB-draft-issue
+
+rules:
+  - id: DM-01
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*, API]
+      artifacts_absent: [UIUX]
+      lane_signals: [api_handlers, migrations, server_logic]
+      gates_approved: [H-DECOMPOSE, H-PLAN]
+    resolve: PB-implement-backend
+    confidence: high
+    notes: Backend-only scope; API spec approved at H-PLAN
+
+  - id: DM-02
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*, UIUX]
+      scope: web_first
+      lane_signals: [components, pages, web_ui]
+      gates_approved: [H-DECOMPOSE, H-PLAN]
+    resolve: PB-implement-frontend
+    confidence: high
+    notes: UIUX approved; web implementation lane
+
+  - id: DM-03
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*, UIUX]
+      scope: mobile_first
+      lane_signals: [native_screens, react_native, mobile_ui]
+      gates_approved: [H-DECOMPOSE, H-PLAN]
+    resolve: PB-implement-mobile
+    confidence: high
+    notes: Mobile-primary scope per UIUX §7 or PRD platform tag
+
+  - id: DM-04
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*]
+      lane_signals: [cicd, iac, k8s, terraform, deployment_pipeline]
+      gates_approved: [H-DECOMPOSE]
+    resolve: PB-implement-devops
+    confidence: high
+    notes: Infra/ops ISS tags; may run parallel with app lanes
+
+  - id: DM-05
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*, API, UIUX]
+      scope: full_stack_feature
+      gates_approved: [H-DECOMPOSE, H-PLAN]
+    resolve: multi_lane
+    resolved_targets:
+      - PB-implement-backend
+      - PB-implement-frontend
+    confidence: high
+    notes: Parallel lane invokes — never single umbrella invoke
+
+  - id: DM-06
+    when:
+      workflow_id: WF-BUGFIX
+      artifacts_present: [ISS]
+      gates_approved: [H-PLAN]
+    resolve: PB-implement-backend
+    confidence: medium
+    notes: Default backend for untagged bugfix; re-check ISS lane tags
+
+  - id: DM-07
+    when:
+      workflow_id: WF-BUGFIX
+      artifacts_present: [ISS]
+      lane_signals: [frontend, css, component]
+      gates_approved: [H-PLAN]
+    resolve: PB-implement-frontend
+    confidence: high
+    notes: UI bugfix — skip decompose path
+
+  - id: DM-08
+    when:
+      phase: Implement
+      artifacts_absent: [ISS-*, ISS]
+      gates_approved: []
+    resolve: none_redirect
+    confidence: low
+    blockers:
+      - missing_issues
+      - h_decompose_not_approved
+    redirect_to: PB-decompose-issues
+    notes: Anti-pattern IMP-skip-issues
+
+  - id: DM-09
+    when:
+      skill_id_proposed: PB-implement
+    resolve: none_redirect
+    confidence: high
+    blockers:
+      - umbrella_not_invokable
+    action: emit_redirect_notice
+    notes: Anti-pattern IMP-invoke-umbrella
+
+  - id: DM-10
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*]
+      lane_signals: [frontend]
+      artifacts_absent: [UIUX]
+      gates_approved: [H-DECOMPOSE]
+    resolve: PB-implement-frontend
+    confidence: medium
+    blockers:
+      - uiux_missing_for_frontend_lane
+    notes: May proceed with architect waiver — prefer PB-draft-ui-ux first
+
+  - id: DM-11
+    when:
+      phase: Implement
+      artifacts_present: [ISS-*]
+      lane_signals: [backend]
+      artifacts_absent: [API, DB]
+    resolve: PB-implement-backend
+    confidence: medium
+    blockers:
+      - api_or_db_spec_missing
+    notes: Small scope may waive; large scope needs PB-draft-api / PB-draft-database
+
+  - id: DM-12
+    when:
+      phase: Implement
+      lane_signals: [mobile]
+      artifacts_present: [ISS-*]
+      scope: web_only_prd
+    resolve: PB-implement-frontend
+    confidence: medium
+    notes: Anti-pattern IMP-wrong-lane — mobile signal on web-only scope
+
+implement_requires_issues:
+  default: true
+  waiver_allowed: true
+  waiver_owner: human_at_h_decompose
+  single_issue_path: ISS
+
+lane_path_comparison:
+  PB-implement-backend:
+    phase: Implement
+    input_artifacts: [ISS-*, API, DB]
+    output_artifact: CODE
+    exit_gate: H-IMPLEMENT
+    checklist: CL-IMPLEMENT
+    use_when:
+      - api_handlers
+      - database_migrations
+      - server_side_logic
+  PB-implement-frontend:
+    phase: Implement
+    input_artifacts: [ISS-*, UIUX]
+    output_artifact: CODE
+    exit_gate: H-IMPLEMENT
+    checklist: CL-IMPLEMENT
+    use_when:
+      - web_components
+      - pages
+      - client_side_ui
+  PB-implement-mobile:
+    phase: Implement
+    input_artifacts: [ISS-*, UIUX]
+    output_artifact: CODE
+    exit_gate: H-IMPLEMENT
+    checklist: CL-IMPLEMENT
+    use_when:
+      - native_screens
+      - mobile_primary_scope
+  PB-implement-devops:
+    phase: Implement
+    input_artifacts: [ISS-*]
+    output_artifact: CODE
+    exit_gate: H-IMPLEMENT
+    checklist: CL-IMPLEMENT
+    use_when:
+      - cicd_pipelines
+      - infrastructure_as_code
+      - deployment_automation

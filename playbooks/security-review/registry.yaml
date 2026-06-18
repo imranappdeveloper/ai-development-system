@@ -1,0 +1,46 @@
+skill_id: PB-security-review
+name: Security Review
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-VERIFY
+optional: true
+checklist_id: CL-SECURITY-REVIEW
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+review_type: security_code
+
+enums:
+  security_review_scope: [auth, input_validation, data_exposure, crypto, dependencies, api_surface, mixed_security]
+  security_review_confidence: [high, medium, low]
+  assess_alignment: [aligned, partial_mismatch, assess_missing, not_applicable]
+  assess_gap: [none, missing, waiver]
+  finding_severity: [P0, P1, P2]
+  review_decision: [pass, changes_requested, fail, blocked]
+  test_status: [existing_pass, pending_ci, not_applicable]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX]
+  phases: [Verify]
+  requires_artifacts: [CODE]
+  requires_artifacts_soft: [SEC-ASSESS]
+  produces_artifacts: [SEC-REVIEW]
+  requires_gates: [H-IMPLEMENT]
+  requires_gates_soft: [H-IMPLEMENT, H-VERIFY]
+  requires_skills_soft: [PB-verify, PB-review]
+  next_candidates:
+    - PB-prepare-release
+    - PB-review
+  entry_denied_redirect: PB-implement
+  rewind_phase: Verify
+  rewind_triggers: [requires_implement_revise, P0_security_finding]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-SECURITY-REVIEW; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — Verify-phase security review placeholder
+
+contract_waivers: []

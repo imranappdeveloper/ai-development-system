@@ -1,0 +1,46 @@
+skill_id: PB-decompose-issues
+name: Decompose Issues
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-DECOMPOSE
+checklist_id: CL-DECOMP
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Decompose]
+optional: true
+
+enums:
+  decompose_scope: [single_lane, multi_lane, full_stack]
+  prd_alignment: [aligned, partial_mismatch, requires_prd_revise]
+  arch_alignment: [aligned, partial_mismatch, not_applicable, requires_arch_revise]
+  lane: [backend, frontend, mobile, devops]
+  decompose_confidence: [high, medium, low]
+  prd_gap: [none, missing, waiver]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT]
+  phases: [Decompose]
+  requires_artifacts: [PRD]
+  requires_artifacts_soft: [ARCH, API, DB, UIUX]
+  produces_artifacts: [ISS-*]
+  requires_gates: [H-PLAN]
+  requires_gates_soft: [H-PLAN]
+  requires_skills_soft: [PB-draft-prd]
+  next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+  entry_denied_redirect: PB-draft-prd
+  rewind_phase: Decompose
+  rewind_triggers: [requires_prd_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-DECOMP; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

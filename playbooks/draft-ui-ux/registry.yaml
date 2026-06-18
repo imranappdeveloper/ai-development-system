@@ -1,0 +1,45 @@
+skill_id: PB-draft-ui-ux
+name: Draft UI/UX
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-UIUX
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: true
+
+enums:
+  change_type: [new, additive, redesign]
+  uiux_confidence: [high, medium, low]
+  uiux_type: [screen_flow, design_system, responsive]
+  prd_alignment: [aligned, partial_mismatch, requires_prd_revise]
+  arch_alignment: [aligned, partial_mismatch, requires_arch_revise, not_applicable]
+  disc_alignment: [aligned, partial_mismatch, not_applicable]
+  arch_gap: [none, missing, waiver]
+  disc_gap: [none, missing, waiver]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT]
+  phases: [Plan]
+  requires_artifacts: [PRD]
+  requires_artifacts_soft: [ARCH, DISC]
+  produces_artifacts: [UIUX]
+  requires_gates: [H-PLAN]
+  requires_gates_soft: [H-FRAME]
+  next_candidates:
+    - PB-implement-frontend
+    - PB-implement-mobile
+  entry_denied_redirect: PB-draft-prd
+  rewind_phase: Plan
+  rewind_triggers: [requires_prd_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-UIUX; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

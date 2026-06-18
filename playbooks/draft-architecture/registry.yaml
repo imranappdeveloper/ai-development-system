@@ -1,0 +1,39 @@
+skill_id: PB-draft-architecture
+name: Draft Architecture
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-ARCH
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+
+enums:
+  architecture_type: [greenfield, as_is, delta]
+  architecture_confidence: [high, medium, low]
+  prd_alignment: [aligned, partial_mismatch, requires_prd_revise]
+
+routing:
+  workflows: [WF-PROJECT-NEW, WF-FEATURE, WF-REFACTOR]
+  phases: [Plan]
+  requires_artifacts: [PRD]
+  produces_artifacts: [ARCH]
+  requires_gates: [H-PLAN]
+  requires_skills: [PB-draft-prd]
+  next_candidates:
+    - PB-decompose-issues
+    - PB-draft-database
+    - PB-draft-api
+  entry_denied_redirect: PB-draft-prd
+  rewind_phase: Plan
+  rewind_triggers: [requires_prd_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-ARCH; promoted active
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

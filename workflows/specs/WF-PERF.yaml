@@ -1,0 +1,107 @@
+workflow_id: WF-PERF
+display_name: Performance
+aliases:
+- Performance baseline
+- Perf planning
+class: end_to_end
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- performance
+phases_ref: ../WF-PERF/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+  - id: IN-WF-02
+    name: project_root
+    source: human
+  optional:
+  - id: IN-WF-10
+    name: context_md
+    source: project
+  - id: IN-WF-11
+    name: existing_metrics
+    source: human
+  prerequisites: []
+outputs:
+  primary_artifacts:
+  - INT
+  - PERF-BASE
+  wr_terminal_status: perf_plan_approved
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-perf-baseline
+  phase: Plan
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: false
+required_templates:
+- TP-intake
+- TP-WR
+- TP-ORS
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-PERF-001
+required_checklists:
+- CL-INTAKE
+- CL-PERF
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-perf-baseline
+- H-PLAN
+exit_criteria:
+- H-PLAN approve on PERF-BASE
+- CL-PERF pass
+- Measurement plan and SLO targets documented
+quality_gates:
+- id: G-WF-PERF-01
+  criterion: PERF-BASE distinct from PERF-REVIEW (Plan vs Verify)
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery; max 3 retries
+  rewind: null
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-PLAN
+  binds:
+  - PERF-BASE
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

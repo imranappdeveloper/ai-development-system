@@ -1,0 +1,25 @@
+workflow_id: WF-PRD
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: workflows/specs/WF-PRD.yaml
+spec_ref: specs/WF-PRD.yaml
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-draft-prd
+- &id004
+  gate: H-PLAN
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Plan
+  steps:
+  - *id003
+  - *id004
+terminal_gate: H-PLAN

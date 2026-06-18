@@ -1,0 +1,126 @@
+# Feature Planner umbrella — routing decision matrix
+# SSOT for machine-readable routing rules (consult only — do not invoke PB-feature-planner)
+
+version: 1.0.0
+umbrella: PB-feature-planner
+never_invoke: PB-feature-planner
+updated: 2026-06-18
+
+routing_ids:
+  - PB-draft-feature
+  - PB-decompose-issues
+
+siblings_documented:
+  - PB-draft-prd
+  - PB-draft-issue
+  - PB-implement
+
+rules:
+  - id: DM-01
+    when:
+      phase: Plan
+      workflow_id: [WF-ENHANCEMENT, WF-FEATURE]
+      artifacts_present: [DISC]
+      artifacts_absent: [PRD, FEAT]
+      scope: narrow_single_slice
+    resolve: PB-draft-feature
+    confidence: high
+    notes: FEAT path; DISC approved at H-FRAME
+
+  - id: DM-02
+    when:
+      phase: Plan
+      workflow_id: [WF-FEATURE, WF-PROJECT-NEW]
+      artifacts_absent: [PRD]
+      scope: multi_epic_or_full_product
+    resolve: PB-draft-prd
+    confidence: high
+    notes: Sibling skill — full PRD path; then decompose typical
+
+  - id: DM-03
+    when:
+      phase: Decompose
+      artifacts_present: [PRD]
+      gates_approved: [H-PLAN]
+      needs_issue_breakdown: true
+    resolve: PB-decompose-issues
+    confidence: high
+    notes: Standard WF-FEATURE decompose step
+
+  - id: DM-04
+    when:
+      phase: Decompose
+      artifacts_present: [FEAT]
+      artifacts_absent: [PRD]
+      gates_approved: [H-PLAN]
+      needs_issue_breakdown: true
+    resolve: PB-decompose-issues
+    confidence: medium
+    notes: May require architect waiver — graph expects PRD; see EC-RT-15
+
+  - id: DM-05
+    when:
+      phase: Plan
+      artifacts_present: [FEAT]
+      gates_approved: [H-PLAN]
+      scope: single_implementable_unit
+    resolve: PB-implement
+    confidence: high
+    notes: Skip decompose — not a routing_id child but valid next step
+
+  - id: DM-06
+    when:
+      workflow_id: WF-BUGFIX
+    resolve: PB-draft-issue
+    confidence: high
+    notes: Outside umbrella children — never PB-decompose-issues
+
+  - id: DM-07
+    when:
+      phase: Decompose
+      artifacts_absent: [PRD]
+      gates_approved: []
+    resolve: none_redirect
+    confidence: low
+    blockers:
+      - missing_prd
+      - h_plan_not_approved
+    redirect_to: PB-draft-prd
+    notes: Anti-pattern FP-skip-prd
+
+  - id: DM-08
+    when:
+      skill_id_proposed: PB-feature-planner
+    resolve: none_redirect
+    confidence: high
+    blockers:
+      - umbrella_not_invokable
+    action: emit_redirect_notice
+    notes: Anti-pattern FP-invoke-umbrella
+
+decompose_requires_prd:
+  default: true
+  waiver_allowed: true
+  waiver_owner: human_at_h_plan
+
+plan_path_comparison:
+  PB-draft-feature:
+    phase: Plan
+    input_artifact: DISC
+    output_artifact: FEAT
+    exit_gate: H-PLAN
+    checklist: CL-DRAFT
+    use_when:
+      - narrow_scope
+      - enhancement_fast_path
+      - disc_sufficient
+  PB-decompose-issues:
+    phase: Decompose
+    input_artifact: PRD
+    output_artifact: ISS-*
+    exit_gate: H-DECOMPOSE
+    checklist: CL-DECOMP
+    use_when:
+      - prd_approved
+      - multiple_implementable_units
+      - wf_feature_or_enhancement

@@ -1,0 +1,293 @@
+# Skill Build Catalog — lifecycle + mapping
+version: 1.0.0
+updated: 2026-06-18
+lifecycle_phases: [design, review, gap_analysis, improve, test, stress_test, freeze, publish]
+
+skills:
+  # --- Meta (build first) ---
+  MS-architecture-review:
+    display_name: Architecture Review
+    path: playbooks/meta-architecture-review
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  MS-dependency-analysis:
+    display_name: Dependency Analysis
+    path: playbooks/meta-dependency-analysis
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  MS-standards-review:
+    display_name: Standards Review
+    path: playbooks/meta-standards-review
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  MS-workflow-review:
+    display_name: Workflow Review
+    path: playbooks/meta-workflow-review
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  MS-repository-review:
+    display_name: Repository Review
+    path: playbooks/meta-repository-review
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  MS-quality-review:
+    display_name: Quality Review
+    path: playbooks/meta-quality-review
+    type: meta
+    lifecycle_phase: design
+    status: draft
+    priority: P0
+
+  # --- Orchestrator ---
+  ORCH-PROJECT:
+    display_name: Project Orchestrator
+    alias: PB-project-orchestrator
+    path: playbooks/project-orchestrator
+    design_ref: workflows/project-orchestrator/DESIGN.md
+    type: orchestrator
+    lifecycle_phase: publish
+    status: active
+    priority: P0
+    note: Foundation P0 — orchestrator spec 0.2.0 frozen
+
+  # --- Delivery skills (user list) ---
+  PB-intake-classify:
+    display_name: Business Analyst / Intake
+    business_alias: [Business Analyst]
+    path: playbooks/intake-classify
+    lifecycle_phase: publish
+    status: active
+    priority: P0
+    note: Foundation P0 reference skill — active
+
+  PB-discovery-research:
+    display_name: Research / Discovery
+    business_alias: [Research]
+    path: playbooks/discovery-research
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Foundation P0 reference skill — active
+
+  PB-draft-prd:
+    display_name: PRD
+    business_alias: [PRD]
+    path: playbooks/draft-prd
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Planning chain gate 1 — sequential PASS
+
+  PB-feature-planner:
+    display_name: Feature Planner
+    business_alias: [Feature Planner]
+    path: playbooks/feature-planner
+    type: umbrella
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Umbrella — routing IDs decompose-issues / draft-feature
+
+  PB-draft-architecture:
+    display_name: Architecture
+    business_alias: [Architecture]
+    path: playbooks/draft-architecture
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Planning chain gate 3 — sequential PASS
+
+  PB-draft-database:
+    display_name: Database Architect
+    business_alias: [Database Architect]
+    path: playbooks/draft-database
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Engineering chain gate 1 — sequential PASS
+
+  PB-draft-api:
+    display_name: API Designer
+    business_alias: [API Designer]
+    path: playbooks/draft-api
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Engineering chain gate 2 — sequential PASS
+
+  PB-draft-ui-ux:
+    display_name: UI/UX Planner
+    business_alias: [UI/UX Planner]
+    path: playbooks/draft-ui-ux
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Engineering chain gate 3 — sequential PASS
+
+  PB-implement:
+    display_name: Implementation
+    business_alias: [Implementation]
+    path: playbooks/implement
+    type: umbrella
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Umbrella — routing IDs implement-backend/frontend/mobile/devops
+
+  PB-implement-backend:
+    display_name: Backend Engineer
+    business_alias: [Backend Engineer]
+    path: playbooks/implement-backend
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Engineering chain gate 5 — sequential PASS
+
+  PB-implement-frontend:
+    display_name: Frontend Engineer
+    business_alias: [Frontend Engineer]
+    path: playbooks/implement-frontend
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Engineering chain gate 6 — sequential PASS
+
+  PB-implement-mobile:
+    display_name: Mobile Engineer
+    business_alias: [Mobile Engineer]
+    path: playbooks/implement-mobile
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Engineering chain gate 7 — sequential PASS
+
+  PB-implement-devops:
+    display_name: DevOps Engineer
+    business_alias: [DevOps Engineer]
+    path: playbooks/implement-devops
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Engineering chain gate 8 — sequential PASS
+
+  PB-test-plan:
+    display_name: Test Planner
+    business_alias: [Test Planner]
+    path: playbooks/test-plan
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Quality chain gate 1 — sequential PASS
+
+  PB-test-generate:
+    display_name: Test Generator
+    business_alias: [Test Generator]
+    path: playbooks/test-generate
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: Quality chain gate 2 — sequential PASS
+
+  PB-verify:
+    display_name: Test Executor
+    business_alias: [Test Executor]
+    path: playbooks/verify
+    lifecycle_phase: publish
+    status: active
+    priority: P1
+    note: TEST-RPT evidence — quality chain gate before full H-VERIFY
+
+  PB-review:
+    display_name: Code Reviewer
+    business_alias: [Code Reviewer]
+    path: playbooks/review
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Quality chain gate 3 — sequential PASS
+
+  PB-security-review:
+    display_name: Security Reviewer
+    business_alias: [Security Reviewer]
+    path: playbooks/security-review
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Quality chain gate 4 — sequential PASS
+
+  PB-perf-review:
+    display_name: Performance Reviewer
+    business_alias: [Performance Reviewer]
+    path: playbooks/perf-review
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Quality chain gate 5 — sequential PASS
+
+  PB-draft-doc-update:
+    display_name: Documentation Writer
+    business_alias: [Documentation Writer]
+    path: playbooks/draft-doc-update
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Quality chain gate 6 — sequential PASS
+
+  PB-prepare-release:
+    display_name: Release Manager
+    business_alias: [Release Manager]
+    path: playbooks/prepare-release
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: Quality chain gate 7 — sequential PASS
+
+  PB-maintenance-triage:
+    display_name: Maintenance Triage
+    business_alias: [Maintenance Triage]
+    path: playbooks/maintenance-triage
+    lifecycle_phase: publish
+    status: active
+    priority: P2
+    note: WF-MAINTENANCE + WF-RELEASE operate closure
+
+build_order:
+  - meta_skills_all
+  - ORCH-PROJECT
+  - PB-intake-classify_publish
+  - PB-discovery-research_publish
+  - PB-draft-prd
+  - PB-feature-planner
+  - PB-draft-architecture
+  - PB-draft-database
+  - PB-draft-api
+  - PB-draft-ui-ux
+  - PB-implement
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+  - PB-test-plan
+  - PB-test-generate
+  - PB-verify
+  - PB-review
+  - PB-security-review
+  - PB-perf-review
+  - PB-draft-doc-update
+  - PB-prepare-release
+  - PB-maintenance-triage

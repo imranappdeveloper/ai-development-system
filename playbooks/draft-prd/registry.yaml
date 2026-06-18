@@ -1,0 +1,35 @@
+skill_id: PB-draft-prd
+name: Draft PRD
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-PRD
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+
+enums:
+  prd_type: [full, lite]
+  discovery_gap: [none, missing, waiver, stale]
+  discovery_alignment: [aligned, partial, not_applicable]
+
+routing:
+  workflows: [WF-PROJECT-NEW, WF-FEATURE, WF-ENHANCEMENT, WF-PRD]
+  phases: [Plan]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: [DISC]
+  produces_artifacts: [PRD]
+  requires_gates: []
+  requires_gates_soft: [H-FRAME]
+  next_candidates:
+    - PB-draft-architecture
+    - PB-decompose-issues
+    - PB-bootstrap-project
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec; promoted active
+contract_waivers: []

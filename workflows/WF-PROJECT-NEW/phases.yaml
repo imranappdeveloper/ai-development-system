@@ -1,0 +1,39 @@
+workflow_id: WF-PROJECT-NEW
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: skill-dependency-graph.yaml#execution_graphs
+note: Plan terminal — optional database, api, uiux specs per routing-matrix before bootstrap
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-discovery-research
+- &id004
+  gate: H-FRAME
+- &id005
+  playbook: PB-draft-prd
+- &id006
+  playbook: PB-draft-architecture
+- &id007
+  gate: H-PLAN
+- &id008
+  playbook: PB-bootstrap-project
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Frame
+  steps:
+  - *id003
+  - *id004
+- phase: Plan
+  steps:
+  - *id005
+  - *id006
+  - *id007
+  - *id008
+terminal_gate: H-PLAN

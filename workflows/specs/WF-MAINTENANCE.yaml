@@ -1,0 +1,118 @@
+workflow_id: WF-MAINTENANCE
+display_name: Maintenance
+aliases:
+- Operate
+- Triage
+class: operate
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- maintenance
+phases_ref: ../WF-MAINTENANCE/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+  - id: IN-WF-02
+    name: project_root
+    source: human
+  optional:
+  - id: IN-WF-10
+    name: child_work_ids
+    source: WR
+  prerequisites: []
+outputs:
+  primary_artifacts:
+  - INT
+  - MAINT
+  wr_terminal_status: maintenance_complete
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-maintenance-triage
+  phase: Operate
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: false
+required_templates:
+- TP-intake
+- TP-WR
+- TP-maintenance
+- TP-ORS
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-PROMPT-001
+- STD-CTX-001
+- STD-MD-001
+- STD-SEC-001
+- STD-LOG-001
+required_checklists:
+- CL-INTAKE
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-maintenance-triage
+- H-OPERATE
+exit_criteria:
+- H-OPERATE approve
+- MAINT triage record complete
+- Child work_ids routed if any
+quality_gates:
+- id: G-WF-MNT-01
+  criterion: "Batch fan-out \u2264 parent_run_id depth 2"
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery; max 3 retries
+  rewind: null
+- code: E-WF-BATCH
+  trigger: Batch depth exceeded
+  action: Block fan-out
+  rewind: null
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-FRAME
+  binds:
+  - DISC
+  required: true
+  skippable: true
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-OPERATE
+  binds:
+  - MAINT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

@@ -1,0 +1,37 @@
+skill_id: PB-discovery-research
+name: Research / Discovery
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-FRAME
+checklist_id: CL-DISCOVERY
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Frame]
+
+enums:
+  discovery_type: [new_project, existing_onboarding, feature, enhancement]
+  discovery_confidence: [high, medium, low]
+  alignment: [aligned, partial_mismatch, requires_re_intake]
+
+routing:
+  workflows: [WF-PROJECT-NEW, WF-PROJECT-EXISTING, WF-FEATURE, WF-ENHANCEMENT]
+  phases: [Frame]
+  requires_artifacts: [INT]
+  produces_artifacts: [DISC]
+  requires_gates: [H-INTAKE]
+  next_candidates:
+    - PB-draft-prd
+    - PB-draft-feature
+    - PB-intake-classify
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Frame
+  rewind_triggers: [requires_re_intake]
+
+changelog:
+  - version: 1.0.1
+    date: 2026-06-18
+    change: Foundation P0 — promoted active
+  - version: 1.0.0
+    date: 2026-06-18
+    change: P0 registry for promotion gate
+contract_waivers: []

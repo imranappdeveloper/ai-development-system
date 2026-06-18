@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  catalog-and-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify catalog consistency
+        run: ./scripts/verify-catalog.sh
+
+      - name: Sync routing graph (warn on drift)
+        run: ./scripts/sync-routing-graph.sh
+
+      - name: Simulate workflows (playbook readiness)
+        run: ./scripts/simulate-workflow.sh all
+
+  verify-active-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify active skill specs
+        run: |
+          set -euo pipefail
+          mapfile -t ACTIVE_DIRS < <(
+            grep -l '^status: active' playbooks/*/registry.yaml \
+              | grep -v '_contract-scaffold' \
+              | grep -v 'meta-' \
+              | xargs -I{} dirname {}
+          )
+          if [[ ${#ACTIVE_DIRS[@]} -eq 0 ]]; then
+            echo "No active skills found"
+            exit 1
+          fi
+          for dir in "${ACTIVE_DIRS[@]}"; do
+            echo "=== Verifying $dir ==="
+            ./scripts/verify-skill-spec.sh "$dir"
+          done

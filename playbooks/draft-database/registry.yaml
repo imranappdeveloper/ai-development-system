@@ -1,0 +1,44 @@
+skill_id: PB-draft-database
+name: Draft Database
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-DATABASE
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: true
+
+enums:
+  change_type: [new_schema, migration, optimization]
+  database_confidence: [high, medium, low]
+  arch_alignment: [aligned, partial_mismatch, requires_arch_revise]
+  prd_alignment: [aligned, partial_mismatch, requires_prd_revise, not_applicable]
+  prd_gap: [none, missing, waiver]
+
+routing:
+  workflows: [WF-FEATURE, WF-REFACTOR, WF-SECURITY, WF-PERF]
+  phases: [Plan]
+  requires_artifacts: [ARCH]
+  requires_artifacts_soft: [PRD]
+  produces_artifacts: [DB]
+  requires_gates: [H-PLAN]
+  requires_gates_soft: [H-PLAN]
+  requires_skills_soft: [PB-draft-architecture]
+  next_candidates:
+    - PB-draft-api
+    - PB-decompose-issues
+    - PB-implement
+  entry_denied_redirect: PB-draft-architecture
+  rewind_phase: Plan
+  rewind_triggers: [requires_arch_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-DATABASE; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

@@ -1,0 +1,46 @@
+skill_id: PB-implement-backend
+name: Implement Backend
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-IMPLEMENT
+checklist_id: CL-IMPLEMENT-BACKEND
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Implement]
+implement_lane: backend
+optional: true
+
+enums:
+  implement_scope: [api_handlers, migrations, server_logic, mixed_backend]
+  implement_confidence: [high, medium, low]
+  api_alignment: [aligned, partial_mismatch, requires_api_revise, not_applicable]
+  db_alignment: [aligned, partial_mismatch, requires_db_revise, not_applicable]
+  api_gap: [none, missing, waiver]
+  db_gap: [none, missing, waiver]
+  test_status: [added, updated, existing_pass, pending_ci]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX]
+  phases: [Implement]
+  requires_artifacts: [ISS-*, ISS]
+  requires_artifacts_soft: [API, DB, ARCH]
+  produces_artifacts: [CODE]
+  requires_gates: [H-DECOMPOSE, H-PLAN]
+  requires_gates_soft: [H-DECOMPOSE, H-PLAN]
+  requires_skills_soft: [PB-decompose-issues, PB-draft-issue]
+  next_candidates:
+    - PB-verify
+    - PB-review
+  entry_denied_redirect: PB-decompose-issues
+  rewind_phase: Implement
+  rewind_triggers: [requires_api_revise, requires_db_revise]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-IMPLEMENT-BACKEND; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — lane child placeholder
+
+contract_waivers: []

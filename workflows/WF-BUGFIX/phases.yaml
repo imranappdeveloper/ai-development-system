@@ -1,0 +1,49 @@
+workflow_id: WF-BUGFIX
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: skill-dependency-graph.yaml#execution_graphs
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-diagnose-bug
+- &id004
+  playbook: PB-draft-issue
+- &id005
+  gate: H-PLAN
+- &id006
+  playbook: PB-implement-backend
+- &id007
+  gate: H-IMPLEMENT
+- &id008
+  playbook: PB-test-plan
+- &id009
+  playbook: PB-test-generate
+- &id010
+  playbook: PB-verify
+- &id011
+  gate: H-VERIFY
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Plan
+  steps:
+  - *id003
+  - *id004
+  - *id005
+- phase: Implement
+  steps:
+  - *id006
+  - *id007
+- phase: Verify
+  steps:
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+terminal_gate: H-VERIFY

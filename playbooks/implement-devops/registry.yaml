@@ -1,0 +1,46 @@
+skill_id: PB-implement-devops
+name: Implement DevOps
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-IMPLEMENT
+checklist_id: CL-IMPLEMENT-DEVOPS
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Implement]
+implement_lane: devops
+optional: true
+
+enums:
+  implement_scope: [ci_pipeline, infra_as_code, deploy_pipeline, mixed_devops]
+  implement_confidence: [high, medium, low]
+  arch_alignment: [aligned, partial_mismatch, requires_arch_revise, not_applicable]
+  rel_alignment: [aligned, partial_mismatch, requires_rel_prepare, not_applicable]
+  arch_gap: [none, missing, waiver]
+  rel_gap: [none, missing, waiver]
+  pipeline_validation_status: [added, updated, existing_pass, pending_ci, plan_only]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX, WF-RELEASE]
+  phases: [Implement]
+  requires_artifacts: [ISS-*, ISS]
+  requires_artifacts_soft: [ARCH, REL]
+  produces_artifacts: [CODE]
+  requires_gates: [H-DECOMPOSE]
+  requires_gates_soft: [H-DECOMPOSE, H-PLAN]
+  requires_skills_soft: [PB-decompose-issues, PB-draft-issue]
+  next_candidates:
+    - PB-verify
+    - PB-prepare-release
+  entry_denied_redirect: PB-decompose-issues
+  rewind_phase: Implement
+  rewind_triggers: [requires_arch_revise, requires_rel_prepare]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-IMPLEMENT-DEVOPS; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — lane child placeholder
+
+contract_waivers: []

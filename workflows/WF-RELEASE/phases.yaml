@@ -1,0 +1,32 @@
+workflow_id: WF-RELEASE
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: skill-dependency-graph.yaml#execution_graphs
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-prepare-release
+- &id004
+  gate: H-SHIP
+- &id005
+  playbook: PB-maintenance-triage
+- &id006
+  gate: H-OPERATE
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Ship
+  steps:
+  - *id003
+  - *id004
+- phase: Operate
+  steps:
+  - *id005
+  - *id006
+terminal_gate: H-OPERATE

@@ -1,0 +1,38 @@
+skill_id: PB-draft-issue
+name: Draft Issue
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-ISSUE
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: false
+
+enums:
+  issue_lane: ['backend', 'frontend', 'mobile', 'devops', 'unspecified']
+  fix_scope: ['minimal', 'standard', 'hotfix']
+  issue_confidence: ['high', 'medium', 'low']
+
+routing:
+  workflows: [WF-BUGFIX]
+  phases: [Plan]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: [DIAG]
+  produces_artifacts: [ISS]
+  requires_gates: [H-INTAKE]
+  requires_gates_soft: []
+  requires_skills: [PB-intake-classify, PB-diagnose-bug]
+  next_candidates:
+    - PB-implement
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-ISSUE; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

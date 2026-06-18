@@ -1,0 +1,1051 @@
+version: 1.0.0
+status: frozen
+updated: 2026-06-18
+meta:
+  orchestrator_id: ORCH-PROJECT
+  contract: STD-SKILL-001@1.0.0
+human_gates:
+- id: H-INTAKE
+  after_skills:
+  - PB-intake-classify
+  binds:
+  - INT
+  blocks:
+  - Frame
+  - Plan
+  skippable: false
+- id: H-FRAME
+  after_skills:
+  - PB-discovery-research
+  - PB-onboard-project
+  binds:
+  - DISC
+  - ONBOARD
+  blocks:
+  - Plan
+  skippable_workflows:
+  - WF-BUGFIX
+  - WF-RELEASE
+  - WF-MAINTENANCE
+  - WF-DOCS
+  - WF-SECURITY
+  - WF-PERF
+- id: H-PLAN
+  after_skills:
+  - PB-draft-prd
+  - PB-draft-feature
+  - PB-draft-architecture
+  - PB-draft-issue
+  - PB-security-assess
+  - PB-perf-baseline
+  - PB-draft-doc-update
+  - PB-diagnose-bug
+  - PB-bootstrap-project
+  binds:
+  - PRD
+  - FEAT
+  - ARCH
+  - ISS
+  - SEC-ASSESS
+  - PERF-BASE
+  - DOC-PLAN
+  - DIAG
+  - SCAFFOLD
+  blocks:
+  - Decompose
+  - Implement
+  skippable_workflows:
+  - WF-PROJECT-EXISTING
+- id: H-DECOMPOSE
+  after_skills:
+  - PB-decompose-issues
+  binds:
+  - ISS-*
+  blocks:
+  - Implement
+  skippable_workflows:
+  - WF-BUGFIX
+  - WF-DOCS
+  - WF-RELEASE
+  - WF-ENHANCEMENT
+- id: H-IMPLEMENT
+  after_skills:
+  - PB-implement
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+  binds:
+  - CODE
+  blocks:
+  - Verify
+  skippable: true
+  advisory: true
+- id: H-VERIFY
+  after_skills:
+  - PB-verify
+  - PB-review
+  - PB-security-review
+  - PB-perf-review
+  - PB-test-plan
+  - PB-test-generate
+  binds:
+  - TEST-RPT
+  - REVIEW
+  - SEC-REVIEW
+  - PERF-REVIEW
+  - TEST-PLAN
+  - TEST-GEN
+  blocks:
+  - Ship
+  skippable_workflows:
+  - WF-MAINTENANCE
+- id: H-SHIP
+  after_skills:
+  - PB-prepare-release
+  binds:
+  - REL
+  blocks:
+  - Operate
+  skippable_workflows:
+  - WF-BUGFIX
+- id: H-OPERATE
+  after_skills:
+  - PB-maintenance-triage
+  binds:
+  - MAINT
+  blocks:
+  - DONE
+  skippable_workflows:
+  - WF-FEATURE
+  - WF-BUGFIX
+  - WF-PROJECT-NEW
+skills:
+  ORCH-PROJECT:
+    type: orchestrator
+    phase: Meta
+    status: design
+    blocking: false
+    depends_on: []
+    produces:
+    - ORS
+  PB-intake-classify:
+    phase: Intake
+    status: active
+    blocking: true
+    optional: false
+    exit_gate: H-INTAKE
+    depends_on:
+      skills: []
+      artifacts:
+      - raw_request
+      gates: []
+    produces:
+    - INT
+    next_candidates:
+    - PB-discovery-research
+    - PB-onboard-project
+    - PB-draft-issue
+    - PB-security-assess
+    - PB-perf-baseline
+    - PB-draft-doc-update
+    - PB-prepare-release
+    - PB-maintenance-triage
+    priority: P0
+  PB-discovery-research:
+    phase: Frame
+    status: active
+    blocking: false
+    optional: true
+    optional_when:
+    - enhancement_fast_path
+    - disc_waived
+    - WF-BUGFIX
+    exit_gate: H-FRAME
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - DISC
+    next_candidates:
+    - PB-draft-prd
+    - PB-draft-feature
+    - PB-intake-classify
+    rewind_triggers:
+    - requires_re_intake
+    priority: P1
+  PB-onboard-project:
+    phase: Frame
+    status: active
+    blocking: false
+    optional: false
+    optional_when:
+    - work_type_not_existing_project
+    exit_gate: H-FRAME
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - ONBOARD
+    workflows:
+    - WF-PROJECT-EXISTING
+    priority: P2
+  PB-survey-codebase:
+    phase: Frame
+    status: active
+    blocking: false
+    optional: true
+    exit_gate: none
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - SURVEY
+    next_candidates:
+    - PB-discovery-research
+    priority: P3
+  PB-draft-prd:
+    phase: Plan
+    status: draft
+    blocking: false
+    optional: false
+    optional_when:
+    - WF-BUGFIX
+    - WF-PROJECT-EXISTING
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      - PB-discovery-research
+      skills_soft:
+      - PB-discovery-research
+      artifacts:
+      - INT
+      artifacts_soft:
+      - DISC
+      gates:
+      - H-FRAME
+      gates_soft:
+      - H-FRAME
+    produces:
+    - PRD
+    next_candidates:
+    - PB-draft-architecture
+    - PB-decompose-issues
+    - PB-bootstrap-project
+    priority: P1
+  PB-draft-feature:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: true
+    alternative_to: PB-draft-prd
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-discovery-research
+      artifacts:
+      - DISC
+      gates:
+      - H-FRAME
+    produces:
+    - FEAT
+    next_candidates:
+    - PB-decompose-issues
+    priority: P3
+  PB-draft-architecture:
+    phase: Plan
+    status: draft
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-draft-prd
+      artifacts:
+      - PRD
+      gates:
+      - H-PLAN
+    produces:
+    - ARCH
+    workflows:
+    - WF-PROJECT-NEW
+    - WF-REFACTOR
+    - WF-FEATURE
+    priority: P2
+  PB-draft-issue:
+    phase: Plan
+    status: planned
+    blocking: false
+    optional: false
+    optional_when:
+    - WF-FEATURE
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      - PB-diagnose-bug
+      skills_soft:
+      - PB-diagnose-bug
+      artifacts:
+      - INT
+      artifacts_soft:
+      - DIAG
+      gates:
+      - H-INTAKE
+    produces:
+    - ISS
+    next_candidates:
+    - PB-implement
+    workflows:
+    - WF-BUGFIX
+    priority: P1
+  PB-diagnose-bug:
+    phase: Plan
+    status: planned
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - DIAG
+    next_candidates:
+    - PB-draft-issue
+    priority: P3
+  PB-security-assess:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: false
+    optional_when:
+    - work_type_not_security
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - SEC-ASSESS
+    workflows:
+    - WF-SECURITY
+    priority: P2
+  PB-perf-baseline:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: false
+    optional_when:
+    - work_type_not_performance
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - PERF-BASE
+    workflows:
+    - WF-PERF
+    priority: P2
+  PB-draft-database:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      skills_soft:
+      - PB-draft-architecture
+      artifacts:
+      - ARCH
+      artifacts_soft:
+      - PRD
+      gates:
+      - H-PLAN
+    produces:
+    - DB
+    workflows:
+    - WF-FEATURE
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-PERF
+    priority: P2
+  PB-draft-api:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      skills_soft:
+      - PB-draft-architecture
+      artifacts:
+      - ARCH
+      artifacts_soft:
+      - PRD
+      - DB
+      gates:
+      - H-PLAN
+    produces:
+    - API
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    priority: P2
+  PB-draft-ui-ux:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      artifacts:
+      - PRD
+      artifacts_soft:
+      - ARCH
+      - DISC
+      gates:
+      - H-PLAN
+      gates_soft:
+      - H-FRAME
+    produces:
+    - UIUX
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    priority: P2
+  PB-draft-doc-update:
+    phase: Plan
+    status: active
+    blocking: false
+    optional: false
+    optional_when:
+    - work_type_not_documentation
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - DOC-PLAN
+    workflows:
+    - WF-DOCS
+    priority: P2
+  PB-bootstrap-project:
+    phase: Plan
+    status: planned
+    blocking: false
+    optional: true
+    exit_gate: H-PLAN
+    depends_on:
+      skills:
+      - PB-draft-prd
+      artifacts:
+      - PRD
+      gates:
+      - H-PLAN
+    produces:
+    - SCAFFOLD
+    workflows:
+    - WF-PROJECT-NEW
+    priority: P3
+  PB-decompose-issues:
+    phase: Decompose
+    status: active
+    blocking: true
+    optional: true
+    optional_when:
+    - WF-BUGFIX
+    - single_issue_path
+    exit_gate: H-DECOMPOSE
+    depends_on:
+      skills:
+      - PB-draft-prd
+      artifacts:
+      - PRD
+      gates:
+      - H-PLAN
+    produces:
+    - ISS-*
+    next_candidates:
+    - PB-implement-backend
+    - PB-implement-frontend
+    - PB-implement-mobile
+    - PB-implement-devops
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    priority: P1
+  PB-implement-backend:
+    phase: Implement
+    status: active
+    blocking: false
+    optional: true
+    implement_lane: backend
+    exit_gate: H-IMPLEMENT
+    depends_on:
+      skills_soft:
+      - PB-decompose-issues
+      - PB-draft-issue
+      artifacts:
+      - ISS-*
+      - ISS
+      artifacts_soft:
+      - API
+      - DB
+      - ARCH
+      gates:
+      - H-DECOMPOSE
+      - H-PLAN
+      gates_soft:
+      - H-DECOMPOSE
+      - H-PLAN
+    produces:
+    - CODE
+    next_candidates:
+    - PB-test-plan
+    - PB-verify
+    - PB-review
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    priority: P1
+  PB-implement-frontend:
+    phase: Implement
+    status: active
+    blocking: false
+    optional: true
+    implement_lane: frontend
+    exit_gate: H-IMPLEMENT
+    depends_on:
+      skills_soft:
+      - PB-decompose-issues
+      - PB-draft-issue
+      artifacts:
+      - ISS-*
+      - ISS
+      artifacts_soft:
+      - UIUX
+      - API
+      - ARCH
+      gates:
+      - H-DECOMPOSE
+      - H-PLAN
+      gates_soft:
+      - H-DECOMPOSE
+      - H-PLAN
+    produces:
+    - CODE
+    next_candidates:
+    - PB-test-plan
+    - PB-verify
+    - PB-review
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    priority: P1
+  PB-implement-mobile:
+    phase: Implement
+    status: active
+    blocking: false
+    optional: true
+    implement_lane: mobile
+    exit_gate: H-IMPLEMENT
+    depends_on:
+      skills_soft:
+      - PB-decompose-issues
+      - PB-draft-issue
+      artifacts:
+      - ISS-*
+      - ISS
+      artifacts_soft:
+      - UIUX
+      - API
+      - ARCH
+      gates:
+      - H-DECOMPOSE
+      - H-PLAN
+      gates_soft:
+      - H-DECOMPOSE
+      - H-PLAN
+    produces:
+    - CODE
+    next_candidates:
+    - PB-test-plan
+    - PB-verify
+    - PB-review
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    priority: P1
+  PB-implement-devops:
+    phase: Implement
+    status: active
+    blocking: false
+    optional: true
+    implement_lane: devops
+    exit_gate: H-IMPLEMENT
+    depends_on:
+      skills_soft:
+      - PB-decompose-issues
+      - PB-draft-issue
+      artifacts:
+      - ISS-*
+      - ISS
+      artifacts_soft:
+      - ARCH
+      - REL
+      gates:
+      - H-DECOMPOSE
+      gates_soft:
+      - H-DECOMPOSE
+      - H-PLAN
+    produces:
+    - CODE
+    next_candidates:
+    - PB-test-plan
+    - PB-verify
+    - PB-prepare-release
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-RELEASE
+    priority: P1
+  PB-implement:
+    phase: Implement
+    status: active
+    blocking: false
+    optional: true
+    optional_when:
+    - WF-DOCS
+    - plan_only_terminal
+    exit_gate: H-IMPLEMENT
+    depends_on:
+      skills:
+      - PB-decompose-issues
+      - PB-draft-issue
+      skills_alternative: true
+      artifacts:
+      - ISS-*
+      - ISS
+      gates:
+      - H-DECOMPOSE
+      - H-PLAN
+      gates_alternative: true
+    produces:
+    - CODE
+    next_candidates:
+    - PB-verify
+    - PB-review
+    priority: P1
+  PB-verify:
+    phase: Verify
+    status: planned
+    blocking: false
+    optional: false
+    optional_when:
+    - WF-DOCS
+    exit_gate: H-VERIFY
+    parallel_group: verify_phase
+    parallel_order: 1
+    depends_on:
+      skills:
+      - PB-implement
+      artifacts:
+      - CODE
+      - TEST
+      gates:
+      - H-IMPLEMENT
+      gates_soft:
+      - H-IMPLEMENT
+    produces:
+    - TEST-RPT
+    next_candidates:
+    - PB-review
+    - PB-prepare-release
+    priority: P1
+  PB-test-plan:
+    phase: Verify
+    status: active
+    blocking: false
+    optional: false
+    test_phase_output: plan
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_plan_sub_artifact
+    depends_on:
+      skills_soft:
+      - PB-implement-backend
+      - PB-implement-frontend
+      - PB-implement-mobile
+      - PB-implement-devops
+      artifacts_soft:
+      - CODE
+      - PRD
+      - ISS-*
+      - ISS
+      gates_soft:
+      - H-IMPLEMENT
+    produces:
+    - TEST-PLAN
+    next_candidates:
+    - PB-test-generate
+    - PB-verify
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    priority: P1
+  PB-test-generate:
+    phase: Verify
+    status: active
+    blocking: false
+    optional: false
+    test_phase_output: generate
+    exit_gate: none
+    depends_on:
+      skills_soft:
+      - PB-test-plan
+      artifacts_soft:
+      - TEST-PLAN
+      - CODE
+    produces:
+    - TEST-GEN
+    next_candidates:
+    - PB-verify
+    - PB-review
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    - WF-PERF
+    priority: P1
+  PB-review:
+    phase: Verify
+    status: active
+    blocking: false
+    optional: true
+    exit_gate: H-VERIFY
+    parallel_group: verify_phase
+    parallel_order: 2
+    depends_on:
+      skills:
+      - PB-implement
+      - PB-verify
+      skills_soft:
+      - PB-verify
+      artifacts:
+      - CODE
+      gates:
+      - H-IMPLEMENT
+      gates_soft:
+      - H-IMPLEMENT
+    produces:
+    - REVIEW
+    next_candidates:
+    - PB-security-review
+    - PB-prepare-release
+    priority: P2
+  PB-security-review:
+    phase: Verify
+    status: active
+    blocking: false
+    optional: true
+    optional_when:
+    - work_type_not_security
+    exit_gate: H-VERIFY
+    exit_gate_mode: soft_review_sub_artifact
+    parallel_group: verify_phase
+    parallel_order: 3
+    depends_on:
+      skills:
+      - PB-implement
+      skills_soft:
+      - PB-verify
+      - PB-review
+      artifacts:
+      - CODE
+      artifacts_soft:
+      - SEC-ASSESS
+      gates:
+      - H-IMPLEMENT
+      gates_soft:
+      - H-IMPLEMENT
+      - H-VERIFY
+    produces:
+    - SEC-REVIEW
+    next_candidates:
+    - PB-perf-review
+    - PB-prepare-release
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-SECURITY
+    - WF-BUGFIX
+    priority: P2
+  PB-perf-review:
+    phase: Verify
+    status: active
+    blocking: false
+    optional: true
+    optional_when:
+    - work_type_not_performance
+    exit_gate: H-VERIFY
+    parallel_group: verify_phase
+    parallel_order: 4
+    depends_on:
+      skills:
+      - PB-implement
+      skills_soft:
+      - PB-verify
+      - PB-review
+      artifacts:
+      - CODE
+      artifacts_soft:
+      - PERF-BASE
+      gates:
+      - H-IMPLEMENT
+      gates_soft:
+      - H-IMPLEMENT
+    produces:
+    - PERF-REVIEW
+    next_candidates:
+    - PB-prepare-release
+    - PB-draft-doc-update
+    workflows:
+    - WF-FEATURE
+    - WF-ENHANCEMENT
+    - WF-REFACTOR
+    - WF-PERF
+    - WF-BUGFIX
+    priority: P2
+  PB-prepare-release:
+    phase: Ship
+    status: active
+    blocking: false
+    optional: true
+    optional_when:
+    - WF-BUGFIX
+    - no_release
+    exit_gate: H-SHIP
+    depends_on:
+      skills:
+      - PB-verify
+      artifacts:
+      - TEST-RPT
+      gates:
+      - H-VERIFY
+    produces:
+    - REL
+    workflows:
+    - WF-RELEASE
+    - WF-FEATURE
+    priority: P2
+  PB-maintenance-triage:
+    phase: Operate
+    status: active
+    blocking: false
+    optional: false
+    optional_when:
+    - non_maintenance_workflows
+    exit_gate: H-OPERATE
+    depends_on:
+      skills:
+      - PB-intake-classify
+      artifacts:
+      - INT
+      gates:
+      - H-INTAKE
+    produces:
+    - MAINT
+    workflows:
+    - WF-MAINTENANCE
+    priority: P2
+execution_graphs:
+  WF-FEATURE:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-discovery-research
+  - H-FRAME
+  - PB-draft-prd
+  - PB-draft-architecture
+  - PB-draft-database
+  - PB-draft-api
+  - PB-draft-ui-ux
+  - H-PLAN
+  - PB-decompose-issues
+  - H-DECOMPOSE
+  - PB-implement-backend
+  - H-IMPLEMENT
+  - PB-test-plan
+  - PB-test-generate
+  - PB-verify
+  - PB-review
+  - PB-security-review
+  - PB-perf-review
+  - H-VERIFY
+  - PB-prepare-release
+  - H-SHIP
+  WF-PROJECT-NEW:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-discovery-research
+  - H-FRAME
+  - PB-draft-prd
+  - PB-draft-architecture
+  - H-PLAN
+  - PB-bootstrap-project
+  WF-BUGFIX:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-diagnose-bug
+  - PB-draft-issue
+  - H-PLAN
+  - PB-implement-backend
+  - H-IMPLEMENT
+  - PB-test-plan
+  - PB-test-generate
+  - PB-verify
+  - H-VERIFY
+  WF-RELEASE:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-prepare-release
+  - H-SHIP
+  - PB-maintenance-triage
+  - H-OPERATE
+  WF-PROJECT-EXISTING:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-onboard-project
+  - H-FRAME
+  WF-ENHANCEMENT:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-discovery-research
+  - H-FRAME
+  - PB-draft-prd
+  - H-PLAN
+  WF-REFACTOR:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-draft-architecture
+  - H-PLAN
+  WF-SECURITY:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-security-assess
+  - H-PLAN
+  WF-PERF:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-perf-baseline
+  - H-PLAN
+  WF-DOCS:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-draft-doc-update
+  - H-PLAN
+  WF-MAINTENANCE:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-maintenance-triage
+  - H-OPERATE
+  WF-DISCOVERY:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-discovery-research
+  - H-FRAME
+  WF-PRD:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-draft-prd
+  - H-PLAN
+  WF-TESTING:
+  - PB-intake-classify
+  - H-INTAKE
+  - PB-verify
+  - PB-review
+  - H-VERIFY
+priority_matrix:
+  P0:
+  - ORCH-PROJECT
+  - PB-intake-classify
+  P1:
+  - PB-discovery-research
+  - PB-draft-prd
+  - PB-draft-issue
+  - PB-decompose-issues
+  - PB-implement
+  - PB-implement-backend
+  - PB-implement-frontend
+  - PB-implement-mobile
+  - PB-implement-devops
+  - PB-test-plan
+  - PB-test-generate
+  - PB-verify
+  P2:
+  - PB-onboard-project
+  - PB-draft-architecture
+  - PB-draft-database
+  - PB-draft-api
+  - PB-draft-ui-ux
+  - PB-prepare-release
+  - PB-review
+  - PB-security-review
+  - PB-perf-review
+  - PB-security-assess
+  - PB-perf-baseline
+  - PB-draft-doc-update
+  - PB-maintenance-triage
+  P3:
+  - PB-diagnose-bug
+  - PB-survey-codebase
+  - PB-draft-feature
+  - PB-bootstrap-project
+platform_version: 1.0.0

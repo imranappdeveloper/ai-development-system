@@ -1,0 +1,41 @@
+skill_id: PB-project-orchestrator
+orchestrator_id: ORCH-PROJECT
+name: Project Orchestrator
+spec_version: 0.2.0
+prompt_version: 0.2.0
+status: active
+exit_gate: none
+checklist_id: CL-ORCH
+contract: STD-SKILL-001@1.0.0
+type: orchestrator
+design_ref: workflows/project-orchestrator/DESIGN.md
+produces: [ORS]
+
+enums:
+  command: [start, resume, tick, record_gate, abort, rewind]
+  run_status: [idle, running, awaiting_human, recovering, done, aborted]
+  phase: [Intake, Frame, Plan, Decompose, Implement, Verify, Ship, Operate, DONE]
+
+routing:
+  workflows: [WF-*]
+  phases: [Meta, Intake, Frame, Plan, Decompose, Implement, Verify, Ship, Operate]
+  produces_artifacts: [ORS]
+  requires_artifacts: [WR]
+  next_candidates: [PB-intake-classify]
+  design_ref: workflows/project-orchestrator/DESIGN.md
+  substrate:
+    - workflows/project-orchestrator/routing-matrix.yaml
+    - workflows/project-orchestrator/gates.yaml
+    - workflows/project-orchestrator/integrations.md
+    - workflows/WF-*/phases.yaml
+  note: Orchestrator is not a row in routing-matrix — it reads the matrix to route child PB-*
+
+changelog:
+  - version: 0.2.0
+    date: 2026-06-18
+    change: Complete spec 01–11; examples; fixtures; promotion to active
+  - version: 0.1.0
+    date: 2026-06-18
+    change: Scaffold from DESIGN; substrate P0
+
+contract_waivers: []

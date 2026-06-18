@@ -1,0 +1,39 @@
+skill_id: PB-draft-doc-update
+name: Documentation Planner
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-DOC-UPDATE
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+
+enums:
+  doc_plan_type: [full, lite, changelog, api_reference, runbook, onboarding]
+  doc_scope: [project_docs, os_docs, api_docs, mixed]
+  quality_chain_gap: [none, missing, waiver, stale]
+  quality_chain_alignment: [aligned, partial, not_applicable]
+  drift_signal: [green, yellow, red]
+  change_type: [update, create, remove, deprecate]
+
+routing:
+  workflows: [WF-DOCS]
+  phases: [Plan]
+  requires_artifacts: [INT]
+  requires_artifacts_soft: [REVIEW, SEC-REVIEW, PERF-REVIEW, CODE]
+  produces_artifacts: [DOC-PLAN]
+  requires_gates: [H-INTAKE]
+  requires_gates_soft: []
+  next_candidates: []
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-DOC-UPDATE; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — honest planned scaffold registry
+
+contract_waivers: []

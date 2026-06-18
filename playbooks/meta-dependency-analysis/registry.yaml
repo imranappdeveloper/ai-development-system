@@ -1,0 +1,9 @@
+skill_id: MS-dependency-analysis
+name: Dependency Analysis
+spec_version: 0.1.0
+status: draft
+exit_gate: H-META
+checklist_id: CL-META-DEP
+contract: STD-META-001@1.0.0
+type: meta
+produces: [REV-DEP]

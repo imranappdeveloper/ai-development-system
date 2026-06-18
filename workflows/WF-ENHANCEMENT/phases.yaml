@@ -1,0 +1,33 @@
+workflow_id: WF-ENHANCEMENT
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+derived_from: skill-dependency-graph.yaml#execution_graphs
+note: Terminal H-PLAN for plan-only slice; full path may continue via routing-matrix through database, api, uiux, decompose, implement lanes, test-plan, test-generate, verify, and review skills
+execution_sequence:
+- &id001
+  playbook: PB-intake-classify
+- &id002
+  gate: H-INTAKE
+- &id003
+  playbook: PB-discovery-research
+- &id004
+  gate: H-FRAME
+- &id005
+  playbook: PB-draft-prd
+- &id006
+  gate: H-PLAN
+phases:
+- phase: Intake
+  steps:
+  - *id001
+  - *id002
+- phase: Frame
+  steps:
+  - *id003
+  - *id004
+- phase: Plan
+  steps:
+  - *id005
+  - *id006
+terminal_gate: H-PLAN

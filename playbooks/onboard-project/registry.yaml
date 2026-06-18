@@ -1,0 +1,41 @@
+skill_id: PB-onboard-project
+name: Onboard Project
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-FRAME
+checklist_id: CL-ONBOAR
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Frame]
+
+enums:
+  onboarding_type: [existing_project]
+  onboarding_confidence: [high, medium, low]
+  alignment: [aligned, partial_mismatch, requires_re_intake]
+  context_drift: [none, minor, major]
+
+routing:
+  workflows: [WF-PROJECT-EXISTING]
+  phases: [Frame]
+  requires_artifacts: [INT, CONTEXT]
+  produces_artifacts: [ONBOARD]
+  requires_gates: [H-INTAKE]
+  requires_skills:
+    - PB-intake-classify
+  next_candidates:
+    - PB-survey-codebase
+    - PB-draft-prd
+    - PB-draft-doc-update
+  entry_denied_redirect: PB-intake-classify
+  rewind_phase: Frame
+  rewind_triggers: [requires_re_intake]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-ONBOAR 10 checks; promoted active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []

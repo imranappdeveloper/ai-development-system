@@ -1,0 +1,48 @@
+skill_id: PB-test-generate
+name: Test Generator
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: none
+checklist_id: CL-TEST-GEN
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+optional: false
+
+enums:
+  test_scope: [unit, integration, contract, e2e, regression, security, perf, a11y, mixed]
+  test_confidence: [high, medium, low]
+  plan_alignment: [aligned, partial_mismatch, requires_plan_revise, not_applicable]
+  code_alignment: [aligned, partial_mismatch, requires_code_revise, not_applicable]
+  code_gap: [none, missing, waiver]
+  file_action: [created, updated, skipped, existing, deferred]
+  test_phase: [generate]
+  gen_handoff_target: [PB-verify, PB-review]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX, WF-PERF]
+  phases: [Verify]
+  requires_artifacts: []
+  requires_artifacts_soft: [TEST-PLAN, CODE]
+  produces_artifacts: [TEST-GEN]
+  test_phase_output: generate
+  requires_gates: []
+  requires_gates_soft: []
+  requires_skills: []
+  requires_skills_soft: [PB-test-plan]
+  next_candidates:
+    - PB-verify
+    - PB-review
+  entry_denied_redirect: PB-test-plan
+  rewind_phase: Verify
+  rewind_triggers: [requires_plan_revise, requires_code_revise, missing_tc_catalog]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures with TEST-PLAN stub, CL-TEST-GEN; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — quality chain placeholder
+
+contract_waivers: []

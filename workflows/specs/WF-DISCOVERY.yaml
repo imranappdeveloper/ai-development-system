@@ -1,0 +1,123 @@
+workflow_id: WF-DISCOVERY
+display_name: Discovery
+aliases:
+- Research
+- Frame
+- Discovery Research
+class: slice
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- new_project
+- feature
+- enhancement
+phases_ref: ../WF-DISCOVERY/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+  - id: IN-WF-02
+    name: intake_artifact
+    source: artifact
+    artifact_type: INT
+  - id: IN-WF-03
+    name: work_id
+    source: WR
+  optional:
+  - id: IN-WF-10
+    name: context_md
+    source: project
+  prerequisites:
+  - gate: H-INTAKE
+    artifact: INT
+    description: Approved INT or documented waiver
+outputs:
+  primary_artifacts:
+  - INT
+  - DISC
+  wr_terminal_status: discovery_approved
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-discovery-research
+  phase: Frame
+  status_accept:
+  - draft
+  - active
+  optional: false
+required_templates:
+- TP-intake
+- TP-WR
+- TP-discovery
+- TP-ORS
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-PROMPT-001
+- STD-CTX-001
+- STD-MD-001
+- STD-SEC-001
+required_checklists:
+- CL-INTAKE
+- CL-DISCOVERY
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-discovery-research
+- H-FRAME
+exit_criteria:
+- CL-DISCOVERY pass on DISC
+- H-FRAME approve
+- intake_classification_alignment block present in DISC
+quality_gates:
+- id: G-WF-04
+  criterion: INT prerequisite documented
+- id: G-WF-DISC-01
+  criterion: No PRD content in DISC
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait for promotion
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery matrix; max 3 retries
+  rewind: null
+- code: E-WF-REWIND-INT
+  trigger: alignment requires_re_intake
+  action: Recommend PB-intake-classify
+  rewind: Intake
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-FRAME
+  binds:
+  - DISC
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

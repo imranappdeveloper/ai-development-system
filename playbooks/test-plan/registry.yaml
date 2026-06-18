@@ -1,0 +1,49 @@
+skill_id: PB-test-plan
+name: Test Planner
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-VERIFY
+exit_gate_mode: soft_plan_sub_artifact
+checklist_id: CL-TEST-PLAN
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Verify]
+optional: false
+
+enums:
+  test_scope: [unit, integration, contract, e2e, regression, security, perf, a11y, mixed]
+  test_confidence: [high, medium, low]
+  code_alignment: [aligned, partial_mismatch, requires_code_revise, not_applicable]
+  prd_alignment: [aligned, partial_mismatch, not_applicable]
+  iss_alignment: [aligned, partial_mismatch, not_applicable]
+  code_gap: [none, missing, waiver]
+  test_layer_inclusion: [yes, no, deferred]
+  test_phase: [plan]
+  plan_handoff_target: [PB-test-generate]
+
+routing:
+  workflows: [WF-FEATURE, WF-ENHANCEMENT, WF-REFACTOR, WF-SECURITY, WF-BUGFIX, WF-PERF]
+  phases: [Verify]
+  requires_artifacts: []
+  requires_artifacts_soft: [CODE, PRD, ISS-*, ISS]
+  produces_artifacts: [TEST-PLAN]
+  test_phase_output: plan
+  requires_gates: []
+  requires_gates_soft: [H-IMPLEMENT]
+  requires_skills_soft: [PB-implement-backend, PB-implement-frontend, PB-implement-mobile, PB-implement-devops]
+  next_candidates:
+    - PB-test-generate
+    - PB-verify
+  entry_denied_redirect: PB-implement-backend
+  rewind_phase: Verify
+  rewind_triggers: [requires_code_revise, missing_ac_grounding]
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures with CODE stub, CL-TEST-PLAN; status draft pending sequential gate
+  - version: 0.0.1-scaffold
+    date: 2026-06-18
+    change: P0 catalog integrity — quality chain placeholder
+
+contract_waivers: []

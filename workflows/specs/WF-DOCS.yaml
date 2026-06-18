@@ -1,0 +1,111 @@
+workflow_id: WF-DOCS
+display_name: Documentation
+aliases:
+- Docs update
+- Documentation planning
+class: end_to_end
+version: 1.0.0
+status: active
+updated: '2026-06-18'
+owner: Workflow Owner
+intake_work_types:
+- docs
+- documentation
+phases_ref: ../WF-DOCS/phases.yaml
+inputs:
+  required:
+  - id: IN-WF-01
+    name: raw_request
+    source: human
+  - id: IN-WF-02
+    name: project_root
+    source: human
+  optional:
+  - id: IN-WF-10
+    name: context_md
+    source: project
+  - id: IN-WF-11
+    name: prior_doc_plan
+    source: artifact
+    artifact_type: DOC-PLAN
+  prerequisites: []
+outputs:
+  primary_artifacts:
+  - INT
+  - DOC-PLAN
+  wr_terminal_status: docs_plan_approved
+  ors_terminal_status: done
+required_skills:
+- skill_id: PB-intake-classify
+  phase: Intake
+  status_accept:
+  - draft
+  - active
+  optional: false
+- skill_id: PB-draft-doc-update
+  phase: Plan
+  status_accept:
+  - planned
+  - draft
+  - active
+  optional: false
+required_templates:
+- TP-intake
+- TP-WR
+- TP-ORS
+- TP-doc-plan
+required_standards:
+- STD-WF-001
+- STD-ARTIFACT-001
+- STD-NAMING-001
+- STD-MEM-001
+- STD-LOG-001
+- STD-VER-001
+- STD-MD-001
+- STD-CTX-001
+required_checklists:
+- CL-INTAKE
+- CL-DOC-UPDATE
+- CL-ORCH
+execution_sequence:
+- PB-intake-classify
+- H-INTAKE
+- PB-draft-doc-update
+- H-PLAN
+exit_criteria:
+- H-PLAN approve on DOC-PLAN
+- CL-DOC-UPDATE pass
+- Documentation scope and update plan documented
+quality_gates:
+- id: G-WF-DOCS-01
+  criterion: DOC-PLAN path uses work/doc-plan/ per ARTIFACT-REGISTRY
+failure_recovery:
+- code: E-WF-PREFLIGHT
+  trigger: Missing required input or artifact
+  action: Human hold; list inputs.required
+  rewind: null
+- code: E-WF-GATE-REJECT
+  trigger: Human reject at H-*
+  action: ORS aborted or revise per gate
+  rewind: prior phase
+- code: E-WF-PLANNED
+  trigger: Next skill status planned
+  action: Block invoke; waiver or wait
+  rewind: null
+- code: E-WF-SKILL
+  trigger: Playbook OUT-05 escalation
+  action: ORCH recovery; max 3 retries
+  rewind: null
+human_approval:
+- gate_id: H-INTAKE
+  binds:
+  - INT
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates
+- gate_id: H-PLAN
+  binds:
+  - DOC-PLAN
+  required: true
+  skippable: false
+  waivable_via: gates.yaml#waivable_gates

@@ -1,0 +1,38 @@
+skill_id: PB-bootstrap-project
+name: Bootstrap Project
+spec_version: 1.0.0
+prompt_version: 1.0.0
+status: active
+exit_gate: H-PLAN
+checklist_id: CL-BOOTST
+contract: STD-SKILL-001@1.0.0
+orchestrator_phase: [Plan]
+optional: true
+
+enums:
+  scaffold_scope: ['minimal', 'standard', 'full']
+  stack_source: ['prd', 'arch', 'human_hint', 'default_template']
+  scaffold_confidence: ['high', 'medium', 'low']
+
+routing:
+  workflows: [WF-PROJECT-NEW]
+  phases: [Plan]
+  requires_artifacts: [PRD]
+  requires_artifacts_soft: [ARCH, DISC]
+  produces_artifacts: [SCAFFOLD]
+  requires_gates: [H-PLAN]
+  requires_gates_soft: []
+  requires_skills: [PB-draft-prd]
+  next_candidates:
+    []
+  rewind_phase: Plan
+
+changelog:
+  - version: 1.0.0
+    date: 2026-06-18
+    change: Foundation P0 — full spec 01–11, examples, fixtures, CL-BOOTST; status active
+  - version: 0.0.1-stub
+    date: 2026-06-18
+    change: P0 phantom stub
+
+contract_waivers: []
