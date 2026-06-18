@@ -8,6 +8,7 @@ Simple setup for **new** and **existing** projects. No architecture knowledge re
 | **After setup** | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) |
 | **Fix a bug** | **[BUG-FIX.md](./BUG-FIX.md)** ← report once, options + Start coding |
 | **How you interact** | **[USER-FLOW.md](./USER-FLOW.md)** ← questions & options, no doc reading |
+| **GitHub / AFK setup** | **`/setup-matt-pocock-skills`** — in `/setup-ads` Phase 1.5 → `docs/agents/` |
 | First time installing the OS | [§1 One-time setup](#1-one-time-setup-5-minutes) |
 | Brand-new app / greenfield | [PROJECT-KICKOFF.md §1](./PROJECT-KICKOFF.md#1-new-project-kickoff) |
 | Code already exists | [PROJECT-KICKOFF.md §2](./PROJECT-KICKOFF.md#2-existing-project-kickoff) |

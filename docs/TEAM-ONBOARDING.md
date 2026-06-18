@@ -42,7 +42,7 @@ source ~/.zshrc    # Mac
 source ~/.bashrc   # Ubuntu
 ```
 
-Installs: `ai-new`, `ai-paths`, `check-cli`, `setup-ads` skill → `~/.grok/skills/`
+Installs: `ai-new`, `ai-paths`, `check-cli`, skills → `~/.grok/skills/` (`setup-ads`, `task-run`, `setup-matt-pocock-skills`, AFK pipeline)
 
 ### 3. Verify CLI
 
@@ -92,7 +92,7 @@ grok
 New project: Auction alerts — email when outbid
 ```
 
-**What happens:** `check-cli` → `ai-new` → **`/grill-me`** → `CONTEXT.md` → **`yes`** → silent spec → task list → **Start AFK**
+**What happens:** `check-cli` → `ai-new` → **`/setup-matt-pocock-skills`** → **`/grill-me`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
 
 ### 6a. Commit (when ready)
 
@@ -137,7 +137,7 @@ grok
 Existing project: Odoo auction addon — add buy-now price on lots
 ```
 
-**What happens:** `check-cli` → `ai-new` → **`/grill-with-docs`** → `CONTEXT.md` → **`yes`** → silent spec → task list → **Start AFK**
+**What happens:** `check-cli` → `ai-new` → **`/setup-matt-pocock-skills`** → **`/grill-with-docs`** → `CONTEXT.md` → **`yes`** → task list → **Start AFK**
 
 Re-run `/setup-ads` anytime you start a new goal on the same codebase.
 

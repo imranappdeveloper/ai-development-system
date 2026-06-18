@@ -110,6 +110,8 @@ ads_block_present() {
     header)             grep -qE 'AI Development OS|grill-first kickoff' "$file" ;;
     path-resolution)    grep -qF 'Path resolution (Mac / Ubuntu' "$file" \
                         || grep -qF 'env:AI_DEV_OS_HOME' "$file" ;;
+    agent-skills)       grep -qF 'docs/agents/issue-tracker.md' "$file" \
+                        || grep -qF 'Agent skills' "$file" ;;
     afk-task-run)       grep -qF 'AFK-TASK-RUN.md' "$file" ;;
     user-flow)          grep -qF 'USER-FLOW.md' "$file" ;;
     config)             grep -qF 'Read `ai-dev-os.yaml`' "$file" ;;

@@ -45,12 +45,13 @@ Existing project: Odoo auction addon — <what you want to do>
 1. check-cli       → if fail: stop, tell user to run install-cli.sh
 2. ai-paths check
 3. ai-new          → AGENTS.md, ai-dev-os.yaml, work/, docs/
-4. Grill           → new: grill-me | existing: grill-with-docs
-5. Summary card    → you: yes
-6. Spec (silent)   → agent writes work/ — you never read it
-7. Fork questions  → A / B / C only when paths diverge
-8. Task list       → short bullets → you pick an option
-9. Start AFK       → new chat `/task-run` (or Start coding for bugs only)
+4. setup-matt-pocock-skills → docs/agents/ + GitHub labels (Phase 1.5)
+5. Grill           → new: grill-me | existing: grill-with-docs
+6. Summary card    → you: yes
+7. Spec (silent)   → agent writes work/ — you never read it
+8. Fork questions  → A / B / C only when paths diverge
+9. Task list       → short bullets → you pick an option
+10. Start AFK      → new chat `/task-run` (or Start coding for bugs only)
 ```
 
 You answer **one question at a time** with **A / B / C**. Agent recommends each time. Full rules: [USER-FLOW.md](./USER-FLOW.md)

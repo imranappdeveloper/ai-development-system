@@ -60,6 +60,11 @@ if [[ -f "$HOME/.grok/skills/task-run/SKILL.md" ]]; then
 else
   _warn "task-run skill missing — run install-cli.sh (needed for AFK batch)"
 fi
+if [[ -f "$HOME/.grok/skills/setup-matt-pocock-skills/SKILL.md" ]]; then
+  _ok "setup-matt-pocock-skills → ~/.grok/skills/setup-matt-pocock-skills/"
+else
+  _fail "setup-matt-pocock-skills (~/.grok/skills/setup-matt-pocock-skills/SKILL.md)"
+fi
 
 # ~/.local/bin on PATH
 if [[ ":${PATH}:" == *":${HOME}/.local/bin:"* ]]; then

@@ -71,7 +71,7 @@ _write_shell_block() {
 _write_shell_block "$HOME/.bashrc"
 _write_shell_block "$HOME/.zshrc"
 
-# Install Grok skills (setup-ads, task-run)
+# Install Grok skills
 _install_skill() {
   local name="$1"
   local src="$ROOT/skills/${name}/SKILL.md"
@@ -84,8 +84,43 @@ _install_skill() {
     info "WARN: skills/${name}/SKILL.md missing — skip"
   fi
 }
+
+# Full skill folder (templates + SKILL.md)
+_install_skill_bundle() {
+  local name="$1"
+  local src="$ROOT/skills/${name}"
+  local dst="$HOME/.grok/skills/${name}"
+  if [[ -d "$src" && -f "$src/SKILL.md" ]]; then
+    mkdir -p "$(dirname "$dst")"
+    rm -rf "$dst"
+    cp -a "$src" "$dst"
+    info "Installed Grok skill bundle: ~/.grok/skills/${name}/"
+  else
+    info "WARN: skills/${name}/ bundle missing — skip"
+  fi
+}
+
+# Symlink from ~/.agent-skills/shared when present (AFK pipeline)
+_link_agent_skill() {
+  local name="$1"
+  local shared="${AGENT_SKILLS:-$HOME/.agent-skills/shared}"
+  local dst="$HOME/.grok/skills/${name}"
+  if [[ -d "$shared/$name" ]]; then
+    mkdir -p "$(dirname "$dst")"
+    ln -sfn "$shared/$name" "$dst"
+    info "Linked Grok skill: ~/.grok/skills/${name} → $shared/$name"
+  elif [[ -f "$ROOT/skills/${name}/SKILL.md" ]]; then
+    _install_skill "$name"
+  fi
+}
+
 _install_skill "setup-ads"
 _install_skill "task-run"
+_install_skill_bundle "setup-matt-pocock-skills"
+
+for _s in plan-to-issue-v2 work-to-pr-v2 to-issues issue-processor grill-me grill-with-docs tdd; do
+  _link_agent_skill "$_s"
+done
 
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
   echo ""
@@ -101,6 +136,7 @@ echo "  check-cli"
 echo "  which ai-new ai-paths"
 echo "  ai-paths check"
 echo "  ls ~/.grok/skills/setup-ads/SKILL.md ~/.grok/skills/task-run/SKILL.md"
+echo "  ls ~/.grok/skills/setup-matt-pocock-skills/SKILL.md"
 echo ""
 echo "AFK task manager (new chat after issues published):"
 echo "  task-run.sh <epic> --server --detach"

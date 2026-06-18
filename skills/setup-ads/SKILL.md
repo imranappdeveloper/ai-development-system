@@ -33,6 +33,7 @@ Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
 | `ai-new` | on PATH or under OS scripts | **stop** |
 | `ai-paths` | on PATH or under OS scripts | **stop** |
 | `setup-ads` skill | `~/.grok/skills/setup-ads/SKILL.md` | **stop** |
+| `setup-matt-pocock-skills` | `~/.grok/skills/setup-matt-pocock-skills/SKILL.md` | **stop** |
 
 **If check fails — do not proceed.** Tell user exactly:
 
@@ -69,6 +70,30 @@ Idempotent — creates only missing: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `do
 Then optionally: `ai-paths sync`
 
 **Do not overwrite** existing `AGENTS.md` or user code.
+
+---
+
+## Phase 1.5 — Project agent config (`/setup-matt-pocock-skills`)
+
+**Required** before `/plan-to-issue-v2`, `/to-issues`, or `/task-run`.
+
+Load: `~/.grok/skills/setup-matt-pocock-skills/SKILL.md`
+
+| Project state | Action |
+|---------------|--------|
+| No `docs/agents/issue-tracker.md` | Full `/setup-matt-pocock-skills` |
+| `docs/agents/` exists | `/setup-matt-pocock-skills --detect-only` |
+
+**Team default (GitHub remote):** propose GitHub + default triage labels + `pr-open` label. Confirm with **A/B/C** — one section at a time per the skill (tracker → labels → domain → engineering standards).
+
+**Writes:**
+
+- `docs/agents/issue-tracker.md`, `triage-labels.md`, `domain.md`, `engineering-standards.md`
+- `## Agent skills` block in `AGENTS.md` (merge with existing ADS blocks — do not wipe OS sections)
+
+**Stop** Phase 3+ if `docs/agents/` incomplete and user has not completed setup.
+
+Create GitHub labels if missing (`ready-for-agent`, `in-progress`, `pr-open`, `done`, `needs-info`).
 
 ---
 

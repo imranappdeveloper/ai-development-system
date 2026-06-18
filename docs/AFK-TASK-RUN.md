@@ -12,8 +12,8 @@ Autonomous implementation after human grill + GitHub issues published. **No ques
 
 ## Prerequisites
 
-1. **Per project (once):** `/setup-matt-pocock-skills` → `docs/agents/` (labels: `ready-for-agent`, `in-progress`, `pr-open`, `done`, `needs-info`)
-2. **Per machine:** `install-cli.sh` + external skills: `plan-to-issue-v2`, `work-to-pr-v2`, `to-issues`, `issue-processor`, `tdd` (not bundled in OS repo)
+1. **Per project:** `/setup-matt-pocock-skills` — runs automatically in `/setup-ads` Phase 1.5 → `docs/agents/` + GitHub labels
+2. **Per machine:** `install-cli.sh` installs `setup-matt-pocock-skills` + links AFK skills (`plan-to-issue-v2`, `work-to-pr-v2`, `to-issues`, `issue-processor`, `tdd`, …)
 3. `gh` authenticated; `dev` branch on project repo
 4. Child issues published (`/plan-to-issue-v2 --auto --lean` or `/to-issues`)
 5. Each AFK task: label `ready-for-agent`, `## Blocked by` set, fat acceptance criteria

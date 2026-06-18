@@ -28,6 +28,28 @@ Committed `ai-dev-os.yaml` uses `env:AI_DEV_OS_HOME` — **never** hardcode `/Us
 Read `ai-dev-os.yaml` + `work_id` in this directory.
 <!-- /ADS-BLOCK:config -->
 
+<!-- ADS-BLOCK:agent-skills -->
+## Agent skills
+
+Configured by **`/setup-matt-pocock-skills`** during `/setup-ads` (Phase 1.5). See `docs/agents/`.
+
+### Issue tracker
+
+_Setup pending — run `/setup-matt-pocock-skills`._ See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+See `docs/agents/domain.md`.
+
+### Engineering standards
+
+See `docs/agents/engineering-standards.md`.
+<!-- /ADS-BLOCK:agent-skills -->
+
 <!-- ADS-BLOCK:afk-task-run -->
 ## AFK task execution (batch features)
 
