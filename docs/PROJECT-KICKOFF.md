@@ -38,6 +38,8 @@ ai-new my-app "Notification preferences — email, push, quiet hours"
 cd my-app
 ```
 
+**Existing repo with code:** `cd your-repo && ai-new` — adds missing OS files only; never overwrites.
+
 (Without `ai-new`, use `$AI_DEV_OS_HOME/scripts/new-project.sh` — same behavior.)
 
 Then open in **Grok** (`cd` to project, run `grok`) or **Antigravity** (open folder) and type:

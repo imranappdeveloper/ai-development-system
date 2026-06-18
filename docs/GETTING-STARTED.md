@@ -81,6 +81,17 @@ AI Development OS v1.0 rules:
 
 **Done.** You do not copy `playbooks/`, `workflows/`, or `standards/` into your app repo.
 
+### Existing project (brownfield bind)
+
+`ai-new` is **idempotent** — safe on repos that already have code:
+
+```bash
+cd /path/to/your-existing-app    # e.g. Odoo auction addon
+ai-new
+```
+
+Creates only what is missing: `AGENTS.md`, `ai-dev-os.yaml`, `work/`, `docs/`, `.gitignore`, `git init` — **never overwrites** existing files.
+
 ---
 
 ## 2. New project (greenfield)
