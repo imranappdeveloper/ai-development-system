@@ -22,6 +22,7 @@ Reusable document skeletons for the AI Dev OS. Templates define **shape and guid
 | TP-vision | `vision/` | Product Vision | New project, major initiative |
 | TP-discovery | `discovery/` | Discovery | Intake, Frame, Plan |
 | TP-prd | `prd/` | PRD | Features, enhancements |
+| TP-req-lock | `requirement-lock/` | Requirement Lock | Grill SSOT before issue publish; AFK execution contract |
 | TP-architecture | `architecture/` | Architecture | New project, features, refactors |
 | TP-database | `database/` | Database | Schema design, migrations |
 | TP-api | `api/` | API | API design, contract changes |

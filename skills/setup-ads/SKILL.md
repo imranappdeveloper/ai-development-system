@@ -277,23 +277,33 @@ Do **not** ask Approve intake / frame / plan.
 
 ---
 
-## Phase 6 — Publish tasks (canonical)
+## Phase 6 — Lock doc + overview + publish (canonical)
 
-Run **`/plan-to-issue-v2 --from-context --auto --lean`** — publishes GitHub epic + children with `ready-for-agent` and `## Blocked by`.
+Run **`/plan-to-issue-v2`** (default lock-doc path):
 
-Present **short list only** (number, title, blocked-by):
+1. Grill misalignments only (if not already done in Phase 3)
+2. Write/approve `work/requirement-lock.md`
+3. Show **overview** — per-screen one-liners + task table (not full issue bodies)
 
 ```text
-Tasks for <feature> (epic #42):
-1. #43 … — blocked by: none
-2. #44 … — blocked by: #43
+<Feature> — agreed changes:
 
-A) Start AFK on server (grok)
-B) Start AFK on server (agy)
-C) Not yet — adjust split (re-run plan-to-issue-v2)
+Settings → add notification toggle (default OFF, saves on change)
+…
+
+Tasks (epic draft):
+1. … — blocked by: none
+2. … — blocked by: #1
+
+A) Publish and Start AFK on server (grok)
+B) Publish and Start AFK on server (agy)
+C) Not yet — change something
 ```
 
-User never reads issue bodies. **Do not** use `/to-issues` or manual decompose. **Do not** use `--execute`.
+| **C — small fix** | Edit lock doc; show overview again |
+| **C — scope change** | Re-grill affected screens; show overview again |
+
+User never reads issue bodies or lock doc unless they ask. **Do not** use `/to-issues` or manual decompose. **Do not** use `--execute` or `--auto --lean` unless user explicitly requests legacy autonomous planning.
 
 ---
 

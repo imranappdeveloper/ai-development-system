@@ -43,9 +43,10 @@ ready-for-agent → in-progress → done
 ## Startup
 
 1. Read `docs/agents/*` (including `engineering-standards.md` when present) and `CONTEXT.md` (+ ADRs if referenced)
-2. Fetch target issues (epic children or `--ready`; cap `--ready` at **5 issues** per run)
-3. Filter children by `## Parent` when an epic number is given
-4. **State sync + recovery** (always — required before building execution queue):
+2. Read **`work/requirement-lock.md`** when epic or issues reference it (default path SSOT)
+3. Fetch target issues (epic children or `--ready`; cap `--ready` at **5 issues** per run)
+4. Filter children by `## Parent` when an epic number is given
+5. **State sync + recovery** (always — required before building execution queue):
 
 ### State sync + recovery
 
@@ -70,9 +71,9 @@ gh pr list --search "closes #<N>" --state all --json number,state,mergedAt,headR
 State sync: <N> done (ok), <N> reopened (closed PR), <N> recovered stuck in-progress
 ```
 
-5. Build dependency graph from `## Blocked by` sections — **`done` = PR opened satisfies blocker** (merge not required)
-6. Execution queue: unblocked issues labeled `ready-for-agent` only
-7. Skip `ready-for-human`, `needs-info`, `done`
+6. Build dependency graph from `## Blocked by` sections — **`done` = PR opened satisfies blocker** (merge not required)
+7. Execution queue: unblocked issues labeled `ready-for-agent` only
+8. Skip `ready-for-human`, `needs-info`, `done`
 
 ### Auto-infer lean
 
@@ -159,15 +160,25 @@ Spawn a **fresh subagent** per issue (`Task` / `invoke_subagent`).
 
 Subagent prompt must include:
 - Full issue body (acceptance criteria are the spec)
-- `CONTEXT.md` and relevant ADRs
+- **Lock doc section** — read `## Requirement lock` pointer; use that entry's Agreed change + Confirmed forks as product SSOT
 - `docs/agents/engineering-standards.md` when present
 - Instruction to follow `/tdd`
 - **Working directory path** (repo root or worktree path)
 - Skip UI tests unless required
 
+**Spot-check only (default — do not re-discover requirements):**
+
+```
+- Open files listed in ## Files to spot-check (or lock doc Files / components)
+- Confirm they still match lock doc Current behavior; if drifted, follow issue + lock doc Agreed change
+- Do NOT broad codebase exploration for requirement discovery — grill already did that
+- Read CONTEXT.md / ADRs only when issue or lock doc references a term or decision
+```
+
 **Implementation guardrails:**
 
 ```
+- Implement lock doc Agreed change literally — do not infer new product behaviour
 - Match neighbouring code — same patterns, naming, structure
 - Do NOT introduce clean architecture or folder restructures unless the issue requires it
 - Do NOT drive-by refactor unrelated files

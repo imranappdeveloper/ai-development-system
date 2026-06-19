@@ -12,7 +12,9 @@ Validate a drafted PRD and vertical-slice breakdown **without human approval**. 
 - **Mandatory:** `/plan-synthesis --auto` Step 3
 - **Optional:** manually before publishing any draft plan
 
-Pass `--lean` when called from `/plan-to-issue-v2 --auto --lean`.
+Default: validate epic + children against approved `work/requirement-lock.md` — Agreed change in issues must match lock doc entries.
+
+Pass `--lean` only when called from legacy `/plan-to-issue-v2 --auto --lean`.
 
 ## Input
 

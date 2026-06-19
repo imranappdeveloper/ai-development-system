@@ -16,7 +16,8 @@ Started on the **Ubuntu server** by `task-run-server.sh` — tmux + **grok** or 
 
 ## Prerequisites
 
-- Issues published via `/plan-to-issue-v2 --auto --lean` (canonical)
+- Issues published via `/plan-to-issue-v2` (lock-doc path — canonical)
+- Epic/issues reference `work/requirement-lock.md` when using default path
 - Labels: `ready-for-agent`; bodies: `## Blocked by`
 - User said **Start AFK on server**
 

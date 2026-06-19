@@ -1,8 +1,8 @@
 # User Flow — Questions & Options (No Document Reading)
 
-**For users:** You never read spec files in `work/` or playbooks. The agent plans in the background and only talks to you through **short questions with options**.
+**For users:** You never read spec files in `work/` or playbooks. The agent plans in the background and only talks to you through **short questions with options** and a **pre-AFK overview**.
 
-**For agents:** SSOT for user interaction. Internal gates (`H-INTAKE`, `H-FRAME`, `H-PLAN`, `H-DECOMPOSE`) are satisfied **silently** when the user picks an option or says **Start coding** — never expose gate names unless asked.
+**For agents:** SSOT for user interaction. Internal gates (`H-INTAKE`, `H-FRAME`, `H-PLAN`, `H-DECOMPOSE`) are satisfied **silently** when the user picks an option or says **Start AFK** — never expose gate names unless asked.
 
 ---
 
@@ -13,12 +13,13 @@
 | **Requirement check** | Restate → context → impact → use cases → edge cases → confirm if unclear ([REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md)) |
 | **Skills from project** | Load `$AI_DEV_OS_HOME/skills/<name>/SKILL.md` only — see `skills/MANIFEST.yaml` |
 | **No doc handoffs** | Never ask user to read `work/`, PRD, ISS, playbooks, or long summaries |
-| **Forks only** | Ask when multiple valid paths exist (scope, design, task split, trade-off) |
+| **Grill = SSOT** | Approved `work/requirement-lock.md` is the execution contract; issues are slices of it |
+| **Forks only** | Ask on misalignment, gaps, or related changes — not every UI micro-detail |
 | **Always options** | End questions with **A / B / C** (and your recommendation) |
 | **One question** | One question per message; wait for answer |
-| **Spec & planning** | Agent invests in specification — writes `work/` + `CONTEXT.md` silently |
+| **Spec & planning** | Agent explores codebase once in grill; writes lock doc + `CONTEXT.md` silently |
 | **Coding gate** | Batch: **Start AFK** + `/task-run`. Bug/single: **Start coding** |
-| **Simple names** | Use *understand → spec → tasks → code* — not intake/frame/decompose |
+| **Simple names** | Use *understand → lock → overview → code* — not intake/frame/decompose |
 
 ---
 
@@ -27,14 +28,15 @@
 ### Interactive (human in chat)
 
 ```
-understand → spec → tasks → Start AFK → done (PRs opened; merge when ready)
-     ↑           ↑        ↑
-  questions   questions  questions (only at forks)
+understand → grill + lock doc → overview → Start AFK → done (PRs opened; merge when ready)
+     ↑              ↑              ↑
+  questions    questions only   per-screen one-liners + task table
+               on misalignment
 ```
 
-### AFK (new chat — `/task-run`)
+### AFK (server — `task-run-server.sh`)
 
-After tasks published to GitHub and you pick **Start AFK on server**:
+After tasks published and you approve the overview:
 
 ```
 task manager → subagent + /tdd per task → PR → next unblocked → until queue empty
@@ -46,77 +48,83 @@ task manager → subagent + /tdd per task → PR → next unblocked → until qu
 
 **Batch code runs on the server only.** Grill and planning can happen on any machine; implementation does not.
 
-**During AFK:** no questions. Issues use `ready-for-agent` + `## Blocked by`. Ambiguity → `needs-info` + epic comment; queue continues.
+**During AFK:** no questions. Agents read lock doc + issue slice; spot-check named files only. Ambiguity → `needs-info` + epic comment; queue continues.
 
 **You merge PRs on GitHub when ready** — agent marks `done` at PR create and continues to next task without waiting.
 
 See [AFK-TASK-RUN.md](./AFK-TASK-RUN.md).
 
-### 1. Understand
+### 1. Understand + grill
 
 - `/setup-ads` → `ai-new` → **`/setup-project-agents`** → grill (`/grill-me` or `/grill-with-docs`)
+- Agent **explores codebase first**, then asks only on **misalignment**, missing info, or related changes
+- Writes **`work/requirement-lock.md`** (silent) — your words preserved in **Your request** fields
+- Updates **`CONTEXT.md`** when domain terms or decisions change
 - Alignment summary (≤8 lines) → user: **`yes`** or one correction
-- Agent runs classify + discovery + planning playbooks **silently**
 
 **Do not** stop for Approve intake / frame / plan.
 
-### 2. Spec (silent + forks)
-
-Agent builds spec in `work/`. **Only interrupt user when:**
-
-- Scope fork (MVP vs full)
-- Design fork (two+ valid approaches)
-- Assumption unclear
-- Integration / platform choice
-
-**Question format:**
+**Question format (misalignment only):**
 
 ```text
-For buy-now on auction lots:
+On Settings screen you asked for a notification toggle. Current code has no prefs model.
 
-A) Fixed buy-now price on the lot (simplest)
-B) Buy-now derived from current bid + markup
+A) Add toggle on Settings only (simplest)
+B) Add toggle + email template change
 C) Something else — tell me
 
 I recommend A because …
 ```
 
-Record internal gates when user answers; no gate jargon.
+### 2. Lock doc (silent)
 
-### 3. Tasks (GitHub issues)
+Agent completes requirement lock with per-screen entries:
 
-Publish via **`/plan-to-issue-v2 --auto --lean`** only. Each task is a vertical slice with `## Blocked by` and label `ready-for-agent`. Execute via **`task-run-server.sh`** on server — not `--execute`.
+- Current behavior | Your request | Agreed change | Files to touch | Confirmed forks
 
-Show a **short list only** (number, title, blocked-by), not issue bodies:
+User does not read the lock doc unless they ask.
+
+### 3. Overview + tasks (before publish)
+
+Run **`/plan-to-issue-v2`** (default). Show **overview only**:
 
 ```text
-Tasks for buy-now (epic #42):
-1. #43 buy_now_price field — blocked by: none
-2. #44 buy-now button — blocked by: #43
-3. #45 completion email — blocked by: #44
+Buy-now — agreed changes:
 
-A) Start AFK on server (grok)
-B) Start AFK on server (agy)
-C) Not yet — change split
+Lot detail → add buy-now button when price set (fixed price from seller)
+Checkout → skip bidding flow when buy-now used
+…
 
-I recommend A or B on Ubuntu — task-run-server.sh or task-run-poll.sh for auto-start.
+Tasks for buy-now (epic draft):
+1. buy_now_price field — blocked by: none
+2. buy-now button on lot detail — blocked by: #1
+3. checkout short-circuit — blocked by: #2
+
+A) Publish and Start AFK on server (grok)
+B) Publish and Start AFK on server (agy)
+C) Not yet — change something
+
+I recommend A or B on Ubuntu.
 ```
 
 | User says | Agent does |
 |-----------|------------|
-| **A — grok** | SSH server + `task-run-server.sh --agent grok [--epic N]` |
-| **B — agy** | SSH server + `task-run-server.sh --agent agy [--epic N]` |
-| **C** | Adjust split; republish; ask again |
+| **A — grok** | Publish issues + `task-run-server.sh --agent grok [--epic N]` |
+| **B — agy** | Publish issues + `task-run-server.sh --agent agy [--epic N]` |
+| **C — small fix** | Edit lock doc, adjust tasks, show overview again |
+| **C — scope change** | Re-grill affected screens, update lock doc, show overview again |
 
-User never reads issue bodies. All doubts cleared **before** Start AFK.
+User never reads full issue bodies. All doubts cleared **before** Start AFK.
+
+**Legacy:** `--auto --lean` skips lock doc and overview — opt-in only, not default.
 
 ### 4. Code (AFK — no human)
 
-Task manager (`/task-run`) spawns subagent per runnable issue (`ready-for-agent` + deps clear). Subagent uses `/tdd`. On PR create → label `done` → **next unblocked task immediately** (no merge wait).
+Task manager spawns subagent per runnable issue. Subagent reads lock doc section + issue; **spot-checks** named files only (no requirement re-discovery). On PR create → `done` → next unblocked task.
 
 ### 5. Done
 
-Epic complete when all children are `done` (PR opened). You **merge PRs on GitHub when ready** — agent does not wait. Optional: `/task-run <epic> --continue` only to resume after interruption or repair legacy labels.
+Epic complete when all children are `done` (PR opened). You **merge PRs on GitHub when ready** — agent does not wait.
 
 ---
 
@@ -147,14 +155,12 @@ Max **2** user decision points per bug: plan options + Start coding.
 
 | Phrase | When |
 |--------|------|
-| `yes` | After kickoff alignment summary |
-| `A` / `B` / `C` | Any fork question |
-| **Start AFK on server** | After task list — `task-run-server.sh` on Ubuntu |
+| `yes` | After kickoff or lock-doc alignment summary |
+| `A` / `B` / `C` | Any fork or overview gate question |
+| **Start AFK on server** | After overview approved |
 | **Start coding** | Single-task / bug path only (no GitHub queue) |
 | `Done.` | Optional — close out work |
 | `Bug Fix: …` | Start bug path |
-
-**Removed from user vocabulary:** Approve intake, Approve frame, Approve plan, Approve decompose, Approve implement, Approve fix.
 
 ---
 
@@ -162,6 +168,8 @@ Max **2** user decision points per bug: plan options + Start coding.
 
 - Dump artifacts for user to read
 - Implement without **Start AFK** (batch) or **Start coding** (single/bug)
+- Re-explore codebase for requirements at AFK time (spot-check lock doc files only)
+- Guess product behaviour not recorded in lock doc or issue
 - Ask approval for intake / frame / plan / decompose
 - Use gate IDs in user-facing text
 - Skip options on real forks
@@ -175,3 +183,4 @@ Max **2** user decision points per bug: plan options + Start coding.
 | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) | Kickoff detail |
 | [AFK-TASK-RUN.md](./AFK-TASK-RUN.md) | Task manager + server tmux |
 | [REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md) | Validate user input before acting |
+| `templates/requirement-lock/template.md` | Lock doc structure |

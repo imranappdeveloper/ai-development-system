@@ -21,6 +21,8 @@ Fetch the full issue via `gh issue view <N> --json title,body,labels`.
 
 Also read `CONTEXT.md` when it exists (glossary for ambiguous-term checks).
 
+When issue has `## Requirement lock`, read that section of `work/requirement-lock.md` and verify issue **What to build** matches lock doc **Agreed change**.
+
 ## Checklist
 
 Score each item pass/fail:
