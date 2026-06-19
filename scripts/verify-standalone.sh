@@ -47,7 +47,8 @@ ok "core SSOT docs present"
 
 # 5. CLI scripts executable
 for s in install-cli.sh check-cli.sh new-project.sh task-run.sh task-run-server.sh \
-  task-run-poll.sh setup-task-run.sh setup-graphify.sh test-task-run-session.sh ai-paths.sh; do
+  task-run-poll.sh setup-task-run.sh setup-graphify.sh sync-project.sh \
+  test-task-run-session.sh ai-paths.sh; do
   [[ -x "$ROOT/scripts/$s" ]] || die "not executable: scripts/$s"
 done
 ok "CLI scripts executable"

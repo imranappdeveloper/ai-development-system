@@ -6,11 +6,11 @@
 
 Agents **always** load from `$AI_DEV_OS_HOME/skills/` — never `~/.agent-skills/shared/`.
 
-## Required skills (19)
+## Required skills (20)
 
 | Group | Skills |
 |-------|--------|
-| OS bind | `setup-ads`, `setup-project-agents`, `setup-task-run` |
+| OS bind | `setup-ads`, `sync-project`, `setup-project-agents`, `setup-task-run` |
 | Grill | `grill-me`, `grill-with-docs` |
 | Plan + publish | `plan-to-issue-v2`, `grill-for-planning`, `plan-synthesis`, `plan-review`, `to-issues`, `to-prd` |
 | AFK execute | `task-run` → `work-to-pr-v2`, `issue-spec-review`, `pr-readiness-check`, `tdd` |

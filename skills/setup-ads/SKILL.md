@@ -42,6 +42,7 @@ Or: `$AI_DEV_OS_HOME/scripts/check-cli.sh`
 | `setup-project-agents` | `$AI_DEV_OS_HOME/skills/setup-project-agents/SKILL.md` | **stop** |
 | `setup-task-run` | `$AI_DEV_OS_HOME/skills/setup-task-run/SKILL.md` | **stop** |
 | `task-run` | `$AI_DEV_OS_HOME/skills/task-run/SKILL.md` | **stop** |
+| `sync-project` | `$AI_DEV_OS_HOME/skills/sync-project/SKILL.md` | warn if missing |
 
 **If check fails — do not proceed.** Tell user exactly:
 

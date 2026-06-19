@@ -26,9 +26,11 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/lib/task-run-agent.sh" \
   "$ROOT/scripts/lib/task-run-session.sh" \
   "$ROOT/scripts/test-task-run-session.sh" \
-  "$ROOT/scripts/setup-graphify.sh" 2>/dev/null || true
+  "$ROOT/scripts/setup-graphify.sh" \
+  "$ROOT/scripts/sync-project.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
+ln -sf "$ROOT/scripts/sync-project.sh" "$BIN_DIR/sync-project"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
 ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
@@ -42,6 +44,7 @@ info "Linked: $BIN_DIR/ai-bind"
 info "Linked: $BIN_DIR/task-run"
 info "Linked: $BIN_DIR/task-run-server"
 info "Linked: $BIN_DIR/task-run-poll"
+info "Linked: $BIN_DIR/sync-project"
 
 _ensure_path_in_rc() {
   local rc="$1"
