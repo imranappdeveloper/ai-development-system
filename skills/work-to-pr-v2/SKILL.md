@@ -7,6 +7,8 @@ description: Improved work-to-pr — issue branch per ticket, PR into dev, spec 
 
 Process GitHub issues autonomously. Human gates at **PR review** — never merge PRs, never ask questions mid-issue.
 
+**Called by:** `task-run` (server AFK) spawns a subagent per issue to run this skill's **Per-issue loop**. Do not skip steps when invoked from `task-run`.
+
 **Prerequisite:** `/setup-project-agents` must have run. Read `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, and `docs/agents/engineering-standards.md` (if present) before starting.
 
 Ensure `done` and `in-progress` labels exist (see `docs/agents/triage-labels.md`).

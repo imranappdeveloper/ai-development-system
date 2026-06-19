@@ -139,7 +139,7 @@ $AI_DEV_OS_HOME/scripts/setup-task-run.sh . --agent grok|agy --poll|--no-poll
 
 **Writes:** `docs/agents/task-run.md`, `work/task-run/`, `ai-dev-os.yaml` → `task_run`
 
-**Skills bundled:** `task-run`, `work-to-pr-v2`, `issue-processor`, `tdd`, `issue-spec-review`, `pr-readiness-check`
+**Skills bundled:** `task-run`, `work-to-pr-v2`, `tdd`, `issue-spec-review`, `pr-readiness-check`
 
 Stop Phase 3+ if `docs/agents/task-run.md` missing and user has not completed Q1–Q2.
 
@@ -276,35 +276,29 @@ Do **not** ask Approve intake / frame / plan.
 
 ---
 
-## Phase 6 — Tasks
+## Phase 6 — Publish tasks (canonical)
 
-Decompose feature into **tasks** (vertical slices). Present **short list only** (name + one line each):
+Run **`/plan-to-issue-v2 --from-context --auto --lean`** — publishes GitHub epic + children with `ready-for-agent` and `## Blocked by`.
+
+Present **short list only** (number, title, blocked-by):
 
 ```text
-Tasks for <feature>:
-1. …
-2. …
+Tasks for <feature> (epic #42):
+1. #43 … — blocked by: none
+2. #44 … — blocked by: #43
 
-A) Split looks good
-B) Merge tasks
-C) Split finer
+A) Start AFK on server (grok)
+B) Start AFK on server (agy)
+C) Not yet — adjust split (re-run plan-to-issue-v2)
 ```
 
-User never reads ISS specs. Adjust from their option.
+User never reads issue bodies. **Do not** use `/to-issues` or manual decompose. **Do not** use `--execute`.
 
 ---
 
-## Phase 7 — Start AFK handoff (server only)
+## Phase 7 — Start AFK (server only)
 
-After task list confirmed, **do not implement in this chat**. Batch code runs on the **server only**.
-
-```text
-A) Start AFK on server (grok)
-B) Start AFK on server (agy / Antigravity)
-C) Not yet
-```
-
-On **A** or **B**:
+When user picks **A** or **B** in Phase 6 — **do not implement in this chat**.
 
 1. On the Ubuntu server, from `project_root`:
 
@@ -334,7 +328,7 @@ Reference `$AI_DEV_OS_HOME/docs/AFK-TASK-RUN.md` + `USER-FLOW.md`.
 - Grill on standard practices (lint rules, TDD ceremony, repo layout) unless user asks
 - Dump playbooks or `work/` specs on user
 - Ask Approve intake / frame / plan / decompose
-- Implement batch features in setup-ads chat (use `/task-run` instead)
+- Implement batch features in setup-ads chat (use `task-run-server.sh` — never `--execute`)
 - Implement without **Start AFK** or **Start coding** (bugs)
 - Self-approve gates (record internally when user picks options or Start AFK/coding)
 - Omit OS status footer (last line)

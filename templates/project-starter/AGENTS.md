@@ -147,7 +147,7 @@ Flow: `check-cli` → `ai-new` → grill → summary → **`yes`** → silent sp
 3. Update **`CONTEXT.md`**; defer unknowns to **`docs/OPEN-QUESTIONS.md`**
 4. Alignment summary → **`yes`**
 5. Run spec + planning playbooks **silently** — no Approve intake / frame / plan
-6. Publish GitHub issues (`/plan-to-issue-v2` or `/to-issues`); short task list + deps
+6. Publish via `/plan-to-issue-v2 --auto --lean`; Start AFK via `task-run-server.sh`
 7. **Start AFK on server / not yet** — `task-run-server.sh` on Ubuntu (not inline implement)
 <!-- /ADS-BLOCK:setup-ads-behavior -->
 

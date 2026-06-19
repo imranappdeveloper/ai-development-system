@@ -97,7 +97,7 @@ Ensure present via `check-cli` / `install-cli.sh`:
 
 - `task-run`
 - `work-to-pr-v2`
-- `issue-processor`
+
 - `issue-spec-review`
 - `pr-readiness-check`
 - `tdd`

@@ -85,7 +85,7 @@ Record internal gates when user answers; no gate jargon.
 
 ### 3. Tasks (GitHub issues)
 
-Publish via `/plan-to-issue-v2 --auto --lean` or `/to-issues`. Each task is a **vertical slice** with `## Blocked by` and label `ready-for-agent`.
+Publish via **`/plan-to-issue-v2 --auto --lean`** only. Each task is a vertical slice with `## Blocked by` and label `ready-for-agent`. Execute via **`task-run-server.sh`** on server — not `--execute`.
 
 Show a **short list only** (number, title, blocked-by), not issue bodies:
 

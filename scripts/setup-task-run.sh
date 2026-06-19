@@ -33,7 +33,7 @@ Writes:
   docs/agents/task-run.md  server AFK config for agents
   ai-dev-os.yaml           task_run.agent (+ auto_poll if --poll)
 
-Skills: task-run, work-to-pr-v2, issue-processor (bundled in MANIFEST.yaml)
+Skills: task-run, work-to-pr-v2 (bundled in MANIFEST.yaml)
 Scripts: task-run-server.sh, task-run-poll.sh
 
 EOF
@@ -182,7 +182,6 @@ task-run-poll.sh --agent ${agent} --dry-run
 |-------|------|
 | \`task-run\` | Task manager loop |
 | \`work-to-pr-v2\` | Per-issue PR + state machine |
-| \`issue-processor\` | Batch subagent pattern |
 | \`tdd\` | Subagent implementation |
 | \`issue-spec-review\` | Preflight |
 | \`pr-readiness-check\` | Before PR |

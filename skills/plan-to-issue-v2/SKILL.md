@@ -1,115 +1,101 @@
 ---
 name: plan-to-issue-v2
-description: Improved plan-to-issue pipeline — enhanced grilling, single synthesis gate, GitHub epic + child issues. Supports --auto for autonomous planning and --lean to minimize ceremony (thin epic, fat children, single preflight). Recommended AFK entrypoint is --auto --lean --execute. Ends with handoff to /work-to-pr-v2. Original /plan-to-issue remains unchanged.
+description: >
+  Plan-to-issue pipeline — grill, synthesize, publish GitHub epic + children.
+  Canonical publish path. Execution is always task-run-server on Ubuntu (not --execute).
 ---
 
 # Plan to Issue v2
 
-Turn a feature idea into a reviewed GitHub epic and child issues — without assumptions on product behaviour.
+Publish a reviewed GitHub epic and child issues. **Does not implement code** — hand off to server AFK.
 
-**Prerequisite:** Run `/setup-project-agents` in the repo first so `docs/agents/` exists (use `--detect-only` to refresh on existing repos).
+**Prerequisite:** `/setup-project-agents` complete (`docs/agents/` exists).
 
-**Difference from v1:** Uses `/grill-for-planning` + `/plan-synthesis` instead of inline grilling and separate `/to-prd` + `/to-issues` approval gates. Original skills (`/plan-to-issue`, `/grill-me`, `/grill-with-docs`, `/to-prd`, `/to-issues`) are untouched.
+---
 
-## Recommended AFK entrypoint
+## Canonical flow
 
 ```
-/plan-to-issue-v2 --auto --lean --execute
+/plan-to-issue-v2 --auto --lean     # publish (this skill)
+task-run-server.sh --agent grok     # execute (server only)
 ```
 
-Plan, publish, and implement in one session. Human effort: PR review + resolving epic `needs-info` only.
+**Never use `--execute`** in setup or planning chat. Batch code runs only via `task-run-server.sh`.
 
-## Decision policy (`--auto`)
-
-When `--auto` is set, read `$AI_DEV_OS_HOME/skills/plan-review/SKILL.md` and apply throughout all phases.
-
-| Situation | Action |
-|---|---|
-| Engineering practices (logging, errors, architecture) | Defer to `docs/agents/engineering-standards.md` at implementation — **not** epic prose in `--lean` |
-| Feature flow documented in repo, CONTEXT.md, ADRs, or issue body | Follow it; no questions |
-| Important + no documentation + multiple valid approaches | Flag blocking unknown → epic `needs-info`; do not guess |
-| Unimportant ambiguity | Pick least-surprising option from repo neighbours |
-
-**Never ask questions in `--auto` mode.** Blocking unknowns are captured on the GitHub epic for human resolution there — not in chat.
-
-## Lean policy (`--lean`)
-
-Requires `--auto`. Propagate `--lean` to Phase 1, Phase 2, and (with `--execute`) `/work-to-pr-v2`.
-
-| Full mode | Lean mode |
-|---|---|
-| Long epic PRD + extensive user stories | **Thin epic** — index + blocking unknowns only |
-| Detail in epic and children | **Fat children** — all behaviour in issue ACs (incl. edge cases) |
-| `CONTEXT.md` / ADR writes during planning | **Defer** — draft terms in epic `## Terms` only |
-| `## Standard Decisions` on epic | **Removed** — link to `engineering-standards.md` |
-| `plan-review` + `issue-spec-review` | **Single preflight** — AFK stamp + `spec-sha256`; skip re-review if unchanged |
-| Many thin slices | **Milestone slices** — max 3 issues (&lt;3 day work); prefer 1–2 |
-| `needs-triage` published slices | **Hold** uncertain slices — do not publish until spec-complete |
-
-**Source of truth:** child issue bodies. Epic is a navigational shell.
+---
 
 ## Invocation
 
 ```
-/plan-to-issue-v2                              # interactive
-/plan-to-issue-v2 --auto --lean --execute     # recommended AFK (plan + work)
-/plan-to-issue-v2 --auto --lean               # lean plan only
-/plan-to-issue-v2 --auto                      # full ceremony auto (also gets AFK stamp)
-/plan-to-issue-v2 --from-context --auto --lean
-/plan-to-issue-v2 --from-issue <N> --auto --lean
-/work-to-pr-v2 <epic> --continue --lean       # resume epic after interruption
+/plan-to-issue-v2 --auto --lean                    # recommended
+/plan-to-issue-v2 --from-context --auto --lean     # after setup-ads grill
+/plan-to-issue-v2 --from-issue <N> --auto --lean   # republish / held slices
+/plan-to-issue-v2                                  # interactive (rare)
 ```
 
-### `--execute`
+### `--execute` — DEPRECATED
 
-After Phase 3 publish, **in the same session**, run `$AI_DEV_OS_HOME/skills/work-to-pr-v2/SKILL.md` (pass `--lean` when set). Published issue numbers and `spec-sha256` values enable same-session preflight skip.
+Do not use. Same-session implementation bypasses server tmux, poll, and `task-run` orchestration.
+
+After publish, user picks **Start AFK on server** → `task-run-server.sh --agent grok|agy --epic <N>`.
+
+---
+
+## Decision policy (`--auto`)
+
+Read `plan-review` when `--auto` is set.
+
+| Situation | Action |
+|---|---|
+| Engineering practices | Defer to `engineering-standards.md` at implementation |
+| Documented in repo | Follow it |
+| Blocking unknown | Epic `needs-info` — do not guess |
+| Minor ambiguity | Least-surprising from repo neighbours |
+
+**No questions in `--auto` mode.**
+
+---
+
+## Lean policy (`--lean`)
+
+Requires `--auto`. Thin epic, fat children, AFK preflight stamps, milestone slices (max 3 issues).
+
+---
 
 ## Phases
 
-Run in order. Do not skip phases or merge them.
-
 ### Phase 1 — Grill
 
-Run `/grill-for-planning` (add `--auto` / `--lean` when set). Read `$AI_DEV_OS_HOME/skills/grill-for-planning/SKILL.md`.
+`/grill-for-planning` (`--auto` / `--lean` when set). Skip if `--from-context` after setup-ads grill.
 
 ### Phase 2 — Synthesize
 
-Run `/plan-synthesis` (add `--auto` / `--lean` when set). Read `$AI_DEV_OS_HOME/skills/plan-synthesis/SKILL.md`.
+`/plan-synthesis` (`--auto` / `--lean`). Stamps children `plan-review: READY` + `spec-sha256`.
 
-All `--auto` publishes stamp children on `plan-review: READY` (with `spec-sha256`).
-
-### Phase 3 — Handoff
+### Phase 3 — Publish + handoff
 
 ```
-Plan complete (v2)<auto><lean>.
+Plan complete (v2) --auto --lean
 - Epic: #<N>
-- Child issues: #<list> (stamped with AFK preflight)
-- Held (not published): <if any>
+- Children: #<list> (AFK preflight stamped)
+- Held: <if any>
 
-<if not --execute>
-/work-to-pr-v2 <epic>              # auto-infers lean from stamps
-/work-to-pr-v2 <epic> --continue --lean   # resume after interruption (optional)
-</if>
+Start AFK on server:
+  task-run-server.sh --agent grok --epic <N>
+  task-run-server.sh --agent agy --epic <N>
 ```
 
-Do not start implementation **unless** `--execute` is set.
+Show user **short list only** (number, title, blocked-by). Do **not** start implementation in this chat.
 
-## Reliability guarantees
+---
 
-- **No product assumptions** — undocumented business behaviour is never invented
-- **Fat child ACs** — testable behaviour in issue acceptance criteria
-- **Single preflight** — `spec-sha256` stamp; immune to label/comment churn on GitHub
-- **Auto-infer lean** — `/work-to-pr-v2` detects stamps; `--continue` inherits lean skip
-- **Engineering standards at PR time** — `engineering-standards.md` + `pr-readiness-check`; never forced clean arch
-- **Hold, don't half-publish** — lean mode does not create `needs-triage` slices
+## Skill map
 
-## Skill map (v2 → reads, never edits)
-
-| Phase | New skill | Reads (unchanged) |
+| Phase | Skill | Notes |
 |---|---|---|
-| 1 | `grill-for-planning` | `grill-with-docs` or `grill-me` |
-| 2 | `plan-synthesis` | `to-prd`, `to-issues` |
-| 2 (`--auto`) | `plan-review` | — |
-| 3 (`--execute`) | `work-to-pr-v2` | `issue-spec-review`, `tdd`, `pr-readiness-check`, `engineering-standards.md` |
+| 1 | `grill-for-planning` | Reads grill-me / grill-with-docs |
+| 2 | `plan-synthesis` | Internal: to-prd, to-issues templates |
+| 2 (`--auto`) | `plan-review` | Autonomous gate |
+| Execute | `task-run` → `work-to-pr-v2` | **Server only** — not this skill |
 
 SSOT: `$AI_DEV_OS_HOME/skills/plan-to-issue-v2/SKILL.md`

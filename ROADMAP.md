@@ -28,7 +28,8 @@ See [release/v1.0/PLATFORM-MANIFEST.md](./release/v1.0/PLATFORM-MANIFEST.md).
 See [release/v1.0/ROADMAP-v2.md](./release/v1.0/ROADMAP-v2.md) § v1.2 and [FUTURE-ENHANCEMENTS.md](./release/v1.0/FUTURE-ENHANCEMENTS.md).
 
 - [ ] Runtime agent E2E harness
-- [ ] `issue-processor` GitHub rewrite + `task-run` delegation fix
+- [x] `task-run` delegates full `work-to-pr-v2`; `issue-processor` removed from AFK chain
+- [x] Canonical path: `plan-to-issue-v2` → `task-run-server` (no `--execute`)
 - [ ] `12-qa-scenarios.md` rollout (31 playbooks)
 - [ ] Meta skills (`MS-*`) promotion
 - [ ] AFK security hardening doc
