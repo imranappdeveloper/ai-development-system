@@ -27,24 +27,47 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/lib/task-run-session.sh" \
   "$ROOT/scripts/test-task-run-session.sh" \
   "$ROOT/scripts/setup-graphify.sh" \
-  "$ROOT/scripts/sync-project.sh" 2>/dev/null || true
+  "$ROOT/scripts/sync-project.sh" \
+  "$ROOT/scripts/usage-feedback.sh" \
+  "$ROOT/scripts/lib/usage-snapshot.sh" \
+  "$ROOT/scripts/test-usage-snapshot.sh" \
+  "$ROOT/scripts/check-integration.sh" \
+  "$ROOT/scripts/test-check-integration.sh" \
+  "$ROOT/scripts/issue-spec-check.sh" \
+  "$ROOT/scripts/issue-context-pack.sh" \
+  "$ROOT/scripts/afk-state-sync.sh" \
+  "$ROOT/scripts/ai-pr-review-notify.sh" \
+  "$ROOT/scripts/grill-intake.py" \
+  "$ROOT/scripts/lib/issue-spec-check.sh" \
+  "$ROOT/scripts/lib/issue-context-pack.sh" \
+  "$ROOT/scripts/lib/afk-state-sync.sh" \
+  "$ROOT/scripts/lib/ai-pr-review-notify.sh" \
+  "$ROOT/scripts/test-issue-spec-check.sh" \
+  "$ROOT/scripts/test-issue-context-pack.sh" \
+  "$ROOT/scripts/test-afk-state-sync.sh" \
+  "$ROOT/scripts/test-ai-pr-review-notify.sh" \
+  "$ROOT/scripts/test-grill-intake.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
 ln -sf "$ROOT/scripts/sync-project.sh" "$BIN_DIR/sync-project"
 ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
 ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
+ln -sf "$ROOT/scripts/check-integration.sh" "$BIN_DIR/check-integration"
 ln -sf "$ROOT/scripts/task-run.sh" "$BIN_DIR/task-run"
 ln -sf "$ROOT/scripts/task-run-server.sh" "$BIN_DIR/task-run-server"
 ln -sf "$ROOT/scripts/task-run-poll.sh" "$BIN_DIR/task-run-poll"
+ln -sf "$ROOT/scripts/usage-feedback.sh" "$BIN_DIR/usage-feedback"
 info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
 info "Linked: $BIN_DIR/check-cli"
+info "Linked: $BIN_DIR/check-integration"
 info "Linked: $BIN_DIR/ai-bind"
 info "Linked: $BIN_DIR/task-run"
 info "Linked: $BIN_DIR/task-run-server"
 info "Linked: $BIN_DIR/task-run-poll"
 info "Linked: $BIN_DIR/sync-project"
+info "Linked: $BIN_DIR/usage-feedback"
 
 _ensure_path_in_rc() {
   local rc="$1"

@@ -28,6 +28,16 @@ Platform frozen. No further architectural changes to v1.0 substrate.
 
 ## [Unreleased]
 
+### Added
+
+- **Usage feedback loop** — `/feedback` and `/usage-report` bundled skills; `usage-feedback.sh` CLI
+- **Milestone snapshots** — auto after grill, tasks published, AFK run; anomaly nudges
+- **Telemetry schema** — `templates/telemetry/event-schema.yaml`, `templates/feedback/entry-schema.yaml`
+- **`docs/USAGE-FEEDBACK.md`** — usage monitoring guide
+- **`feedback:` config** — `ai-dev-os.yaml` thresholds (`nudge_grill_questions`, `nudge_afk_stale_minutes`)
+- **`ai-new` merge** — existing projects get `feedback:` block, `docs.usage_feedback`, `docs/USAGE-FEEDBACK.md`, and `work/feedback/` + `work/telemetry/` on `/sync-project`
+- **Token optimization scripts** — `issue-spec-check`, `issue-context-pack`, `afk-state-sync`, `grill-intake.py`; verified by `check-integration`
+
 ## [1.1.0] — 2026-06-19
 
 ### Frozen — AI Development OS v1.1 (Standalone Execution)

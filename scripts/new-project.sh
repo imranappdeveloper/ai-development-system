@@ -208,6 +208,51 @@ merge_agents_md() {
   info "AGENTS.md — merged $merged block(s)"
 }
 
+# Merge new OS keys into existing ai-dev-os.yaml (additive — never overwrite user values).
+merge_ai_dev_os_yaml() {
+  local yaml="$PROJECT_DIR/ai-dev-os.yaml"
+  local merged=0
+
+  [[ -f "$yaml" ]] || return 0
+
+  if ! grep -qE '^[[:space:]]*usage_feedback:' "$yaml" 2>/dev/null; then
+    if grep -qE '^[[:space:]]*standalone:' "$yaml" 2>/dev/null; then
+      sed -i '/^[[:space:]]*standalone:/a\  usage_feedback: docs/USAGE-FEEDBACK.md' "$yaml"
+      merged=$((merged + 1))
+      info "ai-dev-os.yaml — merged docs.usage_feedback"
+    elif grep -qE '^docs:' "$yaml" 2>/dev/null; then
+      sed -i '/^docs:/a\  usage_feedback: docs/USAGE-FEEDBACK.md' "$yaml"
+      merged=$((merged + 1))
+      info "ai-dev-os.yaml — merged docs.usage_feedback"
+    fi
+  fi
+
+  if ! grep -qE '^feedback:' "$yaml" 2>/dev/null; then
+    cat >> "$yaml" <<'EOF'
+
+# Usage feedback + monitoring (see docs/USAGE-FEEDBACK.md)
+feedback:
+  nudge_grill_questions: 8
+  nudge_afk_stale_minutes: 45
+  rollup_sync: true
+EOF
+    merged=$((merged + 1))
+    info "ai-dev-os.yaml — merged feedback block"
+  fi
+
+  MERGED_YAML_KEYS=$merged
+}
+
+sync_project_os_docs() {
+  local doc="$PROJECT_DIR/docs/USAGE-FEEDBACK.md"
+  [[ -f "$doc" ]] && return 0
+  [[ -f "$ROOT/docs/USAGE-FEEDBACK.md" ]] || return 0
+  mkdir -p "$PROJECT_DIR/docs"
+  cp "$ROOT/docs/USAGE-FEEDBACK.md" "$doc"
+  info "docs/USAGE-FEEDBACK.md — synced from OS"
+  SYNCED_OS_DOCS=1
+}
+
 setup_os_binding() {
   local idea="$1"
   local created=0
@@ -245,12 +290,24 @@ setup_os_binding() {
   fi
 
   # --- ai-dev-os.yaml (portable — env:AI_DEV_OS_HOME, no machine paths) ---
+  MERGED_YAML_KEYS=0
+  SYNCED_OS_DOCS=0
   if [[ -f "$PROJECT_DIR/ai-dev-os.yaml" ]]; then
-    info "ai-dev-os.yaml — exists, kept"
-    skipped=$((skipped + 1))
+    merge_ai_dev_os_yaml
+    if [[ "${MERGED_YAML_KEYS:-0}" -gt 0 ]]; then
+      created=$((created + 1))
+    else
+      info "ai-dev-os.yaml — exists, kept"
+      skipped=$((skipped + 1))
+    fi
   else
     substitute "$TEMPLATE/ai-dev-os.yaml" "$PROJECT_DIR/ai-dev-os.yaml" "$idea"
     info "ai-dev-os.yaml — created (portable — uses \$AI_DEV_OS_HOME)"
+    created=$((created + 1))
+  fi
+
+  sync_project_os_docs
+  if [[ "${SYNCED_OS_DOCS:-0}" -eq 1 ]]; then
     created=$((created + 1))
   fi
 
@@ -272,9 +329,12 @@ setup_os_binding() {
   fi
 
   # --- work/ docs/ ---
-  mkdir -p "$PROJECT_DIR/work/kickoff" "$PROJECT_DIR/docs"
+  mkdir -p "$PROJECT_DIR/work/kickoff" \
+    "$PROJECT_DIR/work/feedback/snapshots" \
+    "$PROJECT_DIR/work/telemetry" \
+    "$PROJECT_DIR/docs"
   touch "$PROJECT_DIR/work/.gitkeep" "$PROJECT_DIR/docs/.gitkeep" 2>/dev/null || true
-  info "work/ docs/ — ready"
+  info "work/ docs/ — ready (feedback + telemetry scaffold)"
 
   # --- .gitignore ---
   ensure_gitignore_entry() {

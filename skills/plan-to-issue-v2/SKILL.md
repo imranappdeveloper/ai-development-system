@@ -112,6 +112,19 @@ Start AFK on server:
 
 Do **not** start implementation in this chat.
 
+### Usage snapshot (after publish)
+
+After epic + children are published:
+
+```bash
+usage-feedback.sh snapshot --milestone tasks-published \
+  --issues-published <child_count> \
+  --partial-footers <N> \
+  --skills "plan-to-issue-v2"
+```
+
+Show snapshot path + summary. Nudge only if anomalies (see `usage-report` skill).
+
 ---
 
 ## Skill map

@@ -8,3 +8,9 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+## On lock (after user confirms `yes`)
+
+Write or update `work/requirement-lock.md` with `status: approved`. That lock doc is the execution SSOT for AFK — agents do not read grill snapshots.
+
+**Do not** run `usage-feedback.sh snapshot` for grill sessions. **Do not** show snapshot paths or summaries to the user.

@@ -46,9 +46,12 @@ done
 ok "core SSOT docs present"
 
 # 5. CLI scripts executable
-for s in install-cli.sh check-cli.sh new-project.sh task-run.sh task-run-server.sh \
+for s in install-cli.sh check-cli.sh check-integration.sh new-project.sh task-run.sh task-run-server.sh \
   task-run-poll.sh setup-task-run.sh setup-graphify.sh sync-project.sh \
-  test-task-run-session.sh ai-paths.sh; do
+  issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py \
+  test-task-run-session.sh test-usage-snapshot.sh test-check-integration.sh \
+  test-issue-spec-check.sh test-issue-context-pack.sh test-afk-state-sync.sh test-grill-intake.sh \
+  usage-feedback.sh ai-paths.sh; do
   [[ -x "$ROOT/scripts/$s" ]] || die "not executable: scripts/$s"
 done
 ok "CLI scripts executable"
@@ -58,6 +61,26 @@ if "$ROOT/scripts/test-task-run-session.sh" >/dev/null 2>&1; then
 else
   die "test-task-run-session.sh failed"
 fi
+
+if "$ROOT/scripts/test-usage-snapshot.sh" >/dev/null 2>&1; then
+  ok "test-usage-snapshot.sh"
+else
+  die "test-usage-snapshot.sh failed"
+fi
+
+if "$ROOT/scripts/test-check-integration.sh" >/dev/null 2>&1; then
+  ok "test-check-integration.sh"
+else
+  die "test-check-integration.sh failed"
+fi
+
+for t in test-issue-spec-check.sh test-issue-context-pack.sh test-afk-state-sync.sh test-grill-intake.sh; do
+  if "$ROOT/scripts/$t" >/dev/null 2>&1; then
+    ok "$t"
+  else
+    die "$t failed"
+  fi
+done
 
 # 6. check-cli (quiet)
 if AI_DEV_OS_HOME="$ROOT" "$ROOT/scripts/check-cli.sh" --quiet; then

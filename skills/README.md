@@ -13,7 +13,7 @@ Agents **always** load from `$AI_DEV_OS_HOME/skills/` — never `~/.agent-skills
 | OS bind | `setup-ads`, `sync-project`, `setup-project-agents`, `setup-task-run` |
 | Grill | `grill-me`, `grill-with-docs` |
 | Plan + publish | `plan-to-issue-v2` (default: lock doc → overview → publish), `grill-for-planning`, `plan-synthesis`, `plan-review`, `to-issues`, `to-prd` |
-| AFK execute | `task-run` → `work-to-pr-v2`, `issue-spec-review`, `pr-readiness-check`, `tdd` |
+| AFK execute | `task-run` → `work-to-pr-v2`, `issue-spec-review`, `pr-readiness-check`, AI PR review (`review` bundled), `tdd` |
 | Bug | `triage`, `diagnose` |
 
 Verify: `check-cli`

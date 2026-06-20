@@ -43,7 +43,7 @@ sync-project.sh /path/to/project
 2. `install-cli.sh` — CLI + skill symlinks (grok/agy)
 3. `check-cli` — verify
 4. `git pull` — project repo (if `.git`)
-5. `ai-new .` — merge AGENTS blocks, task-run/graphify hooks
+5. `ai-new .` — merge AGENTS blocks, `ai-dev-os.yaml` keys (`feedback:`, `docs.usage_feedback`), sync `docs/USAGE-FEEDBACK.md`, scaffold `work/feedback/` + `work/telemetry/`, task-run/graphify hooks
 
 Run the script yourself — do not ask the user to paste commands unless `check-cli` fails.
 
@@ -73,16 +73,80 @@ Skip if project never ran `/setup-project-agents`.
 
 ---
 
+## Phase 4 — Integration check (required)
+
+After Phases 1–2 complete, verify the machine **and** project are fully integrated:
+
+```bash
+check-integration
+# or:
+check-integration /path/to/project
+```
+
+Run it yourself from **project root** — do not skip.
+
+**Script checks:**
+
+| Area | Blocking (FAIL) | Advisory (WARN) |
+|------|-----------------|-----------------|
+| Machine | `check-cli`, `ai-paths check` | `~/.local/bin` not on PATH |
+| Project binding | `AGENTS.md`, `ai-dev-os.yaml` | `work/`, `docs/` |
+| AGENTS.md blocks | header, path-resolution, config, skills-source, setup-ads | optional blocks, setup placeholder |
+| `docs/agents/` | — | issue-tracker, triage-labels, domain, engineering-standards, task-run |
+| AFK | — | `work/task-run/`, `docs/agents/task-run.md` |
+| Optional | — | graphify hook, `gh`, `CONTEXT.md`, grok/agy |
+
+**Show the full report** to the user (all `OK`, `WARN`, `FAIL` lines + summary).
+
+| Summary | Agent action |
+|---------|--------------|
+| `FULLY INTEGRATED` | Confirm ready; continue work |
+| `PARTIAL` | List warnings; ask user to fix before AFK or `/plan-to-issue-v2` |
+| `NOT READY` / `NOT BOUND` | List blocking items; **stop** — ask user to fix |
+
+**When issues exist — ask the user to fix** (one message, A/B/C at forks):
+
+```text
+Integration check: <FULLY INTEGRATED | PARTIAL | NOT READY>
+
+Blocking:
+- <item> → <fix command or skill>
+
+Warnings:
+- <item> → <fix>
+
+A) Fix blocking items now (I'll guide step by step)
+B) Fix warnings only — continue without AFK/planning for now
+C) Skip — I'll fix manually later
+
+I recommend A if any FAIL; B if only WARN and you need to code immediately.
+```
+
+| Issue | Typical fix |
+|-------|-------------|
+| `check-cli` / `ai-paths` | `cd $AI_DEV_OS_HOME && ./scripts/install-cli.sh && source ~/.bashrc` |
+| Missing `AGENTS.md` / `ai-dev-os.yaml` | `ai-new .` |
+| Stale OS blocks | `ai-new .` (merge-only) |
+| `docs/agents/` incomplete | `/setup-project-agents` |
+| task-run scaffold | `setup-task-run.sh .` or `/setup-ads` Phase 1.6 |
+| `CONTEXT.md` | `/setup-ads` grill or manual stub |
+
+Do not proceed to AFK or issue publishing until blocking FAIL items are resolved (or user explicitly chooses C).
+
+---
+
 ## Report
 
 ```text
 Sync complete
 
-OS:     pulled + install-cli
+OS:      pulled + install-cli
 Project: pulled + ai-new
-Agents: refreshed (--detect-only) | skipped
-Ready:  check-cli OK | WARN: <fix>
+Agents:  refreshed (--detect-only) | skipped
+Integration: FULLY INTEGRATED | PARTIAL (N warnings) | NOT READY (N blocking)
 ```
+
+Include the integration summary and any open WARN/FAIL items from Phase 4.
 
 End with OS status footer — `$AI_DEV_OS_HOME/docs/OS-STATUS-FOOTER.md`.
 

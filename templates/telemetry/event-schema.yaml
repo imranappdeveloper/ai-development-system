@@ -1,0 +1,41 @@
+# Telemetry event schema — work/telemetry/events.jsonl (one JSON object per line)
+# Anonymized rollup: $AI_DEV_OS_HOME/.usage/rollup.jsonl (no proprietary text)
+
+version: "1.0"
+
+event_types:
+  - skill_invoked
+  - os_footer
+  - grill_question
+  - milestone_snapshot
+
+fields:
+  ts: ISO-8601 UTC
+  event_type: string
+  milestone: grill | tasks-published | afk-run | null
+  skill: string | null
+  project_slug: basename of project root (rollup only)
+  duration_sec: integer | null
+  metrics:
+    grill_questions: integer
+    partial_footer_count: integer
+    lock_doc_approved: boolean
+    issues_published: integer
+    prs_opened: integer
+    needs_info_count: integer
+    spec_review_retries: integer
+    queued_at_start: integer
+    afk_stalled: boolean
+    task_run_crash: boolean
+  anomalies: list of anomaly_id strings
+  nudge: boolean
+
+anomaly_ids:
+  - afk_stall
+  - needs_info
+  - task_run_crash
+  - grill_abandoned
+  - partial_footer
+  - grill_questions_high
+  - spec_review_retry
+  - afk_zero_prs

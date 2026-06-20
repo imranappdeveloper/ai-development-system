@@ -160,6 +160,8 @@ Max **2** user decision points per bug: plan options + Start coding.
 | **Start AFK on server** | After overview approved |
 | **Start coding** | Single-task / bug path only (no GitHub queue) |
 | `Done.` | Optional — close out work |
+| `/feedback` | Report OS friction anytime |
+| `/usage-report` | Full usage rollup + recommendations |
 | `Bug Fix: …` | Start bug path |
 
 ---
@@ -184,3 +186,4 @@ Max **2** user decision points per bug: plan options + Start coding.
 | [AFK-TASK-RUN.md](./AFK-TASK-RUN.md) | Task manager + server tmux |
 | [REQUIREMENT-CHECK.md](./REQUIREMENT-CHECK.md) | Validate user input before acting |
 | `templates/requirement-lock/template.md` | Lock doc structure |
+| [USAGE-FEEDBACK.md](./USAGE-FEEDBACK.md) | Snapshots, `/feedback`, `/usage-report` |

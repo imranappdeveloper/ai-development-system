@@ -1,0 +1,26 @@
+# Feedback entry schema — work/feedback/entries.jsonl
+
+version: "1.0"
+
+categories:
+  - skill-bug
+  - workflow-friction
+  - spec-quality
+  - afk-reliability
+  - feature-request
+
+severities:
+  - low
+  - medium
+  - high
+
+fields:
+  id: FB-YYYYMMDD-NNN
+  ts: ISO-8601 UTC
+  category: category enum
+  severity: severity enum
+  skill: string | null
+  milestone: string | null
+  text: user words (project-local only — never sync verbatim to rollup)
+  github_issue: number | null
+  snapshot_ref: path under work/feedback/snapshots/ | null

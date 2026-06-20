@@ -1,11 +1,11 @@
 ---
 name: work-to-pr-v2
-description: Improved work-to-pr — issue branch per ticket, PR into dev, spec preflight, PR readiness gate. Task done when PR opens — do not wait for merge; start next unblocked issue immediately. Parallel work uses git worktree. Use after /plan-to-issue-v2 or standalone.
+description: Improved work-to-pr — issue branch per ticket, PR into dev, spec preflight, PR readiness gate, auto AI PR review. Task done when PR opens — do not wait for merge; start next unblocked issue immediately. Parallel work uses git worktree. Use after /plan-to-issue-v2 or standalone.
 ---
 
 # Work to PR v2
 
-Process GitHub issues autonomously. Human gates at **PR review** — never merge PRs, never ask questions mid-issue.
+Process GitHub issues autonomously. Human gates at **PR review** — never merge PRs, never ask questions mid-issue. After each AFK PR is created, run **AI PR review** (PENDING review on GitHub + issue one-liner) — see step 7.
 
 **Called by:** `task-run` (server AFK) spawns a subagent per issue to run this skill's **Per-issue loop**. Do not skip steps when invoked from `task-run`.
 
@@ -42,34 +42,19 @@ ready-for-agent → in-progress → done
 
 ## Startup
 
-1. Read `docs/agents/*` (including `engineering-standards.md` when present) and `CONTEXT.md` (+ ADRs if referenced)
+1. Read `docs/agents/issue-tracker.md` and `docs/agents/triage-labels.md` once at session start — **do not** reload full `docs/agents/*` per issue when a context pack exists
 2. Read **`work/requirement-lock.md`** when epic or issues reference it (default path SSOT)
 3. Fetch target issues (epic children or `--ready`; cap `--ready` at **5 issues** per run)
 4. Filter children by `## Parent` when an epic number is given
-5. **State sync + recovery** (always — required before building execution queue):
-
-### State sync + recovery
-
-For each fetched issue, find its PR:
+5. **State sync + recovery** (always — run script before building execution queue):
 
 ```bash
-gh pr list --search "closes #<N>" --state all --json number,state,mergedAt,headRefName,url --limit 5
+"$AI_DEV_OS_HOME/scripts/afk-state-sync.sh" --issues <comma-separated-nums>
+# Add --apply to execute gh label repairs (dry-run first if uncertain)
+# Or: --epic <N> to sync all children
 ```
 
-| Issue labels | PR state | Action |
-|---|---|---|
-| `done` | `OPEN` | No change — agent complete; human may merge later |
-| `done` | `MERGED` | No change — stay `done` |
-| `done` | `CLOSED` (not merged) | Remove `done`, add `ready-for-agent`. Comment: PR closed unmerged — re-run work |
-| `pr-open` | `OPEN` | **Legacy repair** — add `done`, remove `pr-open` |
-| `pr-open` | `MERGED` | Add `done`, remove `pr-open` |
-| `in-progress` | `OPEN` | Add `done`, remove `in-progress` (fix label drift) |
-| `in-progress` | `MERGED` | `done` + remove `in-progress` |
-| `in-progress` | none | **Stuck recovery** — remove `in-progress`, add `ready-for-agent`, comment with branch name if known |
-
-```
-State sync: <N> done (ok), <N> reopened (closed PR), <N> recovered stuck in-progress
-```
+Script encapsulates PR search and label repair (`done` / `in-progress` / `pr-open`). Report its summary line — do not re-implement the table in agent context.
 
 6. Build dependency graph from `## Blocked by` sections — **`done` = PR opened satisfies blocker** (merge not required)
 7. Execution queue: unblocked issues labeled `ready-for-agent` only
@@ -95,7 +80,7 @@ Before full `issue-spec-review`, check whether duplicate preflight can be skippe
 
 **Always** run full `issue-spec-review` when stamp missing, invalid, or hash mismatch.
 
-TDD and `pr-readiness-check` are **never** skipped.
+TDD, `pr-readiness-check`, and **AI PR review** (step 7) are **never** skipped.
 
 ## `--continue`
 
@@ -116,7 +101,7 @@ Continue sync: <N> done, <N> reopened, <N> ready to implement
 ## Git branching
 
 ```
-main  ← releases only (dev → main when epic fully done)
+main  ← production releases — human merges dev → main when ready (not per task/epic)
 dev   ← all issue PRs merge here
 issue/<N>-<short-slug>  ← one branch per issue; delete after merge
 ```
@@ -125,6 +110,7 @@ Rules:
 - Always branch **from** `dev`
 - Always open PRs **into** `dev` (`--base dev`)
 - Never commit directly to `main` or `dev`
+- **Never** open `dev` → `main` PRs — maintainer does that manually on their schedule
 - Delete remote branch after human merges (optional comment on issue)
 
 ## Per-issue loop
@@ -133,9 +119,17 @@ For each executable (unblocked, `ready-for-agent`) issue:
 
 ### 1. Spec review (before claim)
 
-If valid AFK preflight stamp → skip. Else run `$AI_DEV_OS_HOME/skills/issue-spec-review/SKILL.md`.
+```bash
+"$AI_DEV_OS_HOME/scripts/issue-spec-check.sh" --issue <N>
+```
 
-If `NEEDS_SPEC` → skip, continue to next.
+| Result | Action |
+|---|---|
+| `afk-preflight-skip: true` | Skip spec review |
+| `NEEDS_SPEC` | Skip issue, continue queue |
+| `READY` | Run semantic checks per `$AI_DEV_OS_HOME/skills/issue-spec-review/SKILL.md` only |
+
+If semantic review → `NEEDS_SPEC` → skip, continue to next.
 
 ### 2. Claim
 
@@ -156,12 +150,17 @@ git checkout -b issue/<N>-<short-slug>
 
 ### 4. Implement (subagent + TDD)
 
+Build minimal context pack before spawning subagent:
+
+```bash
+PACK="$("$AI_DEV_OS_HOME/scripts/issue-context-pack.sh" --issue <N>)"
+```
+
 Spawn a **fresh subagent** per issue (`Task` / `invoke_subagent`).
 
 Subagent prompt must include:
-- Full issue body (acceptance criteria are the spec)
-- **Lock doc section** — read `## Requirement lock` pointer; use that entry's Agreed change + Confirmed forks as product SSOT
-- `docs/agents/engineering-standards.md` when present
+- **Context pack path** (`$PACK`) — issue body, lock section, spot-check files, CONTEXT/ADR excerpts
+- `docs/agents/engineering-standards.md` when present (only this agents doc — not full `docs/agents/*`)
 - Instruction to follow `/tdd`
 - **Working directory path** (repo root or worktree path)
 - Skip UI tests unless required
@@ -213,20 +212,38 @@ gh pr create --base dev \
 <paste checkboxes, mark completed ones>"
 ```
 
-Then — **done immediately** (task complete; do not wait for merge):
+Capture **PR number** and **PR URL** from `gh pr create` output.
+
+Mark **done immediately** (unblocks dependents — do not wait for merge or AI review):
 
 ```bash
 gh issue edit <N> --add-label done --remove-label in-progress
-gh issue comment <N> --body "> *Task complete — PR ready for review.*
-
-<PR URL>
-
-Human: merge when ready. Agent queue continues — dependents unblocked."
 ```
 
-**Do NOT merge the PR.** Start the **next unblocked** issue without waiting.
+**Do not** post the task-complete issue comment yet — step 7 posts it with the AI review one-liner.
 
-### 7. Ambiguous spec (fallback)
+### 7. AI PR review (mandatory after PR)
+
+Read `$AI_DEV_OS_HOME/skills/work-to-pr-v2/references/ai-pr-review.md` and execute fully.
+
+Summary:
+
+1. Run bundled `/review --pr <PR>` per `~/.grok/bundled/skills/review/SKILL.md` with AFK reviewer prompt additions (acceptance criteria map, risks, recommendation).
+2. Post **PENDING** GitHub review (inline comments + review body).
+3. On failure → **retry once**; if still failing → `--skipped` notify path.
+4. Run notify script:
+
+```bash
+"$AI_DEV_OS_HOME/scripts/ai-pr-review-notify.sh" \
+  --issue <N> --pr-number <PR> --pr-url "<PR URL>" --review-file "<path>"
+# or --skipped after retry exhausted
+```
+
+5. On bugs found, script posts `⚠️ AI review: fix before merge` on the PR (advisory — issue stays `done`).
+
+**Do NOT merge the PR.** Start the **next unblocked** issue without waiting for human review submit.
+
+### Ambiguous spec (fallback during implement)
 
 ```bash
 gh issue comment <N> --body "> *Blocked by missing spec during work.*
@@ -253,7 +270,7 @@ git worktree add .worktrees/issue-<N> -b issue/<N>-<short-slug> origin/dev
 ```
 
 - Subagent runs in `.worktrees/issue-<N>/`
-- Each worktree: claim → implement → PR readiness → push → `gh pr create` → `done`
+- Each worktree: claim → implement → PR readiness → push → `gh pr create` → `done` → AI PR review
 - After each PR opened: remove worktree, **immediately** pick next unblocked issue
 
 ```bash
@@ -264,21 +281,17 @@ Orchestrator main checkout: stay on `dev`, no parallel branch checkouts in root 
 
 ### Sequential (default when one issue, overlap, or uncertainty)
 
-Single checkout flow (steps 2–6 above). **Do not** use worktrees.
+Single checkout flow (steps 2–7 above). **Do not** use worktrees.
 
 **Do not wait for human merge** between issues — only wait for subagent/PR create to finish.
 
-## Epic release (dev → main)
+## Release to main (human only)
 
-When **all** child issues are labeled `done` (each has an open or merged PR into `dev`):
+When all epic children are `done`, the agent **stops**. Do **not** open a `dev` → `main` PR.
 
-```bash
-gh pr create --base main --head dev --title "release: <epic title> (#<epic>)"
-```
-
-Tell the user to review and merge. Do not merge yourself.
-
-If any child is `in-progress` or not `done` → epic not ready for release.
+- Issue PRs target `dev` only — one PR per issue, not per epic
+- `dev` → `main` is the maintainer's manual release cadence (may batch multiple epics or skip for long periods)
+- Optional one-line in the final report: "Epic #N complete on `dev` — merge issue PRs to `dev` when ready; release to `main` is manual."
 
 ## Stop conditions
 
@@ -291,12 +304,15 @@ If any child is `in-progress` or not `done` → epic not ready for release.
 - No `AskQuestion` during execution
 - No merging PRs
 - No committing directly to `main` or `dev`
+- No `dev` → `main` PRs — ever
 
 Report summary:
 
 ```
 Work complete.
 - Done (PR opened): #<list>
+- AI reviews posted: #<list> (PENDING on PR Files tab)
+- AI review skipped (retry failed): #<list>
 - PRs awaiting your merge: #<list> (informational — agent did not wait)
 - Recovered stuck: #<list>
 - Skipped needs-info: #<list>
@@ -304,11 +320,15 @@ Work complete.
 
 ## Skill map
 
-| Step | Skill |
+| Step | Script / skill |
 |---|---|
-| Preflight | `issue-spec-review` (skippable via AFK stamp) |
+| State sync | `afk-state-sync.sh` |
+| Structural preflight | `issue-spec-check.sh` |
+| Semantic preflight | `issue-spec-review` (after script READY; skippable via script `afk-preflight-skip`) |
+| Context pack | `issue-context-pack.sh` |
 | Implement | `tdd` |
 | Pre-PR | `pr-readiness-check` |
+| Post-PR | `review` (bundled) + `references/ai-pr-review.md` |
 | Plan gaps | `plan-to-issue-v2` |
 
 SSOT: `$AI_DEV_OS_HOME/skills/work-to-pr-v2/SKILL.md`

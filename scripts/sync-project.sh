@@ -121,10 +121,24 @@ info "ai-new (merge OS blocks)..."
 ( cd "$PROJECT_DIR" && "$AI_NEW" . )
 
 echo ""
+echo "--- Integration check ---"
+CHECK_INTEGRATION="${AI_DEV_OS_HOME:-$OS_HOME}/scripts/check-integration.sh"
+if [[ -x "$CHECK_INTEGRATION" ]]; then
+  if "$CHECK_INTEGRATION" "$PROJECT_DIR"; then
+    info "check-integration: OK"
+  else
+    warn "check-integration reported issues — fix before AFK or /plan-to-issue-v2"
+  fi
+else
+  warn "check-integration.sh missing — run install-cli.sh"
+fi
+
+echo ""
 echo "=== Project sync complete ==="
 echo ""
 echo "Next (in Grok/Agy chat from project):"
 echo "  /setup-project-agents --detect-only   # if docs/agents/ exists"
+echo "  check-integration                       # re-verify after fixes"
 echo "  continue your work"
 echo ""
 echo "Skill: \$AI_DEV_OS_HOME/skills/sync-project/SKILL.md"

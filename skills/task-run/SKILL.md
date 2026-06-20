@@ -2,7 +2,7 @@
 name: task-run
 description: >
   AFK task manager — state sync, dependency queue, delegates each issue to full
-  work-to-pr-v2 (spec review, TDD, PR readiness, PR, done at create). Server only.
+  work-to-pr-v2 (spec review, TDD, PR readiness, PR, AI PR review, done at create). Server only.
   Never ask questions.
 ---
 
@@ -21,7 +21,7 @@ Started on the **Ubuntu server** by `task-run-server.sh` — tmux + **grok** or 
 - Labels: `ready-for-agent`; bodies: `## Blocked by`
 - User said **Start AFK on server**
 
-**Read:** `work-to-pr-v2` only (it loads `issue-spec-review`, `tdd`, `pr-readiness-check`).
+**Read:** `work-to-pr-v2` only (it loads `issue-spec-review`, `tdd`, `pr-readiness-check`, AI PR review).
 
 **Do not** use `issue-processor` or run `/tdd` alone — always delegate the full `work-to-pr-v2` per-issue loop.
 
@@ -57,14 +57,16 @@ task-run-server.sh --status
 ```
 loop:
   1. Fetch issues (epic children or --ready)
-  2. State sync — work-to-pr-v2 "State sync + recovery" section
+  2. State sync — afk-state-sync.sh --epic <N> or --issues <list> [--apply]
   3. Dependency graph from ## Blocked by (done = PR opened)
   4. Queue = unblocked + ready-for-agent
   5. Batch ≤3 — check file overlap per work-to-pr-v2 Parallelism
-  6. Per issue: spawn subagent with work-to-pr-v2 per-issue loop (steps 1–6)
+  6. Per issue: spawn subagent with work-to-pr-v2 per-issue loop (steps 1–7)
   7. needs-info → skip, continue queue
   8. Until queue empty
 ```
+
+**Token scripts (orchestrator runs, do not re-implement in context):** `afk-state-sync.sh`, `issue-spec-check.sh`, `issue-context-pack.sh` — see `work-to-pr-v2` per-issue loop.
 
 ### Per-issue delegation (mandatory)
 
@@ -78,9 +80,9 @@ Pass --lean if epic children have AFK preflight stamps.
 Do not process other issues. Do not ask questions.
 ```
 
-Subagent runs the **full** pipeline: `issue-spec-review` → claim → branch/worktree → `/tdd` → `pr-readiness-check` → `gh pr create` → `done`.
+Subagent runs the **full** pipeline: `issue-spec-check.sh` → semantic `issue-spec-review` (if needed) → `issue-context-pack.sh` → claim → branch/worktree → `/tdd` → `pr-readiness-check` → `gh pr create` → `done` → AI PR review → issue notify.
 
-Orchestrator does **not** skip spec review or PR readiness.
+Orchestrator does **not** skip spec review, PR readiness, or AI PR review.
 
 ---
 
@@ -110,6 +112,7 @@ Follow `work-to-pr-v2` Parallelism: max 3 worktrees, no path overlap. After each
 - No user prompts
 - No merging PRs
 - No direct commits to `main`/`dev`
+- No `dev` → `main` PRs (maintainer releases manually)
 - No `--execute` in planning chat — this skill is the only batch executor
 
 ---
@@ -130,5 +133,23 @@ PRs for human merge:     #<list>
 needs-info:              #<list>
 Blocked:                 #<list>
 ```
+
+### Usage snapshot (after batch)
+
+After the report, record the AFK milestone:
+
+```bash
+usage-feedback.sh snapshot --milestone afk-run \
+  --prs <done_count> \
+  --needs-info <needs_info_count> \
+  --spec-retries <retry_count> \
+  --queued <queued_at_start> \
+  --partial-footers <N> \
+  [--afk-stalled] [--crash] \
+  --duration-sec <approx> \
+  --skills "task-run"
+```
+
+Use `TASK_RUN_STALE_MINUTES` (default 45) to set `--afk-stalled` when logs show no activity. Present snapshot per `usage-report` skill.
 
 SSOT: `$AI_DEV_OS_HOME/skills/task-run/SKILL.md`

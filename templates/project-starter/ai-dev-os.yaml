@@ -21,6 +21,7 @@ docs:
   user_flow: docs/USER-FLOW.md
   requirement_check: docs/REQUIREMENT-CHECK.md
   standalone: docs/STANDALONE.md
+  usage_feedback: docs/USAGE-FEEDBACK.md
 
 skills:
   manifest: skills/MANIFEST.yaml
@@ -42,3 +43,9 @@ bug_fix_commands:
 # Server AFK task manager — grok (Grok Build) or agy (Antigravity)
 task_run:
   agent: grok
+
+# Usage feedback + monitoring (see docs/USAGE-FEEDBACK.md)
+feedback:
+  nudge_grill_questions: 8
+  nudge_afk_stale_minutes: 45
+  rollup_sync: true

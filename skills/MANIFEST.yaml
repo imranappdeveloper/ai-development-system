@@ -30,3 +30,6 @@ required:
   # Bug path
   - triage
   - diagnose
+  # Usage feedback + monitoring
+  - feedback
+  - usage-report

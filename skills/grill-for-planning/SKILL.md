@@ -7,7 +7,32 @@ description: Enhanced grilling for the plan-to-issue pipeline — explore first,
 
 Issue-ready grilling session. Builds on the existing grill skills without replacing them.
 
-**Default path:** interactive grill → `work/requirement-lock.md` → overview gate → publish. No autonomous guessing.
+**Default path:** grill intake (optional) → interactive grill → `work/requirement-lock.md` → overview gate → publish. No autonomous guessing.
+
+## Grill intake CLI (optional — before AI)
+
+Structured intake reduces boilerplate Q&A. **Mandatory AI explore pass still required.**
+
+```bash
+# Create starter intake
+python3 "$AI_DEV_OS_HOME/scripts/grill-intake.py" --project . init --feature <slug>
+
+# Edit work/grill-intake.json — fill problem_statement, journeys, open_questions
+
+# Validate completeness (does not approve)
+python3 "$AI_DEV_OS_HOME/scripts/grill-intake.py" --project . lint
+
+# Seed draft lock doc (status: draft only)
+python3 "$AI_DEV_OS_HOME/scripts/grill-intake.py" --project . seed-lock
+```
+
+| Rule | Detail |
+|---|---|
+| Script writes | `work/grill-intake.json`, draft `work/requirement-lock.md` |
+| Script never sets | `status: approved` |
+| AI must | Explore codebase, diff intake vs reality, ask misalignment only, get user `yes` |
+
+If intake is incomplete, fix `work/grill-intake.json` before AI pass. Skip intake CLI when user already grilled interactively in the same session.
 
 ## Which base skill to load first
 
@@ -99,6 +124,8 @@ When the checklist is complete, say:
 > Ready to draft issues from the lock doc?
 
 **Wait for explicit user confirmation** (`yes`) before handing off to `/plan-synthesis`.
+
+**Do not** run `usage-feedback.sh snapshot` for grill sessions. Lock doc is the SSOT — no snapshot files or user-facing snapshot summaries.
 
 ## Legacy auto mode (`--auto --lean`) — opt-in only
 

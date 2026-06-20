@@ -9,6 +9,7 @@
 | Asset | Path | Purpose |
 |-------|------|---------|
 | User flows | `docs/` | How users and agents interact |
+| Usage feedback | `docs/USAGE-FEEDBACK.md` | Telemetry, snapshots, `/feedback`, `/usage-report` |
 | Bundled skills | `skills/` + `skills/MANIFEST.yaml` | All slash-command skills |
 | Playbooks | `playbooks/` | Internal agent specs (users never read) |
 | Workflows | `workflows/` | Phase DAGs, routing, gates |
@@ -75,7 +76,7 @@ All skills invoked are in `skills/MANIFEST.yaml`.
 
 ```bash
 ./scripts/verify-standalone.sh   # no external skill refs; manifest complete
-check-cli                        # CLI + 19 bundled skills (symlink check)
+check-cli                        # CLI + bundled skills (symlink check)
 ```
 
 ---
