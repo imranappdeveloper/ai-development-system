@@ -151,11 +151,6 @@ merge_agents_md() {
     fi
     if [[ "$line" == "ENDBLOCK" ]]; then
       [[ -n "$block_name" ]] || continue
-      if [[ "$block_name" == "project-idea" ]] \
-        && ! grep -qF '{{PROJECT_IDEA}}' "$existing"; then
-        block_name=""
-        continue
-      fi
       if ads_block_present "$block_name" "$existing"; then
         block_name=""
         continue
@@ -217,11 +212,11 @@ merge_ai_dev_os_yaml() {
 
   if ! grep -qE '^[[:space:]]*usage_feedback:' "$yaml" 2>/dev/null; then
     if grep -qE '^[[:space:]]*standalone:' "$yaml" 2>/dev/null; then
-      sed -i '/^[[:space:]]*standalone:/a\  usage_feedback: docs/USAGE-FEEDBACK.md' "$yaml"
+      awk '/^[[:space:]]*standalone:/ { print; print "  usage_feedback: docs/USAGE-FEEDBACK.md"; next } { print }' "$yaml" > "$yaml.tmp" && mv "$yaml.tmp" "$yaml"
       merged=$((merged + 1))
       info "ai-dev-os.yaml — merged docs.usage_feedback"
     elif grep -qE '^docs:' "$yaml" 2>/dev/null; then
-      sed -i '/^docs:/a\  usage_feedback: docs/USAGE-FEEDBACK.md' "$yaml"
+      awk '/^docs:/ { print; print "  usage_feedback: docs/USAGE-FEEDBACK.md"; next } { print }' "$yaml" > "$yaml.tmp" && mv "$yaml.tmp" "$yaml"
       merged=$((merged + 1))
       info "ai-dev-os.yaml — merged docs.usage_feedback"
     fi
