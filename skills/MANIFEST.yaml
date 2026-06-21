@@ -26,6 +26,7 @@ required:
   - work-to-pr-v2
   - issue-spec-review
   - pr-readiness-check
+  - review-requirement
   - tdd
   # Bug path
   - triage
@@ -33,3 +34,4 @@ required:
   # Usage feedback + monitoring
   - feedback
   - usage-report
+  - observe

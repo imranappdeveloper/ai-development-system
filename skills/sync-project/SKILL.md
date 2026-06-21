@@ -10,6 +10,8 @@ description: >
 
 Pull latest OS + project code, refresh CLI symlinks and skills, merge new OS blocks into the project. **Idempotent** — safe to run often.
 
+**Propagation standard (STD-PROJ-001):** OS changes live only in `$AI_DEV_OS_HOME`. Working projects receive them through **`/sync-project`** (or `ai-new .`). New projects receive them through **`ai-new`**. Never ask users to copy OS scripts into project repos.
+
 ---
 
 ## When to use
@@ -43,7 +45,7 @@ sync-project.sh /path/to/project
 2. `install-cli.sh` — CLI + skill symlinks (grok/agy)
 3. `check-cli` — verify
 4. `git pull` — project repo (if `.git`)
-5. `ai-new .` — merge AGENTS blocks, `ai-dev-os.yaml` keys (`feedback:`, `docs.usage_feedback`), sync `docs/USAGE-FEEDBACK.md`, scaffold `work/feedback/` + `work/telemetry/`, task-run/graphify hooks
+5. `ai-new .` — merge AGENTS blocks, `ai-dev-os.yaml` keys (`feedback:`, `telemetry:`, `docs.usage_feedback`), sync `docs/USAGE-FEEDBACK.md`, scaffold `work/feedback/` + `work/telemetry/runs/`, observe CLI (`observe.sh`), task-run/graphify hooks
 
 Run the script yourself — do not ask the user to paste commands unless `check-cli` fails.
 

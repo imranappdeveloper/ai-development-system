@@ -8,6 +8,16 @@ event_types:
   - os_footer
   - grill_question
   - milestone_snapshot
+  - observe_run_start
+  - observe_run_end
+  - observe_heartbeat
+  - run_start
+  - run_end
+  - step_start
+  - step_end
+  - heartbeat
+  - tool_call
+  - subagent_spawn
 
 fields:
   ts: ISO-8601 UTC
@@ -16,6 +26,16 @@ fields:
   skill: string | null
   project_slug: basename of project root (rollup only)
   duration_sec: integer | null
+  run_id: string | null
+  parent_run_id: string | null
+  step: string | null
+  step_index: string | null
+  issue: integer | null
+  agent: grok | agy | null
+  status: ok | fail | skip | null
+  tokens_in: integer | null
+  tokens_out: integer | null
+  tokens_source: exact | estimated | null
   metrics:
     grill_questions: integer
     partial_footer_count: integer

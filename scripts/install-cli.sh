@@ -31,6 +31,10 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/usage-feedback.sh" \
   "$ROOT/scripts/lib/usage-snapshot.sh" \
   "$ROOT/scripts/test-usage-snapshot.sh" \
+  "$ROOT/scripts/observe.sh" \
+  "$ROOT/scripts/observe-event.sh" \
+  "$ROOT/scripts/lib/observe-event.sh" \
+  "$ROOT/scripts/test-observe.sh" \
   "$ROOT/scripts/check-integration.sh" \
   "$ROOT/scripts/test-check-integration.sh" \
   "$ROOT/scripts/issue-spec-check.sh" \
@@ -46,7 +50,13 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/test-issue-context-pack.sh" \
   "$ROOT/scripts/test-afk-state-sync.sh" \
   "$ROOT/scripts/test-ai-pr-review-notify.sh" \
-  "$ROOT/scripts/test-grill-intake.sh" 2>/dev/null || true
+  "$ROOT/scripts/test-grill-intake.sh" \
+  "$ROOT/scripts/setup-local-survey.sh" \
+  "$ROOT/scripts/test-codebase-survey.sh" \
+  "$ROOT/mcp/codebase-survey/server.py" \
+  "$ROOT/scripts/lib/local-survey.sh" 2>/dev/null || true
+chmod +x "$ROOT/mcp/codebase-survey/server.py" "$ROOT/scripts/setup-local-survey.sh" \
+  "$ROOT/scripts/test-codebase-survey.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"
 ln -sf "$ROOT/scripts/sync-project.sh" "$BIN_DIR/sync-project"
@@ -58,6 +68,8 @@ ln -sf "$ROOT/scripts/task-run.sh" "$BIN_DIR/task-run"
 ln -sf "$ROOT/scripts/task-run-server.sh" "$BIN_DIR/task-run-server"
 ln -sf "$ROOT/scripts/task-run-poll.sh" "$BIN_DIR/task-run-poll"
 ln -sf "$ROOT/scripts/usage-feedback.sh" "$BIN_DIR/usage-feedback"
+ln -sf "$ROOT/scripts/observe.sh" "$BIN_DIR/observe"
+ln -sf "$ROOT/scripts/observe-event.sh" "$BIN_DIR/observe-event"
 info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
 info "Linked: $BIN_DIR/check-cli"
@@ -68,6 +80,8 @@ info "Linked: $BIN_DIR/task-run-server"
 info "Linked: $BIN_DIR/task-run-poll"
 info "Linked: $BIN_DIR/sync-project"
 info "Linked: $BIN_DIR/usage-feedback"
+info "Linked: $BIN_DIR/observe"
+info "Linked: $BIN_DIR/observe-event"
 
 _ensure_path_in_rc() {
   local rc="$1"

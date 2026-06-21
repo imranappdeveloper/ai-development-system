@@ -3,7 +3,7 @@ version: 1.0.0
 platform: AI Development OS
 kickoff_mode: grill-first
 
-project_name: {{PROJECT_NAME}}
+project_name: ai-development-system
 work_id: WR-001
 
 # Paths — do NOT use machine-specific absolute paths here.
@@ -44,6 +44,7 @@ bug_fix_commands:
 task_run:
   agent: grok
 
+  auto_poll: false
 # Usage feedback + monitoring (see docs/USAGE-FEEDBACK.md)
 feedback:
   nudge_grill_questions: 8

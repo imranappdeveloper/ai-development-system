@@ -131,4 +131,5 @@ Replace committed `ai-dev-os.yaml` with portable template from OS repo, or edit 
 | Doc | Topic |
 |-----|-------|
 | [GETTING-STARTED.md](./GETTING-STARTED.md) | Install |
+| [LOCAL-SURVEY.md](./LOCAL-SURVEY.md) | Optional Mac Ollama MCP (Ubuntu: off) |
 | [PROJECT-KICKOFF.md](./PROJECT-KICKOFF.md) | Kickoff |

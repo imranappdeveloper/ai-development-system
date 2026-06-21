@@ -80,7 +80,7 @@ Before full `issue-spec-review`, check whether duplicate preflight can be skippe
 
 **Always** run full `issue-spec-review` when stamp missing, invalid, or hash mismatch.
 
-TDD, `pr-readiness-check`, and **AI PR review** (step 7) are **never** skipped.
+TDD, `pr-readiness-check`, `review-requirement`, and **AI PR review** (step 7) are **never** skipped.
 
 ## `--continue`
 
@@ -200,6 +200,14 @@ gh issue edit <N> --add-label needs-info --remove-label in-progress
 
 Do not open PR. Leave branch for human or delete locally.
 
+### 5b. Requirement review (before PR)
+
+Read `$AI_DEV_OS_HOME/skills/review-requirement/SKILL.md`. Run with issue context from step 4.
+
+If **FAIL** → same subagent fix loop as step 5 (**shared max 2 retries** across pr-readiness + review-requirement). Still failing → same `needs-info` path as step 5.
+
+On **PASS** → persist report to `work/review-requirement/issue-<N>-latest.md` for step 7.
+
 ### 6. Pull request
 
 ```bash
@@ -228,7 +236,7 @@ Read `$AI_DEV_OS_HOME/skills/work-to-pr-v2/references/ai-pr-review.md` and execu
 
 Summary:
 
-1. Run bundled `/review --pr <PR>` per `~/.grok/bundled/skills/review/SKILL.md` with AFK reviewer prompt additions (acceptance criteria map, risks, recommendation).
+1. Format pre-PR `review-requirement` report per `references/ai-pr-review.md` (no second full diff review when report exists).
 2. Post **PENDING** GitHub review (inline comments + review body).
 3. On failure → **retry once**; if still failing → `--skipped` notify path.
 4. Run notify script:
@@ -327,7 +335,7 @@ Work complete.
 | Semantic preflight | `issue-spec-review` (after script READY; skippable via script `afk-preflight-skip`) |
 | Context pack | `issue-context-pack.sh` |
 | Implement | `tdd` |
-| Pre-PR | `pr-readiness-check` |
+| Pre-PR | `pr-readiness-check` → `review-requirement` |
 | Post-PR | `review` (bundled) + `references/ai-pr-review.md` |
 | Plan gaps | `plan-to-issue-v2` |
 

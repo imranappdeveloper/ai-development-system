@@ -20,3 +20,6 @@ __pycache__/
 # graphify cache (graph.json + GRAPH_REPORT.md may be committed)
 graphify-out/.graphify_*
 graphify-out/.graphify_chunk_*.json
+ai-dev-os.local.yaml
+work/telemetry/runs/*.jsonl
+work/telemetry/.current-run

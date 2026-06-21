@@ -14,7 +14,7 @@
 | Playbooks | `playbooks/` | Internal agent specs (users never read) |
 | Workflows | `workflows/` | Phase DAGs, routing, gates |
 | Templates | `templates/` | Project binding, artifacts |
-| CLI | `scripts/` | `install-cli`, `ai-new`, `check-cli`, `task-run` |
+| CLI | `scripts/` | `install-cli`, `ai-new`, `sync-project`, `observe`, `check-cli`, `task-run` |
 | Standards | `standards/` | Engineering rules |
 
 **Agents load skills from:** `$AI_DEV_OS_HOME/skills/<name>/SKILL.md`
@@ -89,7 +89,17 @@ cd ~/ai-development-system && git pull
 check-cli
 ```
 
-On bound projects: `ai-new` merges new `AGENTS.md` blocks.
+On bound projects: run **`sync-project`** (pulls OS + runs `ai-new .` + `check-integration`). See **STD-PROJ-001** — every OS feature MUST update templates, `new-project.sh` merges, `install-cli.sh`, and integration checks so sync and new projects stay current.
+
+## OS CLI vs project data
+
+| Layer | Location | Example |
+|-------|----------|---------|
+| CLI / skills | `$AI_DEV_OS_HOME` | `observe.sh`, `usage-feedback.sh`, `skills/observe/` |
+| Per-project config | `your-project/ai-dev-os.yaml` | `telemetry.level`, `feedback:` |
+| Per-project runtime | `your-project/work/` | `work/telemetry/runs/` |
+
+Same `observe` command on PATH; data is **per project** based on `cwd`.
 
 ---
 

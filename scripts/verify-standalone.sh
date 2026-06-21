@@ -51,7 +51,7 @@ for s in install-cli.sh check-cli.sh check-integration.sh new-project.sh task-ru
   issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py \
   test-task-run-session.sh test-usage-snapshot.sh test-check-integration.sh \
   test-issue-spec-check.sh test-issue-context-pack.sh test-afk-state-sync.sh test-grill-intake.sh \
-  usage-feedback.sh ai-paths.sh; do
+  usage-feedback.sh observe.sh observe-event.sh test-observe.sh ai-paths.sh; do
   [[ -x "$ROOT/scripts/$s" ]] || die "not executable: scripts/$s"
 done
 ok "CLI scripts executable"
@@ -68,13 +68,19 @@ else
   die "test-usage-snapshot.sh failed"
 fi
 
+if "$ROOT/scripts/test-observe.sh" >/dev/null 2>&1; then
+  ok "test-observe.sh"
+else
+  die "test-observe.sh failed"
+fi
+
 if "$ROOT/scripts/test-check-integration.sh" >/dev/null 2>&1; then
   ok "test-check-integration.sh"
 else
   die "test-check-integration.sh failed"
 fi
 
-for t in test-issue-spec-check.sh test-issue-context-pack.sh test-afk-state-sync.sh test-grill-intake.sh; do
+for t in test-issue-spec-check.sh test-issue-context-pack.sh test-afk-state-sync.sh test-grill-intake.sh test-codebase-survey.sh; do
   if "$ROOT/scripts/$t" >/dev/null 2>&1; then
     ok "$t"
   else

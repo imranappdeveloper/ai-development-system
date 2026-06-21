@@ -28,6 +28,7 @@ Playbooks                          →  who does the work
 | STD-SEC-001 | [Security](./STD-SEC-001.md) | Security Lead | Secrets, PII, safe handling |
 | STD-PERF-001 | [Performance](./STD-PERF-001.md) | Platform Architect | Token and load efficiency |
 | STD-LOG-001 | [Logging](./STD-LOG-001.md) | Platform Architect | Audit trails and run logs |
+| STD-PROJ-001 | [Project propagation](./STD-PROJ-001.md) | Platform Architect | OS → working/new project sync |
 | STD-VER-001 | [Versioning](./STD-VER-001.md) | Maintainer | Semver and traceability |
 
 ## Contracts (separate — not duplicated here)

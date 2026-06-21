@@ -16,50 +16,42 @@ Mandatory after every AFK `gh pr create`. Advisory only — issue stays `done`; 
 
 - `gh auth status` succeeds
 - PR number and URL captured from `gh pr create` output
-- Full issue body available (acceptance criteria for reviewer)
+- Pre-PR report at `work/review-requirement/issue-<N>-latest.md` (from step 5b — **do not re-analyze the diff**)
+- Full issue body available (acceptance criteria for formatting)
 
 ## Procedure
 
-### 1. Load review skill
+### 1. Load pre-PR report
 
-Read bundled review skill (PR mode):
+Read `work/review-requirement/issue-<N>-latest.md`. If missing, fall back to bundled `/review --pr` (legacy path) once.
 
-```
-~/.grok/bundled/skills/review/SKILL.md
-```
+### 2. Format GitHub review body (no second semantic pass)
 
-Follow it end-to-end for `--pr <number>`, with **reviewer prompt additions** below injected into the subagent prompt (after persona, before diff instructions).
-
-### 2. Reviewer prompt additions (E package)
-
-Append to the review subagent prompt:
+Transform the pre-PR `review-requirement` report into a GitHub review body:
 
 ```markdown
-## AFK review package (required sections in review output)
-
-Write these sections to the review file **before** `## Issues`.
+## Summary
+2–4 sentences from pre-PR Requirement alignment + verdict.
 
 ### What changed
-3–5 sentences: what the PR does, user-visible impact, dominant risk areas.
+3–5 sentences: user-visible impact from pre-PR report.
 
 ### Acceptance criteria
-Map each checkbox from the issue body:
-- [x] or [ ] <criterion> — <file/area> — <one-line evidence>
-
-Issue #<N> body:
-<paste acceptance criteria section>
+Extract from pre-PR **Requirement alignment** — map each issue checkbox:
+- [x] or [ ] <criterion> — <file/area> — <evidence from pre-PR report>
 
 ### Risks
-Bullet list: security, perf, breaking changes, test gaps. Write `none identified` if clean.
+From pre-PR **Possibilities** + **BLOCKER**/**WARN** issues. Write `none identified` if clean.
 
 ### Recommendation
 Exactly one line:
-- `✅ Safe to merge` — criteria met, no bugs found
-- `⚠️ Fix before merge` — bugs or unmet criteria
+- `✅ Safe to merge` — pre-PR verdict PASS, no blockers
+- `⚠️ Fix before merge` — pre-PR verdict FAIL or blockers listed
 
-The `## Summary` section (required by review skill) must be a 2–4 sentence overall assessment.
-It may repeat the headline from **What changed** — do not omit **Acceptance criteria**, **Risks**, or **Recommendation**.
+Source: pre-PR `review-requirement` report (step 5b). Do not spawn a second full diff review subagent when the pre-PR report exists.
 ```
+
+Write formatted body to a temp review file for notify script and `gh api` POST.
 
 ### 3. Post PENDING review
 

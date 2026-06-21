@@ -3,6 +3,8 @@
 #
 # Idempotent: creates only what is missing — never overwrites ai-dev-os.yaml, README.md.
 # AGENTS.md: merges missing OS blocks (ADS-BLOCK markers) when file already exists.
+# Propagation: STD-PROJ-001 — new OS features MUST update templates + merge_* here;
+#   working projects get changes via sync-project.sh → ai-new .
 # Run from ANY directory. Default target is current folder (pwd).
 #
 # Usage:
@@ -235,17 +237,51 @@ EOF
     info "ai-dev-os.yaml — merged feedback block"
   fi
 
+  if ! grep -qE '^telemetry:' "$yaml" 2>/dev/null; then
+    cat >> "$yaml" <<'EOF'
+
+# Run observability — verbose while learning; dial down when confident
+telemetry:
+  level: verbose
+EOF
+    merged=$((merged + 1))
+    info "ai-dev-os.yaml — merged telemetry block"
+  fi
+
   MERGED_YAML_KEYS=$merged
+}
+
+merge_local_yaml_example() {
+  local example="$PROJECT_DIR/ai-dev-os.local.yaml.example"
+  [[ -f "$example" ]] || return 0
+  if grep -qE '^# observe:' "$example" 2>/dev/null || grep -qE '^observe:' "$example" 2>/dev/null; then
+    return 0
+  fi
+  cat >> "$example" <<'EOF'
+
+# Run observability — Mac watches Ubuntu AFK via SSH (see docs/USAGE-FEEDBACK.md)
+# observe:
+#   remote_host: ubuntu-afk
+#   remote_project_root: ~/projects/my-app
+EOF
+  info "ai-dev-os.local.yaml.example — merged observe block"
 }
 
 sync_project_os_docs() {
   local doc="$PROJECT_DIR/docs/USAGE-FEEDBACK.md"
-  [[ -f "$doc" ]] && return 0
   [[ -f "$ROOT/docs/USAGE-FEEDBACK.md" ]] || return 0
   mkdir -p "$PROJECT_DIR/docs"
-  cp "$ROOT/docs/USAGE-FEEDBACK.md" "$doc"
-  info "docs/USAGE-FEEDBACK.md — synced from OS"
-  SYNCED_OS_DOCS=1
+  if [[ ! -f "$doc" ]]; then
+    cp "$ROOT/docs/USAGE-FEEDBACK.md" "$doc"
+    info "docs/USAGE-FEEDBACK.md — synced from OS"
+    SYNCED_OS_DOCS=1
+    return 0
+  fi
+  if ! cmp -s "$ROOT/docs/USAGE-FEEDBACK.md" "$doc" 2>/dev/null; then
+    cp "$ROOT/docs/USAGE-FEEDBACK.md" "$doc"
+    info "docs/USAGE-FEEDBACK.md — refreshed from OS"
+    SYNCED_OS_DOCS=1
+  fi
 }
 
 setup_os_binding() {
@@ -311,6 +347,8 @@ setup_os_binding() {
     cp "$TEMPLATE/ai-dev-os.local.yaml.example" "$PROJECT_DIR/ai-dev-os.local.yaml.example"
     info "ai-dev-os.local.yaml.example — created"
     created=$((created + 1))
+  else
+    merge_local_yaml_example
   fi
 
   # --- README.md ---
@@ -326,10 +364,12 @@ setup_os_binding() {
   # --- work/ docs/ ---
   mkdir -p "$PROJECT_DIR/work/kickoff" \
     "$PROJECT_DIR/work/feedback/snapshots" \
-    "$PROJECT_DIR/work/telemetry" \
+    "$PROJECT_DIR/work/telemetry/runs" \
     "$PROJECT_DIR/docs"
-  touch "$PROJECT_DIR/work/.gitkeep" "$PROJECT_DIR/docs/.gitkeep" 2>/dev/null || true
-  info "work/ docs/ — ready (feedback + telemetry scaffold)"
+  touch "$PROJECT_DIR/work/.gitkeep" \
+    "$PROJECT_DIR/work/telemetry/runs/.gitkeep" \
+    "$PROJECT_DIR/docs/.gitkeep" 2>/dev/null || true
+  info "work/ docs/ — ready (feedback + telemetry + runs scaffold)"
 
   # --- .gitignore ---
   ensure_gitignore_entry() {
@@ -338,12 +378,18 @@ setup_os_binding() {
   }
   if [[ -f "$PROJECT_DIR/.gitignore" ]]; then
     ensure_gitignore_entry "$PROJECT_DIR/.gitignore" "ai-dev-os.local.yaml"
-    info ".gitignore — exists, ensured ai-dev-os.local.yaml"
+    ensure_gitignore_entry "$PROJECT_DIR/.gitignore" "work/telemetry/runs/*.jsonl"
+    ensure_gitignore_entry "$PROJECT_DIR/.gitignore" "work/telemetry/.current-run"
+    info ".gitignore — exists, ensured OS entries"
     skipped=$((skipped + 1))
   else
     cat > "$PROJECT_DIR/.gitignore" <<'GITIGNORE'
 # OS per-machine paths (optional — prefer AI_DEV_OS_HOME in shell)
 ai-dev-os.local.yaml
+
+# Verbose run traces (summaries in work/telemetry/events.jsonl)
+work/telemetry/runs/*.jsonl
+work/telemetry/.current-run
 
 # OS runtime (optional — commit work/ if you want artifact history)
 # work/

@@ -208,7 +208,7 @@ fi
 
 # --- Token optimization + usage feedback scripts ---
 _section "Token optimization (AFK)"
-for ts in issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py usage-feedback.sh; do
+for ts in issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py usage-feedback.sh observe.sh observe-event.sh; do
   if [[ -x "$OS_HOME/scripts/$ts" ]]; then
     _ok "scripts/$ts"
   else
@@ -222,6 +222,12 @@ else
   _warn "work/feedback or work/telemetry missing — run: ai-new ."
 fi
 
+if [[ -d "$PROJECT_DIR/work/telemetry/runs" ]]; then
+  _ok "work/telemetry/runs/"
+else
+  _warn "work/telemetry/runs/ missing — run: ai-new . or /sync-project"
+fi
+
 if [[ -f "$PROJECT_DIR/docs/USAGE-FEEDBACK.md" ]]; then
   _ok "docs/USAGE-FEEDBACK.md"
 else
@@ -232,6 +238,19 @@ if grep -qE '^feedback:' "$PROJECT_DIR/ai-dev-os.yaml" 2>/dev/null; then
   _ok "ai-dev-os.yaml feedback block"
 else
   _warn "ai-dev-os.yaml missing feedback: block — run: ai-new ."
+fi
+
+if grep -qE '^telemetry:' "$PROJECT_DIR/ai-dev-os.yaml" 2>/dev/null; then
+  _ok "ai-dev-os.yaml telemetry block"
+else
+  _warn "ai-dev-os.yaml missing telemetry: block — run: ai-new ."
+fi
+
+if [[ -f "$PROJECT_DIR/ai-dev-os.local.yaml.example" ]] \
+  && grep -qE '^# observe:|^observe:' "$PROJECT_DIR/ai-dev-os.local.yaml.example" 2>/dev/null; then
+  _ok "ai-dev-os.local.yaml.example observe block"
+else
+  _warn "ai-dev-os.local.yaml.example missing observe: — run: ai-new ."
 fi
 
 # --- Optional ---
@@ -265,6 +284,34 @@ if command -v grok >/dev/null 2>&1 || command -v agy >/dev/null 2>&1; then
   _ok "AFK agent CLI (grok or agy)"
 else
   _warn "neither grok nor agy on PATH — server AFK unavailable on this machine"
+fi
+
+# --- Local survey (optional Mac — never blocking) ---
+_section "Local survey (optional)"
+# shellcheck source=scripts/lib/local-survey.sh
+source "$OS_HOME/scripts/lib/local-survey.sh"
+IFS='|' read -r _ls_enabled _ls_model _ls_host _ls_state <<<"$(local_survey_status "$PROJECT_DIR")"
+case "$_ls_state" in
+  ready)
+    _ok "local survey ready (Ollama $_ls_model)"
+    ;;
+  disabled)
+    _ok "local survey disabled (expected on Ubuntu AFK / cloud-only)"
+    ;;
+  enabled-no-ollama)
+    _warn "local_survey enabled but ollama not on PATH — cloud fallback only; install Ollama or set enabled: false"
+    ;;
+  enabled-unreachable)
+    _warn "local_survey enabled but Ollama unreachable at $_ls_host — run: ollama serve && ollama pull $_ls_model"
+    ;;
+  *)
+    _warn "local survey state unknown ($_ls_state)"
+    ;;
+esac
+if [[ -f "$OS_HOME/mcp/codebase-survey/server.py" ]]; then
+  _ok "codebase-survey MCP server present"
+else
+  _warn "codebase-survey MCP server missing — git pull AI Dev OS"
 fi
 
 # --- Summary ---

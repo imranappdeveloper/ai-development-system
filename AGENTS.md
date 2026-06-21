@@ -218,5 +218,5 @@ Internal gates (H-INTAKE, H-FRAME, H-PLAN, H-DECOMPOSE, H-IMPLEMENT) — record 
 <!-- ADS-BLOCK:project-idea -->
 ## Project idea (if provided at scaffold)
 
-{{PROJECT_IDEA}}
+_(existing project — see CONTEXT.md)_
 <!-- /ADS-BLOCK:project-idea -->

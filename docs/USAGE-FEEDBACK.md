@@ -10,6 +10,10 @@ Learn what works as you adopt AI Dev OS — passive telemetry, milestone snapsho
 |---------|------|
 | `/feedback` | Anytime — report friction, bugs, or ideas |
 | `/usage-report` | Anytime — full rollup + recommendations |
+| `/observe` | Live or post-run — step trace for this project (skill: `observe`) |
+| `observe.sh status` | Live — current run, step, elapsed time |
+| `observe.sh watch` | Live — poll every 60s (add `--remote` for Ubuntu AFK) |
+| `observe.sh report` | After a run — per-issue step timeline |
 
 ## Automatic snapshots
 
@@ -28,18 +32,36 @@ Snapshots live at `work/feedback/snapshots/`. Anomalies trigger a one-line nudge
 
 | Location | Contents |
 |----------|----------|
-| `work/telemetry/events.jsonl` | Passive events (project) |
+| `work/telemetry/events.jsonl` | Passive events + run summaries (project) |
+| `work/telemetry/runs/*.jsonl` | Verbose per-run traces (gitignored) |
 | `work/feedback/entries.jsonl` | Your feedback entries (verbatim text) |
 | `work/feedback/snapshots/` | Milestone markdown summaries |
 | `$AI_DEV_OS_HOME/.usage/rollup.jsonl` | Anonymized cross-project rollup |
 
-Configure thresholds in `ai-dev-os.yaml`:
+Configure in `ai-dev-os.yaml`:
 
 ```yaml
 feedback:
   nudge_grill_questions: 8
   nudge_afk_stale_minutes: 45
   rollup_sync: true
+
+telemetry:
+  level: verbose   # verbose | standard | minimal
+```
+
+Mac → Ubuntu AFK watch (`ai-dev-os.local.yaml`, gitignored):
+
+```yaml
+observe:
+  remote_host: ubuntu-afk
+  remote_project_root: ~/projects/my-app
+```
+
+```bash
+observe.sh status --remote
+observe.sh watch --remote --interval 60
+observe.sh report --remote
 ```
 
 ## Anomaly thresholds (balanced)
@@ -70,6 +92,11 @@ Check gate: `usage-feedback.sh meta-gate`
 usage-feedback.sh snapshot --milestone grill --grill-questions 6 --lock-approved true
 usage-feedback.sh feedback --category workflow-friction --severity medium --text "..."
 usage-feedback.sh report
+
+observe-event.sh run-start --skill task-run --agent agy
+observe-event.sh emit --type step_start --step work-to-pr-v2/implement --step-index 4/7 --issue 42
+observe-event.sh run-end --status ok
+observe.sh status --json
 ```
 
 Schemas: `templates/telemetry/event-schema.yaml`, `templates/feedback/entry-schema.yaml`
