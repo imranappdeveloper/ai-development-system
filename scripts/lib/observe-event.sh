@@ -16,6 +16,25 @@ _observe_current_run_file() {
   echo "$(_observe_project_root)/work/telemetry/.current-run"
 }
 
+_observe_global_registry_file() {
+  echo "$HOME/.gemini/antigravity/.active_run_context.json"
+}
+
+_observe_update_global_registry() {
+  local project_root="$1" run_id="$2" agent="$3" status="$4"
+  local registry
+  registry="$(_observe_global_registry_file)"
+  mkdir -p "$(dirname "$registry")"
+  local ts
+  ts="$(_observe_ts)"
+  printf '{"project_root":"%s","run_id":"%s","agent":"%s","status":"%s","last_heartbeat":"%s"}\n' \
+    "$(_observe_json_escape "$project_root")" \
+    "$(_observe_json_escape "$run_id")" \
+    "$(_observe_json_escape "$agent")" \
+    "$(_observe_json_escape "$status")" \
+    "$ts" >"$registry"
+}
+
 _observe_ensure_dirs() {
   mkdir -p "$(_observe_runs_dir)" "$(_observe_project_root)/work/telemetry"
 }
@@ -186,6 +205,14 @@ _observe_emit() {
   line+="}"
 
   _observe_append_jsonl "$run_file" "$line"
+
+  local reg_status="active"
+  [[ "$event_type" == "run_end" ]] && reg_status="idle"
+  local reg_agent="$agent"
+  if [[ -z "$reg_agent" && -f "$(_observe_global_registry_file)" ]]; then
+    reg_agent="$(grep -o '"agent":"[^"]*' "$(_observe_global_registry_file)" | cut -d'"' -f4 || true)"
+  fi
+  _observe_update_global_registry "$(_observe_project_root)" "$run_id" "$reg_agent" "$reg_status"
 
   case "$event_type" in
     run_start|run_end|heartbeat)

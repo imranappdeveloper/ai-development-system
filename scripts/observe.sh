@@ -71,6 +71,38 @@ done
 
 [[ -n "$CMD" ]] || { usage; exit 0; }
 
+ACTIVE_GLOBAL_RUN_ID=""
+_REGISTRY_FILE="$HOME/.gemini/antigravity/.active_run_context.json"
+if [[ -f "$_REGISTRY_FILE" ]]; then
+  _PY_PARSER="import json, sys, datetime
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    if data.get('status') == 'active':
+        hb_str = data.get('last_heartbeat')
+        if hb_str:
+            hb = datetime.datetime.fromisoformat(hb_str.replace('Z', '+00:00'))
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if (now - hb).total_seconds() < 300:
+                print(f\"ACTIVE_PROJECT_ROOT='{data.get('project_root')}'\")
+                print(f\"ACTIVE_RUN_ID='{data.get('run_id')}'\")
+                sys.exit(0)
+except Exception:
+    pass
+print(\"ACTIVE_PROJECT_ROOT=''\")
+print(\"ACTIVE_RUN_ID=''\")"
+  eval "$(python3 -c "$_PY_PARSER" "$_REGISTRY_FILE")"
+
+  if [[ -n "${ACTIVE_PROJECT_ROOT:-}" && -d "$ACTIVE_PROJECT_ROOT" ]]; then
+    PROJECT_ROOT="$ACTIVE_PROJECT_ROOT"
+    ACTIVE_GLOBAL_RUN_ID="$ACTIVE_RUN_ID"
+  fi
+fi
+
+if [[ -z "$RUN_ID" && -n "$ACTIVE_GLOBAL_RUN_ID" ]]; then
+  RUN_ID="$ACTIVE_GLOBAL_RUN_ID"
+fi
+
 _observe_remote_config() {
   local yaml="$PROJECT_ROOT/ai-dev-os.local.yaml"
   REMOTE_HOST=""
@@ -170,7 +202,7 @@ PY
 _cmd_status() {
   local run_file current_run
   current_run="$(_observe_read_current_run_id)"
-  run_file="$(_latest_run_file)"
+  run_file="$(_latest_run_file || true)"
   if [[ -n "$current_run" ]]; then
     run_file="$(_observe_run_file "$current_run")"
   fi
@@ -215,7 +247,7 @@ _cmd_report() {
   if [[ -n "$RUN_ID" ]]; then
     target="$(_observe_run_file "$RUN_ID")"
   else
-    target="$(_latest_run_file)"
+    target="$(_latest_run_file || true)"
   fi
   [[ -n "$target" && -f "$target" ]] || die "no run trace found"
 
@@ -276,11 +308,39 @@ _cmd_watch() {
   echo "=== Observe — watch (interval ${INTERVAL}s, Ctrl-C to stop) ==="
   local last_sig=""
   while true; do
+    local check_root=""
+    local check_run_id=""
+    if [[ -f "${_REGISTRY_FILE:-}" ]]; then
+      _PY_WATCH_PARSER="import json, sys, datetime
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    if data.get('status') == 'active':
+        hb_str = data.get('last_heartbeat')
+        if hb_str:
+            hb = datetime.datetime.fromisoformat(hb_str.replace('Z', '+00:00'))
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if (now - hb).total_seconds() < 300:
+                print(f\"check_root='{data.get('project_root')}'\")
+                print(f\"check_run_id='{data.get('run_id')}'\")
+                sys.exit(0)
+except Exception:
+    pass
+print(\"check_root=''\")
+print(\"check_run_id=''\")"
+      eval "$(python3 -c "$_PY_WATCH_PARSER" "${_REGISTRY_FILE}")"
+    fi
+
+    local active_root="$PROJECT_ROOT"
+    if [[ -n "$check_root" && -d "$check_root" ]]; then
+      active_root="$check_root"
+    fi
+
     local line
     if [[ "$JSON" == true ]]; then
-      line="$(OBSERVE_PROJECT_ROOT="$PROJECT_ROOT" "$0" status --json 2>/dev/null || true)"
+      line="$(OBSERVE_PROJECT_ROOT="$active_root" "$0" status --json 2>/dev/null || true)"
     else
-      line="$(OBSERVE_PROJECT_ROOT="$PROJECT_ROOT" "$0" status 2>/dev/null | tail -n +2 || true)"
+      line="$(OBSERVE_PROJECT_ROOT="$active_root" "$0" status 2>/dev/null | tail -n +2 || true)"
     fi
     local sig
     sig="$(printf '%s' "$line" | head -1)"
@@ -290,9 +350,6 @@ _cmd_watch() {
       else
         echo "--- $(date -u +%H:%M:%S) ---"
         echo "$line"
-      fi
-      if grep -q '"health":"active"' <<<"$line" 2>/dev/null || grep -q 'Health: active' <<<"$line" 2>/dev/null; then
-        :
       fi
       last_sig="$sig"
     fi
