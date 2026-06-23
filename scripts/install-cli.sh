@@ -37,6 +37,8 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/test-observe.sh" \
   "$ROOT/scripts/check-integration.sh" \
   "$ROOT/scripts/test-check-integration.sh" \
+  "$ROOT/scripts/ads-preflight.sh" \
+  "$ROOT/scripts/test-ads-preflight.sh" \
   "$ROOT/scripts/issue-spec-check.sh" \
   "$ROOT/scripts/issue-context-pack.sh" \
   "$ROOT/scripts/afk-state-sync.sh" \
@@ -64,6 +66,7 @@ ln -sf "$ROOT/scripts/bind-project.sh" "$BIN_DIR/ai-bind"
 ln -sf "$ROOT/scripts/ai-paths.sh" "$BIN_DIR/ai-paths"
 ln -sf "$ROOT/scripts/check-cli.sh" "$BIN_DIR/check-cli"
 ln -sf "$ROOT/scripts/check-integration.sh" "$BIN_DIR/check-integration"
+ln -sf "$ROOT/scripts/ads-preflight.sh" "$BIN_DIR/ads-preflight"
 ln -sf "$ROOT/scripts/task-run.sh" "$BIN_DIR/task-run"
 ln -sf "$ROOT/scripts/task-run-server.sh" "$BIN_DIR/task-run-server"
 ln -sf "$ROOT/scripts/task-run-poll.sh" "$BIN_DIR/task-run-poll"
@@ -74,6 +77,7 @@ info "Linked: $BIN_DIR/ai-new"
 info "Linked: $BIN_DIR/ai-paths"
 info "Linked: $BIN_DIR/check-cli"
 info "Linked: $BIN_DIR/check-integration"
+info "Linked: $BIN_DIR/ads-preflight"
 info "Linked: $BIN_DIR/ai-bind"
 info "Linked: $BIN_DIR/task-run"
 info "Linked: $BIN_DIR/task-run-server"
@@ -176,5 +180,6 @@ echo "  check-cli"
 echo "  which ai-new ai-paths task-run task-run-server task-run-poll grok agy"
 echo ""
 echo "In project chat:"
-echo "  /setup-ads"
+echo "  /ads              # session preflight (bound projects)"
+echo "  /setup-ads        # kickoff (new or existing project)"
 echo "  New project: <idea>  |  Existing project: <goal>"

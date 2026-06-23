@@ -121,6 +121,7 @@ ads_block_present() {
     config)             grep -qF 'Read `ai-dev-os.yaml`' "$file" ;;
     bug-fix)            grep -qF 'BUG-FIX.md' "$file" ;;
     setup-ads)          grep -qF 'SETUP-ADS.md' "$file" && grep -qF '/setup-ads' "$file" ;;
+    ads-session)        grep -qF '/ads' "$file" && grep -qF 'ADS session preflight' "$file" ;;
     setup-ads-behavior) grep -qF 'check-cli' "$file" ;;
     implementation-tdd) grep -qF '/tdd' "$file" && grep -qF 'PB-implement' "$file" ;;
     os-status-footer)   grep -qF 'OS-STATUS-FOOTER' "$file" ;;

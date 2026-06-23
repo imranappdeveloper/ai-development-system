@@ -88,6 +88,7 @@ ads_block_present() {
     config)             grep -qF 'Read `ai-dev-os.yaml`' "$file" ;;
     bug-fix)            grep -qF 'BUG-FIX.md' "$file" ;;
     setup-ads)          grep -qF 'SETUP-ADS.md' "$file" && grep -qF '/setup-ads' "$file" ;;
+    ads-session)        grep -qF '/ads' "$file" && grep -qF 'ADS session preflight' "$file" ;;
     setup-ads-behavior) grep -qF 'check-cli' "$file" ;;
     implementation-tdd) grep -qF '/tdd' "$file" && grep -qF 'PB-implement' "$file" ;;
     os-status-footer)   grep -qF 'OS-STATUS-FOOTER' "$file" ;;
@@ -153,7 +154,7 @@ fi
 _section "AGENTS.md OS blocks"
 agents="$PROJECT_DIR/AGENTS.md"
 critical_blocks=(header path-resolution config requirement-check skills-source setup-ads)
-optional_blocks=(agent-skills afk-task-run user-flow bug-fix setup-ads-behavior implementation-tdd os-status-footer never user-approvals project-idea)
+optional_blocks=(ads-session agent-skills afk-task-run user-flow bug-fix setup-ads-behavior implementation-tdd os-status-footer never user-approvals project-idea)
 
 for block in "${critical_blocks[@]}"; do
   if ads_block_present "$block" "$agents"; then

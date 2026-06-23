@@ -154,6 +154,21 @@ Follow **`/setup-ads`** skill — SSOT: **`$AI_DEV_OS_HOME/docs/SETUP-ADS.md`**.
 Flow: `check-cli` → `ai-new` → grill → summary → **`yes`** → silent spec → tasks → **Start AFK**
 <!-- /ADS-BLOCK:setup-ads -->
 
+<!-- ADS-BLOCK:ads-session -->
+## ADS session preflight (`/ads`)
+
+When the user runs **`/ads`**, `ads`, `start session`, or `preflight` on a **bound** project — load **`$AI_DEV_OS_HOME/skills/ads/SKILL.md`**.
+
+| Situation | Action |
+|-----------|--------|
+| User invoked `/ads` | Run full preflight (`ads-preflight.sh` → MCP probe → observe watch) |
+| User starts plan/code/bug without `/ads` or `/setup-ads` | Suggest `/ads` **once**; continue if declined |
+| `/setup-ads`, `start`, `new project` | Kickoff — not `/ads` |
+| `task-run` on Ubuntu server | AFK exempt |
+
+End session: `observe-event.sh run-end` on **`Done.`** or AFK handoff.
+<!-- /ADS-BLOCK:ads-session -->
+
 <!-- ADS-BLOCK:setup-ads-behavior -->
 ### Required behavior (if /setup-ads not invoked manually)
 

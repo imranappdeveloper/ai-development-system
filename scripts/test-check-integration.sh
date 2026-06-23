@@ -33,7 +33,8 @@ assert_exit "unbound project fails" 1 "$ROOT/scripts/check-integration.sh" "$TMP
 mkdir -p "$TMP/bound/work" "$TMP/bound/docs"
 cp "$ROOT/templates/project-starter/AGENTS.md" "$TMP/bound/AGENTS.md"
 cp "$ROOT/templates/project-starter/ai-dev-os.yaml" "$TMP/bound/ai-dev-os.yaml"
-sed -i "s|{{PROJECT_NAME}}|test-project|g" "$TMP/bound/ai-dev-os.yaml"
+sed -i '' "s|{{PROJECT_NAME}}|test-project|g" "$TMP/bound/ai-dev-os.yaml" 2>/dev/null \
+  || sed -i "s|{{PROJECT_NAME}}|test-project|g" "$TMP/bound/ai-dev-os.yaml"
 assert_exit "bound scaffold passes CLI" 0 "$ROOT/scripts/check-integration.sh" "$TMP/bound" --quiet
 
 out="$("$ROOT/scripts/check-integration.sh" "$TMP/bound" --quiet)"
@@ -52,7 +53,8 @@ for doc in issue-tracker.md triage-labels.md domain.md engineering-standards.md 
   echo "# test" > "$TMP/full/docs/agents/$doc"
 done
 echo "# context" > "$TMP/full/CONTEXT.md"
-sed -i 's|_Setup pending — run `/setup-project-agents`._|GitHub issues — see docs/agents/issue-tracker.md.|' "$TMP/full/AGENTS.md"
+sed -i '' 's|_Setup pending — run `/setup-project-agents`._|GitHub issues — see docs/agents/issue-tracker.md.|' "$TMP/full/AGENTS.md" 2>/dev/null \
+  || sed -i 's|_Setup pending — run `/setup-project-agents`._|GitHub issues — see docs/agents/issue-tracker.md.|' "$TMP/full/AGENTS.md"
 
 full_out="$("$ROOT/scripts/check-integration.sh" "$TMP/full" 2>/dev/null)"
 if grep -q 'FULLY INTEGRATED' <<<"$full_out" || grep -q 'PARTIAL' <<<"$full_out"; then

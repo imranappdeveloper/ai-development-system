@@ -28,12 +28,17 @@ skills:
   load_from: env:AI_DEV_OS_HOME/skills/
 
 start_commands:
+  - /ads
+  - ads
+  - start session
+  - preflight
   - /setup-ads
   - setup ads
   - start
   - new project
   - kickoff
 setup_ads_ref: docs/SETUP-ADS.md
+ads_ref: skills/ads/SKILL.md
 
 bug_fix_commands:
   - "Bug Fix:"
