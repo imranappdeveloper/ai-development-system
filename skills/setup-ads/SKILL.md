@@ -84,8 +84,13 @@ Also runs **graphify setup** (via `setup-graphify.sh`):
 | graphify CLI | Install via `uv tool` or `pip` if missing |
 | post-commit hook | `graphify hook install` when git repo exists |
 | Initial graph build | Existing codebase with app code, no `graphify-out/graph.json` yet (`--no-viz`) |
+| **Verify graph.json** | After build, `graphify-out/graph.json` must exist — required for Graphify MCP + `/resolve-screen` |
 
 Greenfield empty folders skip the initial build; the hook updates the graph after commits.
+
+If verify fails: `setup-graphify.sh . --build` (warn user — screen resolver degraded until graph exists).
+
+Also scaffolds `work/ui-aliases.yaml` (screen nickname cache).
 
 Manual re-run: `$AI_DEV_OS_HOME/scripts/setup-graphify.sh . [--build|--skip-build]`
 

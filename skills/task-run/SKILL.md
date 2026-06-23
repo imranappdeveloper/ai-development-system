@@ -68,6 +68,10 @@ loop:
 
 **Token scripts (orchestrator runs, do not re-implement in context):** `afk-state-sync.sh`, `issue-spec-check.sh`, `issue-context-pack.sh` — see `work-to-pr-v2` per-issue loop.
 
+**Observe:** `task-run-server.sh` starts a run via `observe-event.sh run-start` and ends on tmux exit. Each subagent must follow work-to-pr-v2 step `observe-event.sh emit` protocol. Mac users watch server AFK with `observe watch --remote` (configure `observe.remote_*` in `ai-dev-os.local.yaml`).
+
+**Observe:** `task-run-server.sh` starts a run via `observe-event.sh run-start` and ends on tmux exit. Each subagent must follow work-to-pr-v2 step `observe-event.sh emit` protocol. Mac users watch server AFK with `observe watch --remote` (configure `observe.remote_*` in `ai-dev-os.local.yaml`).
+
 ### Per-issue delegation (mandatory)
 
 For each queued issue, spawn a **fresh subagent** (`Task` / `invoke_subagent`) with:

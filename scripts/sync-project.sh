@@ -120,6 +120,12 @@ AI_NEW="${AI_DEV_OS_HOME:-$OS_HOME}/scripts/new-project.sh"
 info "ai-new (merge OS blocks)..."
 ( cd "$PROJECT_DIR" && "$AI_NEW" . )
 
+if [[ -f "${AI_DEV_OS_HOME:-$OS_HOME}/scripts/lib/observe-projects.sh" ]]; then
+  # shellcheck source=scripts/lib/observe-projects.sh
+  source "${AI_DEV_OS_HOME:-$OS_HOME}/scripts/lib/observe-projects.sh"
+  _observe_projects_register "$PROJECT_DIR" 2>/dev/null && info "observe dashboard: project registered" || true
+fi
+
 echo ""
 echo "--- Integration check ---"
 CHECK_INTEGRATION="${AI_DEV_OS_HOME:-$OS_HOME}/scripts/check-integration.sh"
@@ -139,6 +145,8 @@ echo ""
 echo "Next (in Grok/Agy chat from project):"
 echo "  /setup-project-agents --detect-only   # if docs/agents/ exists"
 echo "  check-integration                       # re-verify after fixes"
+echo "  observe dashboard                       # local multi-project monitor (optional)"
+echo "  restart Antigravity/Grok session        # reload codebase-survey MCP after OS pull"
 echo "  continue your work"
 echo ""
 echo "Skill: \$AI_DEV_OS_HOME/skills/sync-project/SKILL.md"

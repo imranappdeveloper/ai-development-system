@@ -75,14 +75,28 @@ Ref: `$AI_DEV_OS_HOME/docs/LOCAL-SURVEY.md`
 
 ---
 
+## Phase 2b — Graphify / screen resolver (warn-only)
+
+Read `graphify` from Phase 1 JSON.
+
+| `graphify.state` | Action |
+|------------------|--------|
+| `ready` | OK — `/resolve-screen` and Graphify MCP can query `graphify-out/graph.json` |
+| `missing-graph`, `cli-missing` | **Warn** (do not block): run `setup-graphify.sh . --build`. Aliases in `work/ui-aliases.yaml` still work |
+
+On UI tasks after preflight: load `$AI_DEV_OS_HOME/skills/resolve-screen/SKILL.md` when user mentions screens or visible UI text.
+
+---
+
 ## Phase 3 — Observe telemetry + watch
 
 On preflight pass:
 
 ```bash
-observe-event.sh run-start --skill ads
-observe.sh watch --interval 60   # background terminal
+observe.sh watch --interval 60   # background terminal; auto run-start if no session
 ```
+
+If no watch yet and you need a session before other work: `observe-event.sh run-start --skill ads` (skip when `.current-run` already active).
 
 - **One run per Mac session** — do not `run-start` again when switching to `/grill-me`, `/plan-to-issue-v2`, `/tdd`, etc.
 - **`run-end`** when user says `Done.` or hands off to AFK (`task-run-server.sh`):

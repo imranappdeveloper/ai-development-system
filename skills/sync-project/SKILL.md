@@ -45,7 +45,7 @@ sync-project.sh /path/to/project
 2. `install-cli.sh` — CLI + skill symlinks (grok/agy)
 3. `check-cli` — verify
 4. `git pull` — project repo (if `.git`)
-5. `ai-new .` — merge AGENTS blocks, `ai-dev-os.yaml` keys (`feedback:`, `telemetry:`, `docs.usage_feedback`), sync `docs/USAGE-FEEDBACK.md`, scaffold `work/feedback/` + `work/telemetry/runs/`, observe CLI (`observe.sh`), task-run/graphify hooks
+5. `ai-new .` — merge AGENTS blocks, `ai-dev-os.yaml` keys (`feedback:`, `telemetry:`, `docs.usage_feedback`), sync `docs/USAGE-FEEDBACK.md`, scaffold `work/feedback/` + `work/telemetry/runs/`, observe CLI (`observe.sh`, `observe dashboard`, MCP `mcp_call` telemetry), task-run/graphify hooks; register project for observe dashboard (`~/.config/ai-dev-os/projects.json`)
 
 Run the script yourself — do not ask the user to paste commands unless `check-cli` fails.
 
@@ -72,6 +72,7 @@ Skip if project never ran `/setup-project-agents`.
 | `graphify-out/` exists + `graphify` on PATH | Rebuild index if code changed significantly |
 | Server AFK | `task-run-server.sh --status` — no action unless resuming work |
 | Cron poll | `task-run-poll.sh --dry-run` — verify poll config |
+| After OS pull with MCP/observe changes | Restart Antigravity/Grok IDE session so `codebase-survey` MCP reloads; run `observe dashboard` to verify |
 
 ---
 

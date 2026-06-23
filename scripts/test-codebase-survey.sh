@@ -61,4 +61,25 @@ esac
 AI_DEV_OS_HOME="$ROOT" server_path="$(local_survey_server_path)"
 [[ -f "$server_path" ]] && echo "  OK: server path" || { echo "  FAIL: server path" >&2; fail=1; }
 
+# MCP survey tool call writes mcp_call telemetry
+TELEM_PROJECT="$TMP/telemetry-project"
+mkdir -p "$TELEM_PROJECT/work/telemetry/runs" "$TELEM_PROJECT/src"
+cp "$ROOT/templates/project-starter/ai-dev-os.yaml" "$TELEM_PROJECT/ai-dev-os.yaml"
+cp "$ROOT/templates/project-starter/AGENTS.md" "$TELEM_PROJECT/AGENTS.md"
+sed -i '' "s|{{PROJECT_NAME}}|telemetry-project|g" "$TELEM_PROJECT/ai-dev-os.yaml" 2>/dev/null \
+  || sed -i "s|{{PROJECT_NAME}}|telemetry-project|g" "$TELEM_PROJECT/ai-dev-os.yaml"
+echo "x" >"$TELEM_PROJECT/src/a.ts"
+call_payload="$(python3 -c "import json; print(json.dumps({'jsonrpc':'2.0','id':9,'method':'tools/call','params':{'name':'survey','arguments':{'files':['src/a.ts'],'project_root':'$TELEM_PROJECT'}}}))")"
+(
+  cd "$TELEM_PROJECT"
+  export PYTHONPATH="$MCP_LIB"
+  printf '%s\n' "$call_payload" | python3 "$MCP_LIB/server.py" >/dev/null
+) || true
+grep -q 'mcp_call' "$TELEM_PROJECT/work/telemetry/events.jsonl" \
+  && echo "  OK: mcp_call telemetry on survey" \
+  || { echo "  FAIL: mcp_call telemetry" >&2; fail=1; }
+grep -q 'codebase-survey' "$TELEM_PROJECT/work/telemetry/events.jsonl" \
+  && echo "  OK: mcp_call names server" \
+  || { echo "  FAIL: mcp_call server field" >&2; fail=1; }
+
 [[ $fail -eq 0 ]] && echo "=== pass ===" || exit 1

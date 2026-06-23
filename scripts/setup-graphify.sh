@@ -132,7 +132,21 @@ run_initial_build() {
   fi
 
   info "graphify build — running initial scan (--no-viz)..."
-  (cd "$dir" && graphify . --no-viz) || warn "graphify build — failed (re-run: graphify . --no-viz)"
+  if (cd "$dir" && graphify . --no-viz); then
+    if [[ -f "$dir/graphify-out/graph.json" ]]; then
+      info "graphify build — graph.json ready"
+      return 0
+    fi
+    warn "graphify build — command ok but graph.json missing"
+    return 1
+  fi
+  warn "graphify build — failed (re-run: graphify . --no-viz)"
+  return 1
+}
+
+verify_graph_json() {
+  local dir="$1"
+  [[ -f "$dir/graphify-out/graph.json" ]]
 }
 
 main() {
@@ -186,23 +200,46 @@ main() {
 
   install_hook "$project_dir"
 
+  local build_rc=0
   case "$do_build" in
     yes)
-      run_initial_build "$project_dir" "$force_build"
+      run_initial_build "$project_dir" "$force_build" || build_rc=1
       ;;
     no)
       info "graphify build — skipped (--skip-build)"
       ;;
     auto)
-      run_initial_build "$project_dir" false
+      run_initial_build "$project_dir" false || build_rc=1
       ;;
   esac
 
+  if ! verify_graph_json "$project_dir"; then
+    if [[ "$do_build" != "no" ]]; then
+      warn "graphify verify — graph.json missing, retrying with --build"
+      run_initial_build "$project_dir" true || build_rc=1
+    fi
+  fi
+
   echo ""
-  echo "=== graphify ready ==="
-  echo "  Query:  cd $project_dir && graphify query \"<question>\""
-  echo "  Update: graphify . --update"
-  echo "  Hook:   graphify hook status"
+  if verify_graph_json "$project_dir"; then
+    echo "=== graphify ready ==="
+    echo "  Graph:  $project_dir/graphify-out/graph.json"
+    echo "  Query:  cd $project_dir && graphify query \"<question>\""
+    echo "  Screen: resolve-screen.sh --phrase \"login screen\" --json"
+    echo "  Update: graphify . --update"
+    echo "  Hook:   graphify hook status"
+  else
+    echo "=== graphify setup incomplete ==="
+    echo "  graph.json missing — Graphify MCP and resolve-screen need a build."
+    echo "  Fix:    cd $project_dir && graphify . --no-viz"
+    echo "  Or:     setup-graphify.sh . --build"
+    if command -v graphify >/dev/null 2>&1 && dir_has_app_content "$project_dir"; then
+      build_rc=1
+    fi
+  fi
+
+  return "$build_rc"
 }
 
 main "$@"
+exit $?

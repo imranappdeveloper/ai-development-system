@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADS Observe</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>AI Dev OS — Observe</h1>
+        <p class="subtitle">Local monitor for scripts, runs, and pipeline activity</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>Projects</h2>
+        <div id="project-picker" class="project-picker">
+          <button type="button" class="project-chip active" data-project="all">All projects</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Health</th>
+              <th>Run</th>
+              <th>Last activity</th>
+              <th>Step</th>
+              <th>Elapsed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="projects-body">
+            <tr><td colspan="7" class="empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2 id="log-heading">Activity log — All projects</h2>
+        <div id="log-list" class="log-list">
+          <div class="empty">Loading…</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span id="updated-at">—</span>
+      ·
+      <span id="project-count">—</span>
+      · <a href="http://127.0.0.1:8765/" id="dashboard-url">http://127.0.0.1:8765/</a>
+      · refreshes every 5s
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -95,7 +95,7 @@ _observe_level_allows() {
   case "$level" in
     minimal)
       case "$event_type" in
-        run_start|run_end|milestone|heartbeat) return 0 ;;
+        run_start|run_end|milestone|heartbeat|script_invoked|daemon_status|mcp_probe|mcp_call|resolve_screen) return 0 ;;
         *) return 1 ;;
       esac
       ;;
@@ -107,6 +107,75 @@ _observe_level_allows() {
       ;;
     verbose|*) return 0 ;;
   esac
+}
+
+_observe_events_file() {
+  echo "$(_observe_project_root)/work/telemetry/events.jsonl"
+}
+
+_observe_activity_emit() {
+  local event_type="$1"
+  shift
+  _observe_level_allows "$event_type" || return 0
+
+  local run_id="${OBSERVE_RUN_ID:-}"
+  local script="" args_summary="" files="" daemon="" target="" status="" duration_sec="" skill="" step=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --run-id) run_id="$2"; shift 2 ;;
+      --script) script="$2"; shift 2 ;;
+      --args-summary) args_summary="$2"; shift 2 ;;
+      --files) files="$2"; shift 2 ;;
+      --daemon) daemon="$2"; shift 2 ;;
+      --target) target="$2"; shift 2 ;;
+      --status) status="$2"; shift 2 ;;
+      --duration-sec) duration_sec="$2"; shift 2 ;;
+      --skill) skill="$2"; shift 2 ;;
+      --step) step="$2"; shift 2 ;;
+      *) return 1 ;;
+    esac
+  done
+
+  _observe_ensure_dirs
+  [[ -n "$run_id" ]] || run_id="$(_observe_read_current_run_id)"
+
+  local ts line
+  ts="$(_observe_ts)"
+  line="{"
+  line+="\"ts\":\"$ts\""
+  line+=",\"event_type\":\"$(_observe_json_escape "$event_type")\""
+  [[ -n "$run_id" ]] && line+=",\"run_id\":\"$(_observe_json_escape "$run_id")\""
+  [[ -n "$skill" ]] && line+=",\"skill\":\"$(_observe_json_escape "$skill")\""
+  [[ -n "$step" ]] && line+=",\"step\":\"$(_observe_json_escape "$step")\""
+  [[ -n "$script" ]] && line+=",\"script\":\"$(_observe_json_escape "$script")\""
+  [[ -n "$args_summary" ]] && line+=",\"args_summary\":\"$(_observe_json_escape "$args_summary")\""
+  if [[ -n "$files" ]]; then
+    line+=",\"files\":["
+    local first=true part
+    IFS=',' read -ra _files_arr <<<"$files"
+    for part in "${_files_arr[@]}"; do
+      part="${part#"${part%%[![:space:]]*}"}"
+      part="${part%"${part##*[![:space:]]}"}"
+      [[ -n "$part" ]] || continue
+      [[ "$first" == true ]] || line+=","
+      line+="\"$(_observe_json_escape "$part")\""
+      first=false
+    done
+    line+="]"
+  fi
+  [[ -n "$daemon" ]] && line+=",\"daemon\":\"$(_observe_json_escape "$daemon")\""
+  [[ -n "$target" ]] && line+=",\"target\":\"$(_observe_json_escape "$target")\""
+  [[ -n "$status" ]] && line+=",\"status\":\"$(_observe_json_escape "$status")\""
+  [[ -n "$duration_sec" ]] && line+=",\"duration_sec\":${duration_sec}"
+  line+="}"
+
+  _observe_append_jsonl "$(_observe_events_file)" "$line"
+  if [[ -n "$run_id" ]]; then
+    _observe_append_jsonl "$(_observe_run_file "$run_id")" "$line"
+    local reg_status="active"
+    _observe_update_global_registry "$(_observe_project_root)" "$run_id" "" "$reg_status"
+  fi
 }
 
 _observe_append_jsonl() {
@@ -133,6 +202,30 @@ _observe_set_current_run_id() {
 
 _observe_clear_current_run_id() {
   rm -f "$(_observe_current_run_file)"
+}
+
+_observe_run_is_active() {
+  local run_id="$1"
+  [[ -n "$run_id" ]] || return 1
+  local run_file
+  run_file="$(_observe_run_file "$run_id")"
+  [[ -f "$run_file" ]] || return 1
+  local last_et
+  last_et="$(tail -1 "$run_file" 2>/dev/null | python3 -c "
+import json, sys
+try:
+    print(json.load(sys.stdin).get('event_type', ''))
+except Exception:
+    print('')
+" 2>/dev/null || true)"
+  [[ "$last_et" == "run_end" ]] && return 1
+  return 0
+}
+
+_observe_has_active_session() {
+  local current
+  current="$(_observe_read_current_run_id)"
+  _observe_run_is_active "$current"
 }
 
 _observe_run_file() {
@@ -212,15 +305,23 @@ _observe_emit() {
   if [[ -z "$reg_agent" && -f "$(_observe_global_registry_file)" ]]; then
     reg_agent="$(grep -o '"agent":"[^"]*' "$(_observe_global_registry_file)" | cut -d'"' -f4 || true)"
   fi
-  _observe_update_global_registry "$(_observe_project_root)" "$run_id" "$reg_agent" "$reg_status"
+  if [[ "$event_type" == "run_end" ]]; then
+    _observe_clear_global_registry
+  else
+    _observe_update_global_registry "$(_observe_project_root)" "$run_id" "$reg_agent" "$reg_status"
+  fi
 
   case "$event_type" in
     run_start|run_end|heartbeat)
-      if [[ -f "$(_observe_project_root)/work/telemetry/events.jsonl" || -d "$(_observe_project_root)/work/telemetry" ]]; then
-        local summary
-        summary="{\"ts\":\"$ts\",\"event_type\":\"observe_${event_type}\",\"run_id\":\"$(_observe_json_escape "$run_id")\",\"skill\":\"$(_observe_json_escape "$skill")\",\"step\":\"$(_observe_json_escape "$step")\",\"status\":\"$(_observe_json_escape "$status")\"}"
-        _observe_append_jsonl "$(_observe_project_root)/work/telemetry/events.jsonl" "$summary"
-      fi
+      local summary
+      summary="{\"ts\":\"$ts\",\"event_type\":\"observe_${event_type}\",\"run_id\":\"$(_observe_json_escape "$run_id")\",\"skill\":\"$(_observe_json_escape "$skill")\",\"step\":\"$(_observe_json_escape "$step")\",\"status\":\"$(_observe_json_escape "$status")\"}"
+      _observe_append_jsonl "$(_observe_events_file)" "$summary"
       ;;
   esac
+}
+
+_observe_clear_global_registry() {
+  local registry
+  registry="$(_observe_global_registry_file)"
+  rm -f "$registry"
 }

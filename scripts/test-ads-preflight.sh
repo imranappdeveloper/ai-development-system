@@ -56,6 +56,7 @@ ids = {c['id'] for c in doc['checks']}
 for req in ('check-cli', 'ai-paths', 'agents-md', 'ai-dev-os-yaml', 'docs-agents-issue-tracker.md'):
     assert req in ids, req
 assert 'local_survey' in doc
+assert 'graphify' in doc
 print('  OK: JSON structure')
 " "$json_out" "$TMP/full" || { echo "  FAIL: JSON structure" >&2; fail=1; }
 

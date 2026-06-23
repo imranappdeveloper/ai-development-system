@@ -34,11 +34,18 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/scripts/observe.sh" \
   "$ROOT/scripts/observe-event.sh" \
   "$ROOT/scripts/lib/observe-event.sh" \
+  "$ROOT/scripts/lib/observe-script-log.sh" \
+  "$ROOT/scripts/lib/observe-projects.sh" \
+  "$ROOT/scripts/observe-dashboard.py" \
   "$ROOT/scripts/test-observe.sh" \
+  "$ROOT/scripts/test-observe-dashboard.sh" \
   "$ROOT/scripts/check-integration.sh" \
   "$ROOT/scripts/test-check-integration.sh" \
   "$ROOT/scripts/ads-preflight.sh" \
   "$ROOT/scripts/test-ads-preflight.sh" \
+  "$ROOT/scripts/resolve-screen.sh" \
+  "$ROOT/scripts/lib/resolve-screen.sh" \
+  "$ROOT/scripts/test-resolve-screen.sh" \
   "$ROOT/scripts/issue-spec-check.sh" \
   "$ROOT/scripts/issue-context-pack.sh" \
   "$ROOT/scripts/afk-state-sync.sh" \
@@ -58,6 +65,7 @@ chmod +x "$SCRIPT" "$ROOT/scripts/ai-paths.sh" "$ROOT/scripts/resolve-os-paths.s
   "$ROOT/mcp/codebase-survey/server.py" \
   "$ROOT/scripts/lib/local-survey.sh" 2>/dev/null || true
 chmod +x "$ROOT/mcp/codebase-survey/server.py" "$ROOT/scripts/setup-local-survey.sh" \
+  "$ROOT/scripts/observe-dashboard.py" \
   "$ROOT/scripts/test-codebase-survey.sh" 2>/dev/null || true
 
 ln -sf "$SCRIPT" "$BIN_DIR/ai-new"

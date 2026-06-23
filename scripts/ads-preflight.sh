@@ -52,6 +52,11 @@ PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
 [[ -d "$PROJECT_DIR" ]] || { echo "ERROR: Not a directory: $PROJECT_DIR" >&2; exit 1; }
 
 export AI_DEV_OS_HOME="${AI_DEV_OS_HOME:-$OS_HOME}"
+export OBSERVE_PROJECT_ROOT="$PROJECT_DIR"
+# shellcheck source=scripts/lib/observe-script-log.sh
+source "$OS_HOME/scripts/lib/observe-script-log.sh"
+_observe_script_log_begin "ads-preflight.sh" "$*"
+trap '_observe_script_log_finish $?' EXIT
 
 declare -a CHECK_IDS=()
 declare -a CHECK_STATUSES=()
@@ -179,11 +184,40 @@ case "$_ls_state" in
     _add_check "local-survey" "warn" "Ollama unreachable at $_ls_host"
     _add_warn "Ollama unreachable — run: ollama serve && ollama pull $_ls_model"
     ;;
-  *)
+    *)
     _add_check "local-survey" "warn" "local survey state unknown ($_ls_state)"
     _add_warn "local survey state unknown"
     ;;
 esac
+
+# --- Warn-only: graphify (screen resolver + MCP) ---
+_graphify_state="missing-graph"
+_graphify_hook=false
+if command -v graphify >/dev/null 2>&1; then
+  if [[ -f "$PROJECT_DIR/graphify-out/graph.json" ]]; then
+    _graphify_state="ready"
+    _add_check "graphify" "ok" "graphify-out/graph.json present"
+    _log "OK: graphify graph.json"
+  else
+    _add_check "graphify" "warn" "graph.json missing — run: setup-graphify.sh . --build"
+    _add_warn "graphify graph.json missing — resolve-screen and Graphify MCP need a build"
+    _log "WARN: graphify graph.json missing"
+  fi
+  if [[ -d "$PROJECT_DIR/.git" ]] \
+    && grep -qF 'graphify' "$PROJECT_DIR/.git/hooks/post-commit" 2>/dev/null; then
+    _graphify_hook=true
+    _add_check "graphify-hook" "ok" "post-commit hook installed"
+  else
+    _add_check "graphify-hook" "warn" "post-commit hook missing — run: setup-graphify.sh ."
+    _add_warn "graphify hook missing — graph will not auto-update on commit"
+    _log "WARN: graphify hook"
+  fi
+else
+  _graphify_state="cli-missing"
+  _add_check "graphify" "warn" "graphify CLI not on PATH — optional; install via setup-graphify.sh"
+  _add_warn "graphify CLI missing — screen resolver falls back to aliases only"
+  _log "WARN: graphify CLI missing"
+fi
 
 # --- JSON output ---
 overall="ok"
@@ -194,6 +228,8 @@ export ADS_PREFLIGHT_OVERALL="$overall"
 export ADS_PREFLIGHT_LS_ENABLED="$_ls_enabled"
 export ADS_PREFLIGHT_LS_STATE="$_ls_state"
 export ADS_PREFLIGHT_LS_MODEL="$_ls_model"
+export ADS_PREFLIGHT_GRAPHIFY_STATE="$_graphify_state"
+export ADS_PREFLIGHT_GRAPHIFY_HOOK="$_graphify_hook"
 
 # Build JSON with python reading from env-encoded data
 _checks_payload=""
@@ -231,6 +267,11 @@ doc = {
         "state": os.environ.get("ADS_PREFLIGHT_LS_STATE", ""),
         "model": os.environ.get("ADS_PREFLIGHT_LS_MODEL", ""),
         "probe_recommended": os.environ.get("ADS_PREFLIGHT_LS_STATE", "") not in ("disabled",),
+    },
+    "graphify": {
+        "state": os.environ.get("ADS_PREFLIGHT_GRAPHIFY_STATE", ""),
+        "hook_installed": os.environ.get("ADS_PREFLIGHT_GRAPHIFY_HOOK", "") == "true",
+        "fix_hint": "setup-graphify.sh . --build" if os.environ.get("ADS_PREFLIGHT_GRAPHIFY_STATE", "") != "ready" else "",
     },
     "checks": checks,
     "warnings": warnings,

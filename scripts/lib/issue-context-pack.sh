@@ -75,6 +75,69 @@ _issue_pack_context_terms() {
   done < "$context_file"
 }
 
+_issue_pack_ui_alias_files() {
+  local haystack="$1"
+  local aliases_file="$2"
+  [[ -f "$aliases_file" ]] || return 0
+  ISSUE_PACK_HAYSTACK="$haystack" ISSUE_PACK_ALIASES="$aliases_file" python3 - <<'PY'
+import json, os, re, sys
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+hay = os.environ.get("ISSUE_PACK_HAYSTACK", "").lower()
+path = os.environ.get("ISSUE_PACK_ALIASES", "")
+if not hay or not os.path.isfile(path):
+    sys.exit(0)
+
+if yaml:
+    data = yaml.safe_load(open(path, encoding="utf-8")) or {}
+else:
+    data = {}
+    key = None
+    entry = {}
+    for line in open(path, encoding="utf-8"):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if re.match(r"^[A-Za-z0-9].*:$", line) and not line.startswith(" "):
+            if key:
+                data[key] = entry
+            key = line[:-1].strip()
+            entry = {}
+            continue
+        m = re.match(r"^\s+-\s+(.+)$", line)
+        if m and key:
+            entry.setdefault("files", []).append(m.group(1).strip())
+    if key:
+        data[key] = entry
+
+STOP = {"screen", "page", "view", "tab", "panel", "dialog", "modal", "the", "and"}
+
+def sig_words(text):
+    return [w for w in re.split(r"\s+", text) if len(w) > 2 and w not in STOP]
+
+seen = []
+for nick, spec in (data or {}).items():
+    if not isinstance(spec, dict):
+        continue
+    n = str(nick).strip().lower()
+    if not n:
+        continue
+    matched = n in hay
+    if not matched:
+        words = sig_words(n)
+        matched = bool(words) and all(w in hay for w in words)
+    if matched:
+        for f in spec.get("files") or []:
+            if f and f not in seen:
+                seen.append(f)
+for f in seen:
+    print(f)
+PY
+}
+
 _issue_pack_write_bundle() {
   local issue_num="$1"
   local title="$2"
@@ -130,10 +193,11 @@ _issue_pack_write_bundle() {
     echo ""
   } >>"$out_file"
   spot="$(_issue_pack_spot_check_files "$body" | sort -u)"
-  if [[ -n "$spot" ]]; then
+  alias_spot="$(_issue_pack_ui_alias_files "$haystack" "$root/work/ui-aliases.yaml" | sort -u)"
+  if [[ -n "$spot" || -n "$alias_spot" ]]; then
     while IFS= read -r f; do
       [[ -n "$f" ]] && echo "- \`$f\`" >>"$out_file"
-    done <<<"$spot"
+    done < <({ echo "$spot"; echo "$alias_spot"; } | sed '/^[[:space:]]*$/d' | sort -u)
   else
     echo "- _(none listed — use lock doc Files / components)_" >>"$out_file"
   fi

@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
+from observe_telemetry import emit_survey_call
 from survey_lib import SurveyResult, parse_files_arg, survey
 
 SERVER_NAME = "codebase-survey"
@@ -126,7 +128,12 @@ def _handle_tools_call(req_id: Any, params: dict[str, Any]) -> None:
     args = params.get("arguments") or {}
     files = parse_files_arg(args.get("files"))
     project_root = args.get("project_root") or str(Path.cwd())
+    started = time.monotonic()
     result = survey(project_root, files)
+    try:
+        emit_survey_call(project_root, result, duration_sec=time.monotonic() - started)
+    except Exception:
+        pass
     _send(
         {
             "jsonrpc": "2.0",

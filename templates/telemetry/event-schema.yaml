@@ -18,6 +18,12 @@ event_types:
   - heartbeat
   - tool_call
   - subagent_spawn
+  - script_invoked
+  - files_used
+  - mcp_probe
+  - mcp_call
+  - daemon_status
+  - resolve_screen
 
 fields:
   ts: ISO-8601 UTC

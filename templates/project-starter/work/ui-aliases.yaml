@@ -1,0 +1,9 @@
+# Screen nicknames only — AI appends on Graphify miss via resolve-screen.sh --write.
+# Graphify post-commit hook owns code structure (graphify-out/graph.json).
+#
+# Example (Flutter):
+# login screen:
+#   query: "LoginScreen auth validation"
+#   files:
+#     - lib/features/auth/login_screen.dart
+#   node: LoginScreen

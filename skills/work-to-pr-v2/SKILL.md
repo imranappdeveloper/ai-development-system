@@ -117,6 +117,16 @@ Rules:
 
 For each executable (unblocked, `ready-for-agent`) issue:
 
+**Observe telemetry (mandatory):** emit step boundaries so `observe watch` / `observe report` show pipeline progress. Use the active run from `/ads` or `task-run` — do not `run-start` per issue.
+
+```bash
+observe-event.sh emit --type step_start --step work-to-pr-v2/spec-review --step-index 1/7 --issue <N>
+# ... step work ...
+observe-event.sh emit --type step_end --step work-to-pr-v2/spec-review --issue <N> --duration-sec <SEC>
+```
+
+Repeat for steps 1–7 (`spec-review`, `claim`, `branch`, `implement`, `pr-readiness`, `review-requirement`, `pr-create`). On `telemetry.level: verbose` only, emit `tool_call` for Read/Write/Grep (`--step Read` etc.).
+
 ### 1. Spec review (before claim)
 
 ```bash

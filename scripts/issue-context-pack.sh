@@ -51,6 +51,12 @@ else
   export ISSUE_PACK_PROJECT_ROOT="$(pwd)"
 fi
 
+export OBSERVE_PROJECT_ROOT="$ISSUE_PACK_PROJECT_ROOT"
+# shellcheck source=scripts/lib/observe-script-log.sh
+source "$OS_REPO/scripts/lib/observe-script-log.sh"
+_observe_script_log_begin "issue-context-pack.sh" "$*"
+trap '_observe_script_log_finish $?' EXIT
+
 body=""
 if [[ -n "$body_file" ]]; then
   [[ -f "$body_file" ]] || die "body file not found: $body_file"
@@ -63,4 +69,5 @@ fi
 
 out_dir="$ISSUE_PACK_PROJECT_ROOT/work/context-packs"
 pack="$(_issue_pack_write_bundle "$issue" "$title" "$body" "$out_dir")"
+_observe_script_log_set_files "$pack,CONTEXT.md,work/requirement-lock.md"
 echo "$pack"

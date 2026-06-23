@@ -49,6 +49,25 @@ EOF
 done
 
 export AI_DEV_OS_HOME="${AI_DEV_OS_HOME:-$OS_HOME}"
+export OBSERVE_PROJECT_ROOT="$PROJECT_DIR"
+# shellcheck source=scripts/lib/observe-script-log.sh
+source "$OS_HOME/scripts/lib/observe-script-log.sh"
+
+_observe_survey_log_finish() {
+  local exit_code="${1:-0}"
+  local probe_status="skip"
+  case "${state:-}" in
+    disabled) probe_status="disabled" ;;
+    enabled-unreachable) probe_status="down" ;;
+    enabled*) probe_status="ok" ;;
+  esac
+  _observe_activity_emit mcp_probe --target codebase-survey --status "$probe_status"
+  _observe_script_log_finish "$exit_code"
+}
+
+_observe_script_log_begin "setup-local-survey.sh" "$*"
+trap '_observe_survey_log_finish $?' EXIT
+
 SERVER_PY="$(local_survey_server_path)"
 [[ -f "$SERVER_PY" ]] || die "missing MCP server: $SERVER_PY"
 

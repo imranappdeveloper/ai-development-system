@@ -209,7 +209,7 @@ fi
 
 # --- Token optimization + usage feedback scripts ---
 _section "Token optimization (AFK)"
-for ts in issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py usage-feedback.sh observe.sh observe-event.sh; do
+for ts in issue-spec-check.sh issue-context-pack.sh afk-state-sync.sh grill-intake.py usage-feedback.sh observe.sh observe-event.sh observe-dashboard.py; do
   if [[ -x "$OS_HOME/scripts/$ts" ]]; then
     _ok "scripts/$ts"
   else

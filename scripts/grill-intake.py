@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -202,6 +204,32 @@ def cmd_init(args: argparse.Namespace) -> int:
     return 0
 
 
+def _observe_script_record(project: Path, argv: list[str], exit_code: int, files: str = "") -> None:
+    os_home = os.environ.get("AI_DEV_OS_HOME", "")
+    if not os_home:
+        return
+    helper = Path(os_home) / "scripts" / "lib" / "observe-script-log.sh"
+    if not helper.is_file():
+        return
+    args = " ".join(argv[1:]) if len(argv) > 1 else ""
+    cmd = [
+        "bash",
+        str(helper),
+        "record",
+        "--project",
+        str(project.resolve()),
+        "--script",
+        "grill-intake.py",
+        "--args",
+        args,
+        "--exit",
+        str(exit_code),
+    ]
+    if files:
+        cmd.extend(["--files", files])
+    subprocess.run(cmd, check=False)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Grill intake CLI (pre-AI structured intake)")
     parser.add_argument("--project", default=".", help="Project root")
@@ -232,7 +260,19 @@ def main() -> int:
     args = parser.parse_args()
     if args.cmd in ("lint", "validate") and not args.file:
         args.file = str(Path(args.project).resolve() / "work" / "grill-intake.json")
-    return args.func(args)
+    project = Path(args.project).resolve()
+    exit_code = 0
+    files = ""
+    try:
+        exit_code = args.func(args)
+        if getattr(args, "file", None):
+            files = str(Path(args.file).resolve())
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 1
+        exit_code = code if code is not None else 1
+    finally:
+        _observe_script_record(project, sys.argv, exit_code, files)
+    return exit_code
 
 
 if __name__ == "__main__":

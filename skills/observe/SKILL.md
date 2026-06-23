@@ -23,8 +23,9 @@ Always `cd` to the target project (or pass remote SSH for Ubuntu AFK) before run
 | Trigger | Action |
 |---------|--------|
 | `/observe` or "what is AFK doing?" | `observe.sh status` |
-| "watch background work" | `observe.sh watch` |
+| "watch background work" | `observe.sh watch` — auto-starts telemetry if none active (Mac) or `observe.sh watch --remote` (Ubuntu AFK) |
 | "show run timeline / steps taken" | `observe.sh report` |
+| "monitor all projects (local page)" | `observe.sh dashboard` |
 | Mac user watching Ubuntu server | `observe.sh watch --remote` |
 
 Pair with `/usage-report` for milestone rollups and improvement recommendations — observe is **per-run detail**; usage-report is **historical rollup**.
@@ -65,15 +66,21 @@ telemetry:
 ```bash
 observe.sh status
 observe.sh status --json
-observe.sh watch --interval 60
+observe.sh watch --interval 60   # auto run-start when no session
 observe.sh report
 observe.sh report --run-id RUN-2026-06-21-abc12345
+observe.sh dashboard              # local page http://127.0.0.1:8765
+observe.sh dashboard --port 9000 --open
 
 # Ubuntu AFK from Mac
 observe.sh status --remote
 observe.sh watch --remote
 observe.sh report --remote
 ```
+
+**`observe watch`** auto-calls `observe-event.sh run-start --skill observe` when the project has no active session. End a session with `observe-event.sh run-end` on `Done.` or AFK handoff.
+
+**MCP `codebase-survey` / `survey` tool** — auto-logs `mcp_call` to `work/telemetry/events.jsonl` (files, duration, model, fallback flag). Visible on `observe dashboard` and `observe report`.
 
 **Agents emit events** (low-token — one JSON line per boundary):
 
@@ -90,7 +97,7 @@ observe-event.sh run-end --status ok
 
 1. Confirm project root (`pwd` has `AGENTS.md` + `ai-dev-os.yaml`).
 2. Run the appropriate `observe.sh` subcommand — **do not** narrate steps in chat instead of logging.
-3. Summarize output for user (≤10 lines): health, current issue/step, elapsed, anomalies.
+3. Summarize output for user (≤10 lines): health, last script, MCP/daemon lines, current issue/step, elapsed, anomalies.
 4. On `report`: highlight step order, long steps, missing expected steps (spec-review skipped, etc.).
 5. If scaffolds missing → tell user to run `sync-project`, then retry.
 
@@ -101,7 +108,7 @@ observe-event.sh run-end --status ok
 | Path | Contents |
 |------|----------|
 | `work/telemetry/runs/*.jsonl` | Verbose per-run trace (gitignored) |
-| `work/telemetry/events.jsonl` | Summary events |
+| `work/telemetry/events.jsonl` | Summary events + `script_invoked`, `files_used`, `mcp_probe` |
 | `work/telemetry/.current-run` | Active run id (gitignored) |
 
 ---

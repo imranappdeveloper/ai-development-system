@@ -77,6 +77,12 @@ PROJECT_ROOT="$(pwd)"
 command -v tmux >/dev/null 2>&1 || die "tmux required for server AFK"
 command -v gh >/dev/null 2>&1 || die "gh CLI required"
 
+export OBSERVE_PROJECT_ROOT="$PROJECT_ROOT"
+# shellcheck source=scripts/lib/observe-script-log.sh
+source "$OS_HOME/scripts/lib/observe-script-log.sh"
+_observe_script_log_begin "task-run-server.sh" "$*"
+trap '_observe_script_log_finish $?' EXIT
+
 AGENT="$(_task_run_resolve_agent "$PROJECT_ROOT" "$AGENT_FLAG")"
 _task_run_verify_agent "$AGENT"
 
@@ -193,12 +199,27 @@ EOF
 
 EXEC_LINE="$(_task_run_agent_exec_line "$AGENT" "$PROMPT_FILE")"
 RUNNER="$HANDOFF_DIR/${SLUG}-${AGENT}-runner.sh"
+TASK_RUN_OBSERVE_RUN_ID=""
+if command -v observe-event >/dev/null 2>&1 || [[ -x "$OS_HOME/scripts/observe-event.sh" ]]; then
+  TASK_RUN_OBSERVE_RUN_ID="$("$OS_HOME/scripts/observe-event.sh" run-start --skill task-run --agent "$AGENT" 2>/dev/null || true)"
+fi
 cat >"$RUNNER" <<RUNNER
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$PROJECT_ROOT"
 export AI_DEV_OS_HOME="${AI_DEV_OS_HOME:-$OS_HOME}"
+export OBSERVE_PROJECT_ROOT="$PROJECT_ROOT"
+export OBSERVE_RUN_ID="${TASK_RUN_OBSERVE_RUN_ID}"
 export PATH="\$HOME/.local/bin:\$PATH"
+_obs_run_end() {
+  local rc=\$1
+  if [[ -n "\${OBSERVE_RUN_ID:-}" ]] && command -v observe-event >/dev/null 2>&1; then
+    local st=ok
+    [[ \$rc -eq 0 ]] || st=fail
+    observe-event.sh run-end --run-id "\$OBSERVE_RUN_ID" --status "\$st" || true
+  fi
+}
+trap '_obs_run_end \$?' EXIT
 echo "=== Task Run Server — ${AGENT} starting ==="
 echo "Agent: ${AGENT_LABEL}"
 echo "Invocation: ${INVOCATION}"

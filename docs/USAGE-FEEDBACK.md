@@ -12,7 +12,7 @@ Learn what works as you adopt AI Dev OS — passive telemetry, milestone snapsho
 | `/usage-report` | Anytime — full rollup + recommendations |
 | `/observe` | Live or post-run — step trace for this project (skill: `observe`) |
 | `observe.sh status` | Live — current run, step, elapsed time |
-| `observe.sh watch` | Live — poll every 60s (add `--remote` for Ubuntu AFK) |
+| `observe.sh watch` | Live status card every 60s + heartbeat when active (use `--remote` for Ubuntu AFK) |
 | `observe.sh report` | After a run — per-issue step timeline |
 
 ## Automatic snapshots
@@ -32,7 +32,7 @@ Snapshots live at `work/feedback/snapshots/`. Anomalies trigger a one-line nudge
 
 | Location | Contents |
 |----------|----------|
-| `work/telemetry/events.jsonl` | Passive events + run summaries (project) |
+| `work/telemetry/events.jsonl` | Passive events, `script_invoked`, `files_used`, `mcp_probe` (project) |
 | `work/telemetry/runs/*.jsonl` | Verbose per-run traces (gitignored) |
 | `work/feedback/entries.jsonl` | Your feedback entries (verbatim text) |
 | `work/feedback/snapshots/` | Milestone markdown summaries |

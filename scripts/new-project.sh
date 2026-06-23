@@ -129,6 +129,9 @@ ads_block_present() {
     user-approvals)     grep -qF 'Start coding' "$file" ;;
     project-idea)       grep -qF 'Project idea (if provided' "$file" \
                         || grep -qF '{{PROJECT_IDEA}}' "$file" ;;
+    local-survey)       grep -qF 'LOCAL-SURVEY.md' "$file" ;;
+    resolve-screen)     grep -qF 'resolve-screen.sh' "$file" \
+                        || grep -qF 'ui-aliases.yaml' "$file" ;;
     *)                  return 1 ;;
   esac
 }
@@ -370,6 +373,11 @@ setup_os_binding() {
   touch "$PROJECT_DIR/work/.gitkeep" \
     "$PROJECT_DIR/work/telemetry/runs/.gitkeep" \
     "$PROJECT_DIR/docs/.gitkeep" 2>/dev/null || true
+  if [[ ! -f "$PROJECT_DIR/work/ui-aliases.yaml" && -f "$TEMPLATE/work/ui-aliases.yaml" ]]; then
+    cp "$TEMPLATE/work/ui-aliases.yaml" "$PROJECT_DIR/work/ui-aliases.yaml"
+    info "work/ui-aliases.yaml — created (screen nickname cache)"
+    created=$((created + 1))
+  fi
   info "work/ docs/ — ready (feedback + telemetry + runs scaffold)"
 
   # --- .gitignore ---
@@ -428,6 +436,12 @@ GITIGNORE
   if [[ -x "$ROOT/scripts/setup-task-run.sh" ]]; then
     echo ""
     "$ROOT/scripts/setup-task-run.sh" "$PROJECT_DIR" --no-poll || info "task-run — setup skipped or partial"
+  fi
+
+  if [[ -f "$ROOT/scripts/lib/observe-projects.sh" ]]; then
+    # shellcheck source=scripts/lib/observe-projects.sh
+    source "$ROOT/scripts/lib/observe-projects.sh"
+    _observe_projects_register "$PROJECT_DIR" 2>/dev/null || true
   fi
 
   echo ""

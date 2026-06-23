@@ -56,6 +56,22 @@ Read-only discovery via local Ollama when a **script or artifact already lists f
 **Never** inline-read many files in the parent session when a script-gated list exists — delegate to `survey` first, then verify on cloud.
 <!-- /ADS-BLOCK:local-survey -->
 
+<!-- ADS-BLOCK:resolve-screen -->
+## UI screen resolver (screen names → files)
+
+When the user mentions a **screen**, **page**, **route**, tab, or **visible UI text** — run **`$AI_DEV_OS_HOME/skills/resolve-screen/SKILL.md`** before broad codebase search.
+
+| Step | Action |
+|------|--------|
+| UI-ish message | `resolve-screen.sh --phrase "<screen phrase>" --json` → spot-check returned files only |
+| Graphify miss + files confirmed | `resolve-screen.sh --phrase "…" --write --json` → updates `work/ui-aliases.yaml` |
+| Explicit | `/resolve-screen` — same protocol |
+
+**Graphify** (`graphify-out/graph.json`) auto-updates on commit; aliases cache nicknames only. Requires graph build: `setup-graphify.sh . --build` (done in `/setup-ads`).
+
+**Never** map functions/lines in `ui-aliases.yaml`. **Never** read all of `lib/` for a single UI tweak when resolver returns files.
+<!-- /ADS-BLOCK:resolve-screen -->
+
 <!-- ADS-BLOCK:skills-source -->
 ## Skills — project bundle only
 
